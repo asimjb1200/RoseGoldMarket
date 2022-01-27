@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct HomeMarket: View {
+    @Binding var tab: Int
+    
     var body: some View {
         NavigationView {
             Text("Home View")
@@ -18,6 +20,7 @@ struct HomeMarket: View {
 
 struct HomeMarket_Previews: PreviewProvider {
     static var previews: some View {
-        HomeMarket()
+        Text("Text")
+        // HomeMarket(tab: <#T##Binding<Int>#>)
     }
 }

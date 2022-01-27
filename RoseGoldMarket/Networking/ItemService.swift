@@ -21,8 +21,7 @@ struct ItemService {
         let requestData = networker.buildMultipartImageRequest(boundary: boundary, item: items)
         
         URLSession.shared.uploadTask(with: urlRequest, from: requestData) {(data, response, error) in
-            guard error != nil else {
-                print("an error occurred")
+            guard error == nil else {
                 completion(.failure(.genError))
                 return
             }
@@ -48,6 +47,7 @@ struct ItemService {
             
             do {
                 let decoded = try JSONDecoder().decode(String.self, from: data)
+                print("Data posted")
                 completion(.success(decoded))
                 return
             } catch let err {

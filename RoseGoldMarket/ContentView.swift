@@ -6,21 +6,21 @@
 //
 
 import SwiftUI
-
 struct ContentView: View {
+    @State var tab: Int = 0
     var body: some View {
-        TabView {
-            HomeMarket()
+        TabView(selection: $tab) {
+            HomeMarket(tab: $tab)
                 .tabItem {
                     Label("Market", systemImage: "house.fill")
                 }.tag(0)
             
-            AddItems()
+            AddItems(tab: $tab)
                 .tabItem {
                     Label("Add Item", systemImage: "plus.circle")
                 }.tag(1)
-            
-        }.accentColor(Color("AccentColor"))
+        }
+        .accentColor(Color("AccentColor"))
     }
 }
 

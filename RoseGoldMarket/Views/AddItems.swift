@@ -8,16 +8,18 @@
 import SwiftUI
 
 struct AddItems: View {
-    @State private var plantImage = UIImage(named: "circlePlaceholder")! // state var because this will change when the user picks their own image and we want to update the view with it
-    @State private var plantImage2 = UIImage(named: "circlePlaceholder")!
-    @State private var plantImage3 = UIImage(named: "circlePlaceholder")!
-    @StateObject private var viewModel = AddItemsViewModel()
-    private var categoryMapper = CategoryMapper()
+    @State var plantImage = UIImage(named: "circlePlaceholder")! // state var because this will change when the user picks their own image and we want to update the view with it
+    @State var plantImage2 = UIImage(named: "circlePlaceholder")!
+    @State var plantImage3 = UIImage(named: "circlePlaceholder")!
+    @StateObject var viewModel = AddItemsViewModel()
+    @Binding var tab: Int
+    var categoryMapper = CategoryMapper()
     
-    init() {
+    init(tab: Binding<Int>) {
         UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(named: "MainColor") ?? .black]
         UINavigationBar.appearance().largeTitleTextAttributes = [.foregroundColor: UIColor(named: "MainColor") ?? .black]
         UITextView.appearance().backgroundColor = .clear
+        self._tab = tab // initialize a binding
     }
     
     var body: some View {
@@ -85,6 +87,11 @@ struct AddItems: View {
                     Spacer()
                 }
                 .frame(maxWidth: .infinity, maxHeight: 100, alignment: .center)
+                .alert(isPresented: $viewModel.itemPosted) {
+                    return Alert(title: Text("Success"), message: Text("Your plant is now live on the market!"), dismissButton: .default(Text("OK!"), action: {
+                        self.tab = 0
+                    }))
+                }
                 
                 Button("Submit") {
                     guard self.imageWasntChanged() == false else {
@@ -154,8 +161,10 @@ struct AddItems: View {
 
 
 struct AddItems_Previews: PreviewProvider {
+    @State var tab = 0
     static var previews: some View {
-        AddItems()
+        Text("hey")
+        //AddItems(tab: $tab)
 //            .preferredColorScheme(.dark)
     }
 }
