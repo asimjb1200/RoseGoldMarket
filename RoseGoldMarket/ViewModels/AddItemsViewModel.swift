@@ -37,7 +37,7 @@ final class AddItemsViewModel: ObservableObject {
         
         itemService.postItem(itemData: item, completion: {[weak self] apiRes in
             switch apiRes {
-                case .success(let res):
+                case .success( _):
                     DispatchQueue.main.async {
                         self?.itemPosted = true
                     }
