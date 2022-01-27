@@ -9,8 +9,18 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        Text("Hello, world!")
-            .padding()
+        TabView {
+            HomeMarket()
+                .tabItem {
+                    Label("Market", systemImage: "house.fill")
+                }.tag(0)
+            
+            AddItems()
+                .tabItem {
+                    Label("Add Item", systemImage: "plus.circle")
+                }.tag(1)
+            
+        }.accentColor(Color("AccentColor"))
     }
 }
 
