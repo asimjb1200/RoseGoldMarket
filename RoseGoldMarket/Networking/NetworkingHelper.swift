@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-class Networker {
+struct Networker {
     // static let shared = Networker()
     init() {}
     func constructRequest(uri: String, token: String = "", post: Bool = false) -> URLRequest {

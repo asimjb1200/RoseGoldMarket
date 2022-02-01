@@ -161,10 +161,8 @@ struct AddItems: View {
 
 
 struct AddItems_Previews: PreviewProvider {
-    @State var tab = 0
     static var previews: some View {
-        Text("hey")
-        //AddItems(tab: $tab)
+        AddItems(tab: Binding.constant(1))
 //            .preferredColorScheme(.dark)
     }
 }
