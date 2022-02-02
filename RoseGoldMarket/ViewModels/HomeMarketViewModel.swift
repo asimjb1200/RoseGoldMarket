@@ -61,21 +61,4 @@ final class HomeMarketViewModel: ObservableObject {
             }
         })
     }
-    
-//    func loadMoreContentIfNeeded(currentItem item: Item?) {
-//      guard let item = item else {
-//        getFilteredItems()
-//        return
-//      }
-//
-//      let thresholdIndex = items.index(items.endIndex, offsetBy: -10) // get the index of the item 10 places back, (the start of the last fetch)
-//      if items.firstIndex(where: { $0.id == item.id }) == thresholdIndex, canLoadMorePages == true {
-//        getFilteredItems()
-//      }
-//    }
-    
-    func sendSearchQueryToServer() {
-        self.isLoadingPage = true
-        let categoryIdList: [UInt] = self.categoryHolder.filter{ $0.isActive == true}.map{ $0.category }
-    }
 }
