@@ -58,7 +58,7 @@ struct ItemService {
         }.resume()
     }
     
-    func retrieveItems(categoryIdFilters: [UInt], limit: UInt, offset: UInt, longAndLat: String, miles: UInt, completion: @escaping (Result<[Item], ItemErrors>) -> ()) {
+    func retrieveItems(categoryIdFilters: [UInt], limit: UInt, offset: UInt, longAndLat: String, miles: UInt, searchTerm: String, completion: @escaping (Result<[Item], ItemErrors>) -> ()) {
         let networker = Networker()
         let urlRequest = networker.constructRequest(uri: "http://localhost:4000/item-handler/fetch-filtered-items", post: true)
         
@@ -67,8 +67,10 @@ struct ItemService {
             "limit": limit,
             "offset": offset,
             "longAndLat": longAndLat,
-            "miles": miles
+            "miles": miles,
+            "searchTerm": searchTerm
         ]
+        
         let request = networker.buildReqBody(req: urlRequest, body: body)
         
         URLSession.shared.dataTask(with: request) {(data, response, err) in
@@ -79,6 +81,11 @@ struct ItemService {
             
             guard let response = response as? HTTPURLResponse else {
                 completion(.failure(.genError))
+                return
+            }
+            
+            guard response.statusCode != 404 else {
+                completion(.success([]))
                 return
             }
             

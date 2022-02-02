@@ -11,7 +11,14 @@ struct CategoryMapper {
         0: "indoor",
         1: "outdoor",
         2: "tropical",
-        3: "lowlight"
+        3: "low light",
+        4: "herbs",
+        5: "trees",
+        6: "climbers",
+        7: "creepers",
+        8: "ferns",
+        9: "flowering plants",
+        10: "plants with seeds"
     ]
 }
 

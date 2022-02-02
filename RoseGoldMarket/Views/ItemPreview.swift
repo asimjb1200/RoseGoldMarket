@@ -15,7 +15,7 @@ struct ItemPreview: View {
         VStack {
             AsyncImage(url: URL(string: "http://localhost:4000\(self.getImageLink(imageLink: itemImageLink))")) { phase in
                 if let image = phase.image {
-                    image.resizable()
+                    image.resizable().frame(maxWidth: 200, maxHeight: 200).cornerRadius(15)
                 } else if phase.error != nil {
                     Color.red // an error occurred
                 } else {
@@ -31,12 +31,8 @@ struct ItemPreview: View {
                 .foregroundColor(Color("AccentColor"))
                 
         }
-        .frame(width: 150, height: 150)
+        .frame(maxWidth: 200, maxHeight: 200)
         .padding()
-        .overlay(
-            RoundedRectangle(cornerRadius: 5)
-            .stroke(Color("AccentColor"), lineWidth: 4)
-        )
     }
 }
 

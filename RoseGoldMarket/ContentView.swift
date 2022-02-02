@@ -8,6 +8,10 @@
 import SwiftUI
 struct ContentView: View {
     @State var tab: Int = 0
+    init() {
+//        UITabBar.appearance().isTranslucent = false
+        UITabBar.appearance().backgroundColor = UIColor(Color.white) 
+    }
     var body: some View {
         TabView(selection: $tab) {
             HomeMarket(tab: $tab)
