@@ -18,8 +18,9 @@ struct HomeMarket: View {
     ]
     
     init(tab: Binding<Int>) {// changing the color of the nav bar title
-        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(named: "MainColor") ?? .black]
-        UINavigationBar.appearance().largeTitleTextAttributes = [.foregroundColor: UIColor(named: "MainColor") ?? .black]
+//        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(named: "MainColor")!]
+//        UINavigationBar.appearance().largeTitleTextAttributes = [.font: UIFont(name: "Georgia-Bold", size: 35)!, .foregroundColor: UIColor(named: "MainColor")!]
+
         //UITextView.appearance().backgroundColor = .clear
         self._tab = tab
     }
@@ -71,7 +72,7 @@ struct HomeMarket: View {
                 ScrollView {
                     LazyVGrid(columns: columns) {
                         ForEach(viewModel.items, id: \.self) { x in
-                            NavigationLink(destination: Text("Detail View")) {
+                            NavigationLink(destination: ItemDetails(item: x)) {
                                 ItemPreview(itemId: x.id, itemTitle: x.name, itemImageLink: x.image1)
                                 .onAppear() {
                                     if x == viewModel.items.last, viewModel.allDataLoaded == false {
@@ -86,7 +87,17 @@ struct HomeMarket: View {
                         }
                     }
                 }
-            }.navigationTitle("RoseGold")
+            }
+            .navigationBarTitle("", displayMode: .inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Text("RoseGold").foregroundColor(Color("MainColor"))
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Image(systemName: "person.circle.fill")
+                        .foregroundColor(Color("MainColor"))
+                }
+            }
         }
         
         
