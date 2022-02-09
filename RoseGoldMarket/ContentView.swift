@@ -7,7 +7,7 @@
 
 import SwiftUI
 struct ContentView: View {
-    @State var tab: Int = 0
+    @State var tab: UInt = 0
     init() {
 //        UITabBar.appearance().isTranslucent = false
         UITabBar.appearance().backgroundColor = UIColor(Color.white) 
@@ -23,6 +23,11 @@ struct ContentView: View {
                 .tabItem {
                     Label("Add Item", systemImage: "plus.circle")
                 }.tag(1)
+            
+            MessageList(tab: $tab)
+                .tabItem {
+                    Label("Messages", systemImage: "envelope.fill")
+                }.tag(2)
         }
         .accentColor(Color("AccentColor"))
     }

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HomeMarket: View {
-    @Binding var tab: Int
+    @Binding var tab: UInt
     @StateObject var viewModel = HomeMarketViewModel()
     
     var categoryMapper = CategoryMapper()
@@ -17,7 +17,7 @@ struct HomeMarket: View {
         GridItem(.flexible(), spacing: 0)
     ]
     
-    init(tab: Binding<Int>) {// changing the color of the nav bar title
+    init(tab: Binding<UInt>) {// changing the color of the nav bar title
 //        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(named: "MainColor")!]
 //        UINavigationBar.appearance().largeTitleTextAttributes = [.font: UIFont(name: "Georgia-Bold", size: 35)!, .foregroundColor: UIColor(named: "MainColor")!]
 
