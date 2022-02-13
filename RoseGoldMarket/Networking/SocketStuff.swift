@@ -21,21 +21,10 @@ final class SocketUtils: ObservableObject {
         self.dateFormatter.locale = Locale(identifier: "en_US_POSIX")
         self.dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         self.decoder.dateDecodingStrategy = .formatted(self.dateFormatter)
+        self.connectToServer(withId: 16)
         
         manager.defaultSocket.on(clientEvent: .connect) {data, ack in
             print("socket connected")
-        }
-        
-        manager.defaultSocket.on("Private Message") { data, ack in
-            do {
-                guard let dict = data[0] as? [String: Any] else { return }
-                let rawData = try JSONSerialization.data(withJSONObject: dict["data"] as Any, options: [])
-                let chatBlock = try self.decoder.decode(ChatFromBackend.self, from: rawData)
-                self.newChat = chatBlock
-                //self.newMessage = chatBlock.message
-            } catch let err {
-                print(err)
-            }
         }
     }
     

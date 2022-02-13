@@ -216,6 +216,7 @@
 			isa = PBXGroup;
 			children = (
 				684867912798BB060033969D /* HomeMarket.swift */,
+				68E083D727ACAFC400DA0110 /* MessageThread.swift */,
 				68C48A0327A4AFA200AEF0F5 /* ItemPreview.swift */,
 				681AB5C627A650F700B1629B /* ItemDetails.swift */,
 			);
@@ -226,7 +227,6 @@
 			isa = PBXGroup;
 			children = (
 				68E083D527ACAFA600DA0110 /* MessageList.swift */,
-				68E083D727ACAFC400DA0110 /* MessageThread.swift */,
 			);
 			name = Messenger;
 			sourceTree = "<group>";
