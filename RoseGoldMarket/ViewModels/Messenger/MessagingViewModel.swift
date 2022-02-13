@@ -9,7 +9,6 @@ import Foundation
 import SocketIO
 
 final class MessagingViewModel: ObservableObject {
-//    var socket: SocketUtils = .shared
     @Published var uniqueChats:[ChatData] = [ChatData]()
     @Published var allChats: [String:[ChatData]] = [:]
     @Published var firstAppear = true
@@ -174,7 +173,11 @@ final class MessagingViewModel: ObservableObject {
         manager.defaultSocket.connect(withPayload: ["accountId": accountIdString])
     }
     
-    func sendMessageToUser() {
+    func sendMessageToUser(newMessage: String, receiverId: UInt, senderId: UInt) {
+        // build the chat block for the server
+        // let newChatBlock = ChatForSocketTransfer(senderid: senderId, recid: receiverId, message: newMessage, timestamp: Date())
+        
+        // s
         
     }
 }

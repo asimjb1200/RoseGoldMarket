@@ -34,7 +34,7 @@
 		68DFE8A327B4230F00190CD7 /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 68DFE8A227B4230F00190CD7 /* SocketIO */; };
 		68E083D627ACAFA600DA0110 /* MessageList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E083D527ACAFA600DA0110 /* MessageList.swift */; };
 		68E083D827ACAFC400DA0110 /* MessageThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E083D727ACAFC400DA0110 /* MessageThread.swift */; };
-		68E083DB27ACB02300DA0110 /* MessageListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E083DA27ACB02300DA0110 /* MessageListViewModel.swift */; };
+		68E083DB27ACB02300DA0110 /* MessagingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E083DA27ACB02300DA0110 /* MessagingViewModel.swift */; };
 		68E083DD27ACB03100DA0110 /* MessageThreadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E083DC27ACB03100DA0110 /* MessageThreadViewModel.swift */; };
 		68E083DF27ACBE4000DA0110 /* MessagingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E083DE27ACBE4000DA0110 /* MessagingService.swift */; };
 /* End PBXBuildFile section */
@@ -67,7 +67,7 @@
 		68D7FC4D279923DD00F9CFBB /* PlantPictureOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantPictureOptions.swift; sourceTree = "<group>"; };
 		68E083D527ACAFA600DA0110 /* MessageList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageList.swift; sourceTree = "<group>"; };
 		68E083D727ACAFC400DA0110 /* MessageThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageThread.swift; sourceTree = "<group>"; };
-		68E083DA27ACB02300DA0110 /* MessageListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageListViewModel.swift; sourceTree = "<group>"; };
+		68E083DA27ACB02300DA0110 /* MessagingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagingViewModel.swift; sourceTree = "<group>"; };
 		68E083DC27ACB03100DA0110 /* MessageThreadViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageThreadViewModel.swift; sourceTree = "<group>"; };
 		68E083DE27ACBE4000DA0110 /* MessagingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagingService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -234,7 +234,7 @@
 		68E083D927ACAFD000DA0110 /* Messenger */ = {
 			isa = PBXGroup;
 			children = (
-				68E083DA27ACB02300DA0110 /* MessageListViewModel.swift */,
+				68E083DA27ACB02300DA0110 /* MessagingViewModel.swift */,
 				68E083DC27ACB03100DA0110 /* MessageThreadViewModel.swift */,
 			);
 			path = Messenger;
@@ -327,7 +327,7 @@
 				68C489FF27A4ADBC00AEF0F5 /* HomeMarketViewModel.swift in Sources */,
 				6800EDD827B06C3600461643 /* ChatData.swift in Sources */,
 				684867982798CCF20033969D /* CategoryMapper.swift in Sources */,
-				68E083DB27ACB02300DA0110 /* MessageListViewModel.swift in Sources */,
+				68E083DB27ACB02300DA0110 /* MessagingViewModel.swift in Sources */,
 				68C48A0127A4AE8A00AEF0F5 /* ItemTile.swift in Sources */,
 				6848679B2798CD9A0033969D /* ItemForBackend.swift in Sources */,
 				6823B7D427990844008F2CB7 /* AddItems.swift in Sources */,

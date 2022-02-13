@@ -19,7 +19,7 @@ struct MessageList: View {
     
     var body: some View {
         NavigationView {
-            List(viewModel.uniqueChats, id: \.customId) {x in
+            List(viewModel.uniqueChats, id: \.id) {x in
                 if x.senderUsername == "admin" {
                     NavigationLink(destination: MessageThread(receiverId: x.recid == myAccountId ? x.senderid : x.recid)) {
                         HStack(spacing: 10) {

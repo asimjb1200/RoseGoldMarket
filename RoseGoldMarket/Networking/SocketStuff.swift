@@ -13,8 +13,6 @@ final class SocketUtils: ObservableObject {
     let manager = SocketManager(socketURL: URL(string: "http://localhost:4000")!, config: [.log(true), .compress])
     let decoder = JSONDecoder()
     let dateFormatter = DateFormatter()
-    @Published var newMessage = ""
-    @Published var newChat: ChatFromBackend = ChatFromBackend(id: 0, senderid: 0, recid: 0, message: "", timestamp: Date())
     
     private init() {
         // handle the UTC date type that will be coming through the wire

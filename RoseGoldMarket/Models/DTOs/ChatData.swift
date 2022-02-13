@@ -8,8 +8,7 @@
 import Foundation
 
 struct ChatData: Codable, Hashable, Identifiable {
-    let customId = UUID()
-    let id: UInt
+    let id: UUID
     let senderid: UInt
     let recid: UInt
     let message: String
@@ -19,10 +18,16 @@ struct ChatData: Codable, Hashable, Identifiable {
 }
 
 struct ChatFromBackend: Codable, Hashable, Identifiable {
-    let customId = UUID()
-    let id: UInt
+    let id: UUID
     let senderid: UInt
     let recid: UInt
     let message: String
     let timestamp: Date
+}
+
+struct ChatForSocketTransfer: Codable {
+    let senderId: UInt
+    let recid: UInt
+    let message: String
+    let timestamp: String
 }
