@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+final class MsgThreadViewModel: ObservableObject {
+    let socket: SocketUtils = .shared
+}

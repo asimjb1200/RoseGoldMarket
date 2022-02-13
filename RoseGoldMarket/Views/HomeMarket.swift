@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HomeMarket: View {
-    @Binding var tab: UInt
+    @Binding var tab: Int
     @StateObject var viewModel = HomeMarketViewModel()
     
     var categoryMapper = CategoryMapper()
@@ -17,11 +17,8 @@ struct HomeMarket: View {
         GridItem(.flexible(), spacing: 0)
     ]
     
-    init(tab: Binding<UInt>) {// changing the color of the nav bar title
-//        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(named: "MainColor")!]
-//        UINavigationBar.appearance().largeTitleTextAttributes = [.font: UIFont(name: "Georgia-Bold", size: 35)!, .foregroundColor: UIColor(named: "MainColor")!]
-
-        //UITextView.appearance().backgroundColor = .clear
+    init(tab: Binding<Int>) {// changing the color of the nav bar title
+        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(named: "MainColor")!]
         self._tab = tab
     }
     var body: some View {
@@ -75,6 +72,7 @@ struct HomeMarket: View {
                             NavigationLink(destination: ItemDetails(item: x)) {
                                 ItemPreview(itemId: x.id, itemTitle: x.name, itemImageLink: x.image1)
                                 .onAppear() {
+                                    print("on appear for home")
                                     if x == viewModel.items.last, viewModel.allDataLoaded == false {
                                         viewModel.getFilteredItems()
                                     }
@@ -88,24 +86,13 @@ struct HomeMarket: View {
                     }
                 }
             }
-            .navigationBarTitle("", displayMode: .inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Text("RoseGold").foregroundColor(Color("MainColor"))
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Image(systemName: "person.circle.fill")
-                        .foregroundColor(Color("MainColor"))
-                }
-            }
+            .navigationBarTitle(Text("RoseGold"))
         }
-        
-        
     }
 }
 
 struct HomeMarket_Previews: PreviewProvider {
     static var previews: some View {
-        HomeMarket(tab: Binding.constant(5))
+        HomeMarket(tab: Binding.constant(2))
     }
 }

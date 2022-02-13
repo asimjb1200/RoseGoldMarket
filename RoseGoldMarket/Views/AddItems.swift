@@ -12,10 +12,10 @@ struct AddItems: View {
     @State var plantImage2 = UIImage(named: "circlePlaceholder")!
     @State var plantImage3 = UIImage(named: "circlePlaceholder")!
     @StateObject var viewModel = AddItemsViewModel()
-    @Binding var tab: UInt
+    @Binding var tab: Int
     var categoryMapper = CategoryMapper()
     
-    init(tab: Binding<UInt>) {
+    init(tab: Binding<Int>) {
         UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(named: "MainColor") ?? .black]
         UINavigationBar.appearance().largeTitleTextAttributes = [.foregroundColor: UIColor(named: "MainColor") ?? .black]
         UITextView.appearance().backgroundColor = .clear
@@ -162,7 +162,7 @@ struct AddItems: View {
 
 struct AddItems_Previews: PreviewProvider {
     static var previews: some View {
-        AddItems(tab: Binding.constant(1))
+        AddItems(tab: Binding.constant(2))
 //            .preferredColorScheme(.dark)
     }
 }
