@@ -19,54 +19,67 @@ struct MessageList: View {
     
     var body: some View {
         NavigationView {
-            List(viewModel.listOfChats, id: \.id) {x in
-                if x.senderUsername == "admin" {
-                    NavigationLink(destination: MessageThread(receiverId: x.recid == myAccountId ? x.senderid : x.recid)) {
-                        HStack(spacing: 10) {
-                            Image(systemName: "person.fill").padding()
+            if viewModel.listOfChats.isEmpty {
+                Text("No Chats Yet")
+            } else {
+                List(viewModel.listOfChats, id: \.id) {x in
+                    if x.senderUsername == "admin" {
+                        NavigationLink(destination: MessageThread(receiverId: x.recid == myAccountId ? x.senderid : x.recid)) {
+                            HStack(spacing: 10) {
+                                Image(systemName: "person.fill").padding()
 
-                            VStack(alignment: .leading) {
-                                Text(x.receiverUsername)
-                                Text(x.message)
-                                    .padding(.leading)
-                            }
-                            Spacer()
-                        }.frame(height: 70)
-                    }.isDetailLink(true)
-                } else {
-                    NavigationLink(destination: MessageThread(receiverId: x.recid == myAccountId ? x.senderid : x.recid)) {
-                        HStack(spacing: 10) {
-                            Image(systemName: "person.fill").padding()
+                                VStack(alignment: .leading) {
+                                    Text(x.receiverUsername)
+                                    Text(x.message)
+                                        .padding(.leading)
+                                }
+                                Spacer()
+                            }.frame(height: 70)
+                        }.isDetailLink(true)
+                    } else {
+                        NavigationLink(destination: MessageThread(receiverId: x.recid == myAccountId ? x.senderid : x.recid)) {
+                            HStack(spacing: 10) {
+                                Image(systemName: "person.fill").padding()
 
-                            VStack(alignment: .leading){
-                                Text(x.senderUsername)
-                                Text(x.message)
-                                    .padding(.leading)
-                            }
+                                VStack(alignment: .leading){
+                                    Text(x.senderUsername)
+                                    Text(x.message)
+                                        .padding(.leading)
+                                }
 
-                            Spacer()
-                        }.frame(height: 70)
-                    }.isDetailLink(true)
+                                Spacer()
+                            }.frame(height: 70)
+                        }.isDetailLink(true)
+                    }
+
                 }
-
+                .onAppear() {
+                    print("message list appearing")
+                    viewModel.listOfChats = buildUniqueChatList()
+                }
+                .frame(maxHeight: .infinity)
+                .navigationTitle("Inbox")
             }
-            .frame(maxHeight: .infinity)
-            .navigationTitle("Inbox")
             
             Spacer()
         }.onAppear(){
-            var tempHolder:[ChatData] = []
-            // iterate through allChats
-            for(_, chatHistory) in viewModel.allChats {
-                tempHolder.append(chatHistory.last!)
-            }
-            
-            viewModel.listOfChats = tempHolder.sorted(by: {$0.timestamp > $1.timestamp})
+            print("message list navigation view appearing")
+            viewModel.listOfChats = buildUniqueChatList()
         }
         .onDisappear() {
             viewModel.newMsgCount = 0
         }
         
+    }
+    
+    func buildUniqueChatList() -> [ChatData] {
+        var tempHolder:[ChatData] = []
+        // iterate through allChats
+        for(_, chatHistory) in self.viewModel.allChats {
+            tempHolder.append(chatHistory.last!)
+        }
+        
+        return tempHolder.sorted(by: {$0.timestamp > $1.timestamp})
     }
 }
 

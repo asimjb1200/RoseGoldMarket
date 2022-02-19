@@ -50,38 +50,6 @@ final class MessagingViewModel: ObservableObject {
                         self.allChats[String(chatBlock.senderid)] = [chatBlock]
                     }
                     
-//                    guard let chatThreadOfTwoUsers = self.allChats[String(chatBlock.senderid)] else {
-//                        print("couldn't find their history, which is weird because it should've been created now")
-//                        return
-//                    }
-//                    
-//                    // grab the last chat block between the two users
-//                    guard let newChatToAdd = chatThreadOfTwoUsers.last else {
-//                        print("couldn't unwrap the new chat")
-//                        return
-//                    }
-                    
-//                    if !self.uniqueChats.isEmpty {
-//                        // find index of the chat that has the sender's username to see if there's already a message involving them
-//                        let sendersLastMsgIndex = self.uniqueChats.firstIndex(where: {$0.senderUsername == chatBlock.senderUsername || $0.receiverUsername == chatBlock.senderUsername })
-//                        
-//                        if let sendersLastMsgIndex = sendersLastMsgIndex {
-//                            // now update the last message between these two users
-//                            self.uniqueChats[sendersLastMsgIndex] = newChatToAdd
-//                        } else {
-//                            // if that user wasn't in the array, add them at the end
-//                            self.uniqueChats.append(newChatToAdd)
-//                        }
-//                        
-//                        // now to filter the messages by their timestamp, with the most recent stamp being at the front
-//                        
-//                    } else {
-//                        for (_, chatHistory) in self.allChats {
-//                            self.uniqueChats.append(chatHistory.last!)
-//                            // add check later that doesn't just kill and rebuild the entire list
-//                        }
-//                    }
-                    
                 } catch let err {
                     print(err)
                 }
@@ -94,14 +62,6 @@ final class MessagingViewModel: ObservableObject {
             switch(chatResponse) {
                 case .success(let chatData):
                     DispatchQueue.main.async {
-                        // extract the last chat message from each key of the dict to use as a preview
-//                        for (_, chatHistory) in chatData {
-//                            self.uniqueChats.append(chatHistory.last!)
-//                        }
-//
-//                        // make sure the unique chats are in descending order (by date. I want the newest message at top)
-//                        self.uniqueChats = self.uniqueChats.sorted(by: {$0.timestamp > $1.timestamp})
-
                         self.allChats = chatData
                         
                         // go through each key and sort them by their time stamps in ascending order (I want the oldest message at top)
