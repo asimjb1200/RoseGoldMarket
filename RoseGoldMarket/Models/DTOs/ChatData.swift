@@ -25,8 +25,9 @@ struct ChatFromBackend: Codable, Hashable, Identifiable {
     let timestamp: Date
 }
 
-struct ChatForSocketTransfer: Codable {
-    let senderId: UInt
+struct ChatForSocketTransfer: Codable, Identifiable {
+    let id: UUID
+    let senderid: UInt
     let recid: UInt
     let message: String
     let timestamp: String

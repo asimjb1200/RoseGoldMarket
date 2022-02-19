@@ -34,8 +34,7 @@ struct ContentView: View {
                 }
                 .tag(2)
                 .badge(messenger.newMsgCount)
-        }
-        .accentColor(Color("AccentColor"))
+        }.accentColor(Color("AccentColor"))
         .onAppear() {
             if firstAppear {
                 messenger.getAllMessages()
@@ -43,7 +42,6 @@ struct ContentView: View {
             }
         }
         .environmentObject(messenger)
-        
     }
 }
 

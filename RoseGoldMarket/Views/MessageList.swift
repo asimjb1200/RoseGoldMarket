@@ -19,7 +19,7 @@ struct MessageList: View {
     
     var body: some View {
         NavigationView {
-            List(viewModel.uniqueChats, id: \.id) {x in
+            List(viewModel.listOfChats, id: \.id) {x in
                 if x.senderUsername == "admin" {
                     NavigationLink(destination: MessageThread(receiverId: x.recid == myAccountId ? x.senderid : x.recid)) {
                         HStack(spacing: 10) {
@@ -32,7 +32,7 @@ struct MessageList: View {
                             }
                             Spacer()
                         }.frame(height: 70)
-                    }
+                    }.isDetailLink(true)
                 } else {
                     NavigationLink(destination: MessageThread(receiverId: x.recid == myAccountId ? x.senderid : x.recid)) {
                         HStack(spacing: 10) {
@@ -46,16 +46,27 @@ struct MessageList: View {
 
                             Spacer()
                         }.frame(height: 70)
-                    }
+                    }.isDetailLink(true)
                 }
 
             }
             .frame(maxHeight: .infinity)
             .navigationTitle("Inbox")
+            
             Spacer()
-        }.onDisappear() {
+        }.onAppear(){
+            var tempHolder:[ChatData] = []
+            // iterate through allChats
+            for(_, chatHistory) in viewModel.allChats {
+                tempHolder.append(chatHistory.last!)
+            }
+            
+            viewModel.listOfChats = tempHolder.sorted(by: {$0.timestamp > $1.timestamp})
+        }
+        .onDisappear() {
             viewModel.newMsgCount = 0
         }
+        
     }
 }
 
