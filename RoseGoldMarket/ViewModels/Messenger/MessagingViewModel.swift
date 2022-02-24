@@ -28,19 +28,17 @@ final class MessagingViewModel: ObservableObject {
         iso8601DateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         iso8601DateFormatter.timeZone = TimeZone.current
         listenForNewMessages()
-        //setUpSocket(accountIdForSocket: 16)
     }
-    
+
     func listenForNewMessages() {
         DispatchQueue.main.async {
             self.socket.manager.defaultSocket.on("Private Message") { data, ack in
-                print("we got a new message")
                 do {
                     self.newMsgCount += 1
                     guard let dict = data[0] as? [String: Any] else { return }
                     let rawData = try JSONSerialization.data(withJSONObject: dict["data"] as Any, options: [])
                     let chatBlock = try self.decoder.decode(ChatData.self, from: rawData)
-                    
+
                     // check the all chats dict for the sender's key, to see if they have history
                     if self.allChats[String(chatBlock.senderid)] != nil {
                         // if they have history, append the new chat to the end of their convo
@@ -49,16 +47,17 @@ final class MessagingViewModel: ObservableObject {
                         // if not present, I need to create it for them
                         self.allChats[String(chatBlock.senderid)] = [chatBlock]
                     }
-                    
+                    self.listOfChats = self.buildUniqueChatList()
                 } catch let err {
                     print(err)
                 }
             }
         }
     }
-    
+
     func getAllMessages() {
         MessagingService().fetchAllThreadsForUser(userId: 16, completion: { chatResponse in
+            print("fetching messages")
             switch(chatResponse) {
                 case .success(let chatData):
                     DispatchQueue.main.async {
@@ -68,6 +67,8 @@ final class MessagingViewModel: ObservableObject {
                         for (accountId, chatHistory) in self.allChats {
                             self.allChats[accountId] = chatHistory.sorted(by: {$0.timestamp < $1.timestamp})
                         }
+                        
+                        self.listOfChats = self.buildUniqueChatList()
                     }
                 
                 case .failure(let err):
@@ -77,27 +78,36 @@ final class MessagingViewModel: ObservableObject {
             }
         })
     }
-    
+
+    func buildUniqueChatList() -> [ChatData] {
+        var tempHolder:[ChatData] = []
+        // iterate through allChats
+        for(_, chatHistory) in self.allChats {
+            tempHolder.append(chatHistory.last!)
+        }
+        return tempHolder.sorted(by: {$0.timestamp > $1.timestamp})
+    }
+
     func connectToServer(withId: UInt) {
         // server needs the account to be in a string format to create its key
         let accountIdString = String(withId)
         manager.defaultSocket.connect(withPayload: ["accountId": accountIdString])
     }
-    
-    func sendMessageToUser(newMessage: String, receiverId: UInt, receiverUsername: String, senderUsername: String, senderId: UInt) {
+
+    func sendMessageToUser(newMessage: String, receiverId: UInt, receiverUsername: String, senderUsername: String, senderId: UInt) -> UUID? {
         // build the chat block for the server
         let today = Date()
-        
+
         let dateString = iso8601DateFormatter.string(from: today)
-        
+
         let newChatBlockForSocket = ChatForSocketTransfer(id: UUID(), senderid: senderId, recid: receiverId, message: newMessage, timestamp: dateString)
         let newChatBlockForUser = ChatData(id: newChatBlockForSocket.id, senderid: newChatBlockForSocket.senderid, recid: newChatBlockForSocket.recid, message: newMessage, timestamp: today, senderUsername: senderUsername, receiverUsername: receiverUsername)
-        
+
         // serialize the chat block into a JSON string
         do {
             let encodedData:Data = try encoder.encode(newChatBlockForSocket)
             let jsonString:String = String(data:encodedData, encoding: .utf8)!
-            
+
             DispatchQueue.main.async {
                 // add the new message to the user's chat list on the device
                 if self.allChats[String(receiverId)] != nil {
@@ -105,6 +115,8 @@ final class MessagingViewModel: ObservableObject {
                 } else {
                     self.allChats[String(receiverId)] = [newChatBlockForUser]
                 }
+
+                self.listOfChats = self.buildUniqueChatList()
             }
             
             // send the data through the socket, which will save it to the db
@@ -112,6 +124,6 @@ final class MessagingViewModel: ObservableObject {
         } catch let err {
             print(err)
         }
-        
+        return newChatBlockForUser.id
     }
 }

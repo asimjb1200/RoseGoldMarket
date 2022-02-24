@@ -14,6 +14,7 @@
 		6823B7D427990844008F2CB7 /* AddItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6823B7D327990844008F2CB7 /* AddItems.swift */; };
 		6823B7D627991322008F2CB7 /* AddItemsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6823B7D527991322008F2CB7 /* AddItemsViewModel.swift */; };
 		6823B7D9279913A4008F2CB7 /* PhotoPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6823B7D8279913A4008F2CB7 /* PhotoPicker.swift */; };
+		6823D74727C72BD8001876A8 /* IdentifiableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6823D74627C72BD8001876A8 /* IdentifiableView.swift */; };
 		6825899F27A7179C003E52D9 /* ResponseFromServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6825899E27A7179C003E52D9 /* ResponseFromServer.swift */; };
 		684867832798BAC70033969D /* RoseGoldMarketApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684867822798BAC70033969D /* RoseGoldMarketApp.swift */; };
 		684867852798BAC70033969D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684867842798BAC70033969D /* ContentView.swift */; };
@@ -47,6 +48,7 @@
 		6823B7D327990844008F2CB7 /* AddItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItems.swift; sourceTree = "<group>"; };
 		6823B7D527991322008F2CB7 /* AddItemsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemsViewModel.swift; sourceTree = "<group>"; };
 		6823B7D8279913A4008F2CB7 /* PhotoPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPicker.swift; sourceTree = "<group>"; };
+		6823D74627C72BD8001876A8 /* IdentifiableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentifiableView.swift; sourceTree = "<group>"; };
 		6825899E27A7179C003E52D9 /* ResponseFromServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseFromServer.swift; sourceTree = "<group>"; };
 		6848677F2798BAC70033969D /* RoseGoldMarket.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RoseGoldMarket.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		684867822798BAC70033969D /* RoseGoldMarketApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoseGoldMarketApp.swift; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 				684867952798C9710033969D /* Item.swift */,
 				684867972798CCF20033969D /* CategoryMapper.swift */,
 				68C48A0027A4AE8A00AEF0F5 /* ItemTile.swift */,
+				6823D74627C72BD8001876A8 /* IdentifiableView.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -328,6 +331,7 @@
 				6800EDD827B06C3600461643 /* ChatData.swift in Sources */,
 				684867982798CCF20033969D /* CategoryMapper.swift in Sources */,
 				68E083DB27ACB02300DA0110 /* MessagingViewModel.swift in Sources */,
+				6823D74727C72BD8001876A8 /* IdentifiableView.swift in Sources */,
 				68C48A0127A4AE8A00AEF0F5 /* ItemTile.swift in Sources */,
 				6848679B2798CD9A0033969D /* ItemForBackend.swift in Sources */,
 				6823B7D427990844008F2CB7 /* AddItems.swift in Sources */,
