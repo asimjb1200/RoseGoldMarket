@@ -21,32 +21,38 @@ struct MessageList: View {
     
     var body: some View {
         VStack{
-            ScrollView {
-                ForEach(viewModel.listOfChats, id: \.id) { x in
-                    Button(action: {
-                        self.nextView = IdentifiableView(
-                            view: AnyView(MessageThread(receiverId: x.recid == myAccountId ? x.senderid : x.recid))
-                        )
-                    }, label: {
-                        HStack(spacing: 10) {
-                            Image(systemName: "person.fill").padding()
+            if !viewModel.listOfChats.isEmpty {
+                ScrollView {
+                    ForEach(viewModel.listOfChats, id: \.id) { x in
+                        Button(action: {
+                            self.nextView = IdentifiableView(
+                                view: AnyView(MessageThread(receiverId: x.recid == myAccountId ? x.senderid : x.recid))
+                            )
+                        }, label: {
+                            HStack(spacing: 10) {
+                                Image(systemName: "person.fill").padding()
 
-                            VStack(alignment: .leading) {
-                                Text(x.recid == myAccountId ? x.senderUsername : x.receiverUsername)
-                                Text(x.message)
-                                    .padding(.leading)
-                            }
+                                VStack(alignment: .leading) {
+                                    Text(x.recid == myAccountId ? x.senderUsername : x.receiverUsername)
+                                    Text(x.message)
+                                        .padding(.leading)
+                                }
 
-                            Spacer()
-                        }.frame(height: 70)
-                    })
-
-    //                Spacer()
+                                Spacer()
+                            }.frame(height: 70)
+                        })
+                    }
+                }.fullScreenCover(item: self.$nextView, onDismiss: { nextView = nil}) { view in
+                    view.view
                 }
-            }.fullScreenCover(item: self.$nextView, onDismiss: { nextView = nil}) { view in
-                view.view
+                Spacer()
+            } else {
+                Text("No Conversations Yet")
+                .fontWeight(.bold)
+                .foregroundColor(Color("MainColor"))
             }
-            Spacer()
+        }.onDisappear() {
+            viewModel.newMsgCount = 0
         }
     }
     

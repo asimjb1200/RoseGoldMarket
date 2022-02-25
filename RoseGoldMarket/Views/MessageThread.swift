@@ -34,7 +34,8 @@ struct MessageThread: View {
                     viewModel.allChats[String(receiverId)]!.first!.senderUsername :
                     viewModel.allChats[String(receiverId)]!.first!.receiverUsername
                 )
-                .foregroundColor(Color("AccentColor"))
+                .fontWeight(.bold)
+                .foregroundColor(Color("MainColor"))
                 .padding()
                 .onTapGesture {
                     print("take them to the Profile")
