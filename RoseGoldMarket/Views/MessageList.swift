@@ -26,7 +26,9 @@ struct MessageList: View {
                     ForEach(viewModel.listOfChats, id: \.id) { x in
                         Button(action: {
                             self.nextView = IdentifiableView(
-                                view: AnyView(MessageThread(receiverId: x.recid == myAccountId ? x.senderid : x.recid))
+                                view: AnyView(
+                                    MessageThread(receiverId: x.recid == myAccountId ? x.senderid : x.recid,
+                                                  receiverUsername: x.recid == myAccountId ? x.senderUsername : x.receiverUsername))
                             )
                         }, label: {
                             HStack(spacing: 10) {

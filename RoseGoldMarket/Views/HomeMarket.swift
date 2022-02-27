@@ -69,7 +69,7 @@ struct HomeMarket: View {
                 ScrollView {
                     LazyVGrid(columns: columns) {
                         ForEach(viewModel.items, id: \.self) { x in
-                            NavigationLink(destination: ItemDetails(item: x)) {
+                            NavigationLink(destination: ItemDetails(item: x, viewingFromAccountDetails: false)) {
                                 ItemPreview(itemId: x.id, itemTitle: x.name, itemImageLink: x.image1)
                                 .onAppear() {
                                     print("on appear for home")

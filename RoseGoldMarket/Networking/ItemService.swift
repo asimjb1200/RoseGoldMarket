@@ -118,6 +118,48 @@ struct ItemService {
             }
         }.resume()
     }
+    
+    func retrieveItemsForAccount(accountId: UInt, completion: @escaping (Result<[Item], ItemErrors>) -> ()) {
+        let networker = Networker()
+        let req = networker.constructRequest(uri: "http://localhost:4000/users/items?accountId=\(accountId)")
+        
+        URLSession.shared.dataTask(with: req) {(data, response, err) in
+            guard err == nil else {
+                completion(.failure(.genError))
+                return
+            }
+            guard let response = response as? HTTPURLResponse else {
+                completion(.failure(.genError))
+                return
+            }
+            
+            guard response.statusCode == 200 else {
+                print("The status wasn't ok")
+                completion(.failure(.genError))
+                return
+            }
+            
+            guard let data = data else {
+                print("couldn't unwrap the data")
+                completion(.failure(.genError))
+                return
+            }
+            
+            do {
+                let decoder = JSONDecoder()
+                let dateFormatter = DateFormatter()
+                dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+                
+                decoder.dateDecodingStrategy = .formatted(dateFormatter)
+                let itemsResponse = try decoder.decode(ResponseFromServer<[Item]>.self, from: data)
+                completion(.success(itemsResponse.data))
+            } catch let error {
+                print(error)
+            }
+
+        }.resume()
+    }
 }
 
 enum ItemErrors: String, Error {

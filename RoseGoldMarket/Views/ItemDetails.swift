@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ItemDetails: View {
     let item: Item
+    let viewingFromAccountDetails: Bool
     var body: some View {
         VStack{
             ScrollView(.horizontal, showsIndicators: true) {
@@ -80,6 +81,6 @@ extension ItemDetails {
 struct ItemDetails_Previews: PreviewProvider {
     static var previews: some View {
         let item = Item(id: 5, name: "Weed", description: "weed for you and me", owner: 6, isavailable: true, pickedup: false, dateposted: Date(), categories: ["indoor", "tropical"], image1: "/image1.jpg", image2: "/image2.jpg", image3: "/image3.jpg")
-        ItemDetails(item: item)
+        ItemDetails(item: item, viewingFromAccountDetails: false)
     }
 }
