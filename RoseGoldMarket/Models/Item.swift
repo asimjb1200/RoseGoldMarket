@@ -19,4 +19,5 @@ struct Item: Codable, Hashable {
     let image1: String
     let image2: String
     let image3: String
+    let ownerUsername: String?
 }

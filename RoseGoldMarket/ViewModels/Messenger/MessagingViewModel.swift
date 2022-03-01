@@ -16,7 +16,6 @@ final class MessagingViewModel: ObservableObject {
     let iso8601DateFormatter = ISO8601DateFormatter()
     let encoder = JSONEncoder()
     let dateFormatter = DateFormatter()
-    let manager = SocketManager(socketURL: URL(string: "http://localhost:4000")!, config: [.log(true), .compress])
     let socket:SocketUtils = .shared
     @Published var listOfChats:[ChatData] = []
     
@@ -88,11 +87,6 @@ final class MessagingViewModel: ObservableObject {
         return tempHolder.sorted(by: {$0.timestamp > $1.timestamp})
     }
 
-    func connectToServer(withId: UInt) {
-        // server needs the account to be in a string format to create its key
-        let accountIdString = String(withId)
-        manager.defaultSocket.connect(withPayload: ["accountId": accountIdString])
-    }
 
     func sendMessageToUser(newMessage: String, receiverId: UInt, receiverUsername: String, senderUsername: String, senderId: UInt) -> UUID? {
         // build the chat block for the server

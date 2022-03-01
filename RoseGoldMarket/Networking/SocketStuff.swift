@@ -37,8 +37,4 @@ final class SocketUtils: ObservableObject {
         manager.defaultSocket.emit("disconnect me", accountIdString) // remove their socket and key from dict on server
         manager.defaultSocket.disconnect()
     }
-    
-    func sendMessage(newMessage: ChatData) {
-        
-    }
 }
