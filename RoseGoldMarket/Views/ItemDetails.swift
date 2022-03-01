@@ -73,6 +73,7 @@ struct ItemDetails: View {
                     }
                 }
                 .padding(.bottom)
+                Spacer()
             }
         }
     }
