@@ -22,18 +22,24 @@ struct ContentView: View {
                 .tabItem {
                     Label("Market", systemImage: "house.fill")
                 }.tag(0)
-            
+
             AddItems(tab: $tab)
                 .tabItem {
                     Label("Add Item", systemImage: "plus.circle")
                 }.tag(1)
-            
+
             MessageList(tab: $tab)
                 .tabItem {
                     Label("Messages", systemImage: "envelope.fill")
                 }
                 .tag(2)
                 .badge(messenger.newMsgCount)
+
+            AccountOptions()
+                .tabItem {
+                    Label("Account", systemImage: "person.crop.circle.fill")
+                }.tag(3)
+
         }.accentColor(Color("AccentColor"))
         .onAppear() {
             if firstAppear {

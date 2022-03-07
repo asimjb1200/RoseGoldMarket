@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct AddItems: View {
-    @State var plantImage = UIImage(named: "circlePlaceholder")! // state var because this will change when the user picks their own image and we want to update the view with it
-    @State var plantImage2 = UIImage(named: "circlePlaceholder")!
-    @State var plantImage3 = UIImage(named: "circlePlaceholder")!
+    @State var plantImage:UIImage? = UIImage(named: "circlePlaceholder")! // state var because this will change when the user picks their own image and we want to update the view with it
+    @State var plantImage2:UIImage? = UIImage(named: "circlePlaceholder")!
+    @State var plantImage3:UIImage? = UIImage(named: "circlePlaceholder")!
     @StateObject var viewModel = AddItemsViewModel()
     @Binding var tab: Int
     var categoryMapper = CategoryMapper()
@@ -27,7 +27,7 @@ struct AddItems: View {
             VStack(alignment: .leading) {
                 Text("Add 3 photos of your plant").foregroundColor(Color("AccentColor")).padding([.leading, .top])
                 HStack {
-                        Image(uiImage: plantImage)
+                    Image(uiImage: plantImage!)
                             .resizable()
                             .scaledToFit()
                             .clipShape(Circle())
@@ -36,7 +36,7 @@ struct AddItems: View {
                                 viewModel.isShowingPhotoPicker = true
                             }
 
-                        Image(uiImage: plantImage2)
+                        Image(uiImage: plantImage2!)
                             .resizable()
                             .scaledToFit()
                             .clipShape(Circle())
@@ -44,8 +44,8 @@ struct AddItems: View {
                                 viewModel.plantEnum = .imageTwo
                                 viewModel.isShowingPhotoPicker = true
                             }
-                        
-                        Image(uiImage: plantImage3)
+
+                        Image(uiImage: plantImage3!)
                             .resizable()
                             .scaledToFit()
                             .clipShape(Circle())
@@ -115,8 +115,21 @@ struct AddItems: View {
                         viewModel.showAlert = true
                         return
                     }
+                    
+                    guard
+                        let plantImage = plantImage,
+                        let plantImage2 = plantImage2,
+                        let plantImage3 = plantImage3
+                    else {
+                        return
+                    }
+
 
                     viewModel.savePlant(accountid: 5, plantImage: plantImage.jpegData(compressionQuality: 0.5)!, plantImage2: plantImage2.jpegData(compressionQuality: 0.5)!, plantImage3: plantImage3.jpegData(compressionQuality: 0.5)!)
+                    
+                    // reset everything now
+                    viewModel.plantName = ""
+                    viewModel.plantDescription = ""
                 }
                 .padding()
                 .foregroundColor(.white)
@@ -148,10 +161,18 @@ struct AddItems: View {
     }
     
     func imageWasntChanged() -> Bool {
+        guard
+            let plantImage = plantImage,
+            let plantImage2 = plantImage2,
+            let plantImage3 = plantImage3
+        else {
+            return true
+        }
+        
         let x: [Bool] = [
-            self.plantImage.isEqual(UIImage(named: "circlePlaceholder")!),
-            self.plantImage2.isEqual(UIImage(named: "circlePlaceholder")!),
-            self.plantImage3.isEqual(UIImage(named: "circlePlaceholder")!)
+            plantImage.isEqual(UIImage(named: "circlePlaceholder")!),
+            plantImage2.isEqual(UIImage(named: "circlePlaceholder")!),
+            plantImage3.isEqual(UIImage(named: "circlePlaceholder")!)
         ]
         
         return 0 != x.filter{ $0 == true }.count

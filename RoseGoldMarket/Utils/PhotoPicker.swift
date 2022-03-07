@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct PhotoPicker: UIViewControllerRepresentable {
-    @Binding var plantImage: UIImage // tie the image to the view
-    @Binding var plantImage2: UIImage
-    @Binding var plantImage3: UIImage
+    @Binding var plantImage: UIImage? // tie the image to the view
+    @Binding var plantImage2: UIImage?
+    @Binding var plantImage3: UIImage?
     @Binding var plantEnum: PlantOptions
     
     typealias UIViewControllerType = UIImagePickerController // let this struct know that it'll be working with images

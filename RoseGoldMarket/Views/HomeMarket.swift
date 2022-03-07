@@ -21,6 +21,7 @@ struct HomeMarket: View {
         UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(named: "MainColor")!]
         self._tab = tab
     }
+
     var body: some View {
         NavigationView {
             VStack {
@@ -72,7 +73,6 @@ struct HomeMarket: View {
                             NavigationLink(destination: ItemDetails(item: x, viewingFromAccountDetails: false)) {
                                 ItemPreview(itemId: x.id, itemTitle: x.name, itemImageLink: x.image1)
                                 .onAppear() {
-                                    print("on appear for home")
                                     if x == viewModel.items.last, viewModel.allDataLoaded == false {
                                         viewModel.getFilteredItems()
                                     }

@@ -160,6 +160,36 @@ struct ItemService {
 
         }.resume()
     }
+    
+    func retrieveItemById(itemId:UInt, completion: @escaping (Result<Item, ItemErrors>) -> ()) {
+        let req = Networker().constructRequest(uri: "http://localhost:4000/item-handler/item-details-for-edit?itemId=\(itemId)", post: false)
+        
+        URLSession.shared.dataTask(with: req) { (data, _, err) in
+            if err != nil {
+                completion(.failure(.genError))
+            }
+            
+            guard let data = data else {
+                completion(.failure(.genError))
+                return
+            }
+            
+            do {
+                let decoder = JSONDecoder()
+                let dateFormatter = DateFormatter()
+                dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+                
+                decoder.dateDecodingStrategy = .formatted(dateFormatter)
+                
+                let itemData = try decoder.decode(Item.self, from: data)
+                completion(.success(itemData))
+            } catch let itemError {
+                print(itemError)
+                completion(.failure(.genError))
+            }
+        }.resume()
+    }
 }
 
 enum ItemErrors: String, Error {

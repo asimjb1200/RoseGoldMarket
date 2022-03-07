@@ -20,6 +20,20 @@ struct CategoryMapper {
         9: "flowering plants",
         10: "plants with seeds"
     ]
+    
+    let categoriesByDescription: [String:UInt] = [
+        "indoor":0,
+        "outdoor":1,
+        "tropical":2,
+        "low light":3,
+        "herbs":4,
+        "trees":5,
+        "climbers":6,
+        "creepers":7,
+        "ferns":8,
+        "flowering plants":9,
+        "plants with seeds":10
+    ]
 }
 
 struct Category: Identifiable {
