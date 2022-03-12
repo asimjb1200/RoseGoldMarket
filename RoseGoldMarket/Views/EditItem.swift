@@ -9,6 +9,8 @@ import SwiftUI
 
 struct EditItem: View {
     @StateObject var viewModel = EditItemVM()
+    @Environment(\.presentationMode) var presentation
+    @State var areYouSure = false
     var categoryMapper = CategoryMapper()
     let itemName:String
     let ownerName:String
@@ -16,6 +18,7 @@ struct EditItem: View {
     
     var body: some View {
         VStack {
+            Text("Tap to change your photos").foregroundColor(Color("AccentColor")).padding([.leading, .top])
             HStack {
                 if viewModel.plantImage != nil {
                     Image(uiImage: viewModel.plantImage!)
@@ -36,7 +39,7 @@ struct EditItem: View {
                         .scaledToFit()
                         .clipShape(Circle())
                         .onTapGesture {
-                            viewModel.plantEnum = .imageOne
+                            viewModel.plantEnum = .imageTwo
                             viewModel.isShowingPhotoPicker = true
                         }
                 } else {
@@ -49,14 +52,13 @@ struct EditItem: View {
                         .scaledToFit()
                         .clipShape(Circle())
                         .onTapGesture {
-                            viewModel.plantEnum = .imageOne
+                            viewModel.plantEnum = .imageThree
                             viewModel.isShowingPhotoPicker = true
                         }
                 } else {
                     ProgressView()
                 }
             }.onAppear{
-                print("on appear for editing images running")
                 viewModel.getImages(itemName: self.itemName, ownerName: self.ownerName)
             }
             .navigationBarTitle("Edit Item")
@@ -78,12 +80,15 @@ struct EditItem: View {
                 .frame( height: 100)
                 .padding([.leading, .trailing, .bottom])
             
-            HStack {
-                Toggle("Still available?", isOn: $viewModel.isAvailable)
-                
-                if !viewModel.isAvailable {
-                    Toggle("Has it been picked up?", isOn: $viewModel.pickedUp)
+            Toggle("Still available?", isOn: $viewModel.isAvailable)
+                .padding(.leading)
+                .foregroundColor(Color("AccentColor"))
+                .alert(isPresented: $viewModel.itemIsDeleted) {
+                    Alert(title: Text("Success"), message: Text("Your item has been deleted"), dismissButton: .default(Text("OK"), action: {self.presentation.wrappedValue.dismiss()}))
                 }
+            
+            if !viewModel.isAvailable {
+                Toggle("Has it been picked up?", isOn: $viewModel.pickedUp).padding(.leading)
             }
             
             Button("Change Categories") {
@@ -112,11 +117,82 @@ struct EditItem: View {
             }
             .frame(maxWidth: .infinity, maxHeight: 100, alignment: .center)
             
-            Spacer()
+//            Spacer()
             
-            Button("Delete Item") {
+            HStack {
+                Text("Delete Item")
+                .onTapGesture {
+                    areYouSure = true
+                }
+                .foregroundColor(.red)
+                .padding()
+                .alert(isPresented: $areYouSure) {
+                    Alert(
+                        title: Text("Are You Sure?"),
+                        message: Text("You're about to delete your item. You can't undo this."),
+                        primaryButton: .destructive(Text("Delete")) {
+                            viewModel.deleteItem(itemId: itemId)
+                        },
+                        secondaryButton: .cancel()
+                    )
+                }
                 
-            }.foregroundColor(.red).padding()
+                Spacer()
+                
+                Button("Update Item") {
+                    // figure out if the images have been changed etc
+                    guard !viewModel.plantName.isEmpty else {
+                        viewModel.viewStateErrors = .nameEmpty
+                        viewModel.showUpdateError = true
+                        return
+                    }
+                    guard !viewModel.plantDescription.isEmpty else {
+                        viewModel.viewStateErrors = .descriptionEmpty
+                        viewModel.showUpdateError = true
+                        return
+                    }
+                    guard viewModel.categoryChosen == true else {
+                        viewModel.viewStateErrors = .noCategory
+                        viewModel.showUpdateError = true
+                        return
+                    }
+                    
+                    guard
+                        let plantImage = viewModel.plantImage,
+                        let plantImage2 = viewModel.plantImage2,
+                        let plantImage3 = viewModel.plantImage3
+                    else {
+                        return
+                    }
+                    
+                    viewModel.savePlant(accountid: 17, plantImage: viewModel.plantImage!.jpegData(compressionQuality: 0.5)!, plantImage2: viewModel.plantImage2!.jpegData(compressionQuality: 0.5)!, plantImage3: viewModel.plantImage3!.jpegData(compressionQuality: 0.5)!, itemId: itemId)
+                }
+                .foregroundColor(Color("MainColor"))
+                .padding()
+                .alert(isPresented: $viewModel.showUpdateError) {
+                    switch viewModel.viewStateErrors {
+                        case .imagesEmpty:
+                            return Alert(title: Text("Image Selections"), message: Text("Make sure you upload 3 pictures of your plant so that people can see what they are getting."), dismissButton: .default(Text("OK!")))
+                        case .nameEmpty:
+                            return Alert(title: Text("Plant Name"), message: Text("Enter the name of your plant so that people will know what they are getting."), dismissButton: .default(Text("OK!")))
+                        case .descriptionEmpty:
+                            return Alert(title: Text("Plant Description"), message: Text("Add a description of your plant to give other users a little bit of information about it."), dismissButton: .default(Text("OK!")))
+                        case .noCategory:
+                            return Alert(title: Text("Plant Categories"), message: Text("Select some categories that your plant falls under so that users will be able to find it easier."), dismissButton: .default(Text("OK!")))
+                        case .allGood:
+                            return Alert(
+                                title: Text("Success"),
+                                message: Text("Your item has been updated."),
+                                dismissButton: .default(
+                                    Text("OK"),
+                                    action: { self.presentation.wrappedValue.dismiss() }
+                                )
+                            )
+                    }
+                }
+            }
+            .padding(.bottom)
+            
             
         }.sheet(isPresented: $viewModel.isShowingPhotoPicker, content: {
             if viewModel.plantImage != nil, viewModel.plantImage2 != nil, viewModel.plantImage3 != nil {

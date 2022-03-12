@@ -20,35 +20,42 @@ final class EditItemVM:ObservableObject {
     @Published var firstAppear = true
     @Published var isAvailable = true
     @Published var pickedUp = false
+    @Published var itemIsDeleted = false
+    @Published var showUpdateError = false
+    var viewStateErrors: EditItemViewStates = .allGood
     var categoryMapper = CategoryMapper()
+    var service = ItemService()
+    var categoryChosen: Bool {
+        return 0 != self.categoryHolder.filter{ $0.isActive == true }.count
+    }
     
     func getItemData(itemId:UInt) {
-        ItemService().retrieveItemById(itemId: itemId) {[weak self] itemDataResponse in
+        service.retrieveItemById(itemId: itemId) {[weak self] itemDataResponse in
             switch itemDataResponse {
-            case .success(let itemData):
-                DispatchQueue.main.async {
-                    self?.plantName = itemData.name
-                    self?.plantDescription = itemData.description
-                    
-                    // go through the category list and set the toggle to true if it is present
-                    for cat in itemData.categories {
-                        let catId = self?.categoryMapper.categoriesByDescription[cat]
+                case .success(let itemData):
+                    DispatchQueue.main.async {
+                        self?.plantName = itemData.name
+                        self?.plantDescription = itemData.description
                         
-                        // now find that category id in my array
-                        let indexOfCategoryToActivate = self?.categoryHolder.firstIndex(where: {$0.category == catId})
-                        
-                        guard let indexOfCategoryToActivate = indexOfCategoryToActivate else {
-                            return
+                        // go through the category list and set the toggle to true if it is present
+                        for cat in itemData.categories {
+                            let catId = self?.categoryMapper.categoriesByDescription[cat]
+                            
+                            // now find that category id in my array
+                            let indexOfCategoryToActivate = self?.categoryHolder.firstIndex(where: {$0.category == catId})
+                            
+                            guard let indexOfCategoryToActivate = indexOfCategoryToActivate else {
+                                return
+                            }
+                            
+                            // now activate it since this category id was a pre-existing one in the db
+                            self?.categoryHolder[indexOfCategoryToActivate].isActive = true
                         }
-                        
-                        // now activate it since this category id was a pre-existing one in the db
-                        self?.categoryHolder[indexOfCategoryToActivate].isActive = true
                     }
-                }
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    print(error)
-                }
+                case .failure(let error):
+                    DispatchQueue.main.async {
+                        print(error)
+                    }
             }
         }
     }
@@ -71,6 +78,41 @@ final class EditItemVM:ObservableObject {
             self.plantImage3 = UIImage(data: image3)
         } catch let requestError {
             print(requestError.localizedDescription)
+        }
+    }
+    
+    func deleteItem(itemId:UInt) {
+        service.deleteItem(itemId: itemId, itemName: self.plantName) { deletionResponse in
+            switch deletionResponse {
+                case .success( _):
+                    DispatchQueue.main.async {
+                        self.itemIsDeleted = true
+                    }
+                    
+                case .failure(let error):
+                    DispatchQueue.main.async {
+                        print(error)
+                    }
+            }
+        }
+    }
+    
+    func savePlant(accountid: UInt, plantImage: Data, plantImage2: Data, plantImage3: Data, itemId:UInt) {
+        let categoryIdList: [UInt] = self.categoryHolder.filter{ $0.isActive == true}.map{ $0.category }
+        let item = ItemForBackend(accountid: accountid, image1: plantImage, image2: plantImage2, image3: plantImage3, isavailable: self.isAvailable, pickedup: self.pickedUp, zipcode: 64111, dateposted: Date(), name: self.plantName, description: self.plantDescription, categoryIds: categoryIdList)
+        
+        service.updateItem(itemData: item, itemId: itemId) {[weak self] apiRes in
+            switch apiRes {
+                case .success( _):
+                    DispatchQueue.main.async {
+                        self?.viewStateErrors = .allGood
+                        self?.showUpdateError = true
+                    }
+                case .failure(let err):
+                    DispatchQueue.main.async {
+                        print(err)
+                    }
+            }
         }
     }
 }

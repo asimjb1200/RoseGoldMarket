@@ -27,3 +27,11 @@ enum AddItemViewStates {
     case descriptionEmpty
     case imagesEmpty
 }
+
+enum EditItemViewStates {
+    case noCategory
+    case nameEmpty
+    case descriptionEmpty
+    case imagesEmpty
+    case allGood
+}

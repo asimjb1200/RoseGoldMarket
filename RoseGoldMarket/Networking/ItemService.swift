@@ -190,6 +190,81 @@ struct ItemService {
             }
         }.resume()
     }
+    
+    func deleteItem(itemId:UInt, itemName:String, completion: @escaping (Result<Bool, ItemErrors>) -> ()) {
+        let url = URL(string: "http://localhost:4000/item-handler/delete-item?itemId=\(itemId)&itemName=\(itemName.replacingOccurrences(of: " ", with: "%20"))")!
+        var request = URLRequest(url: url)
+        
+        request.httpMethod = "DELETE"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        URLSession.shared.dataTask(with: request) { (data, _, error) in
+            if error != nil {
+                completion(.failure(.genError))
+            }
+            
+            guard let data = data else {
+                return
+            }
+
+            do {
+                let dataPosted = try JSONDecoder().decode(Bool.self, from: data)
+                completion(.success(dataPosted))
+            } catch let apiErr {
+                print(apiErr)
+            }
+        }.resume()
+    }
+    
+    func updateItem(itemData items: ItemForBackend, itemId:UInt, completion: @escaping (Result<String, ItemErrors>) -> ()) {
+        let networker = Networker()
+        let serverUrl = URL(string: "http://localhost:4000/item-handler/edit-item")
+        var urlRequest = URLRequest(url: serverUrl!)
+        
+        let boundary = UUID().uuidString
+        
+        urlRequest.httpMethod = "POST"
+        urlRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        
+        let requestData = networker.buildMultipartImageRequest(boundary: boundary, item: items, itemId: itemId)
+        
+        URLSession.shared.uploadTask(with: urlRequest, from: requestData) {(data, response, error) in
+            guard error == nil else {
+                completion(.failure(.genError))
+                return
+            }
+            
+            guard let response = response as? HTTPURLResponse else {
+                print("error unwrapping response")
+                completion(.failure(.genError))
+                return
+            }
+            
+            guard response.statusCode == 201 else {
+                print("the request failed")
+                completion(.failure(.genError))
+                return
+            }
+
+            
+            guard let data = data else {
+                print("problem decoding data")
+                completion(.failure(.genError))
+                return
+            }
+            
+            do {
+                let decoded = try JSONDecoder().decode(String.self, from: data)
+                print("Data posted")
+                completion(.success(decoded))
+                return
+            } catch let err {
+                print("\(err.localizedDescription)")
+                completion(.failure(.genError))
+                return
+            }
+        }.resume()
+    }
 }
 
 enum ItemErrors: String, Error {

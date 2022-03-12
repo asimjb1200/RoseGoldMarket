@@ -59,7 +59,7 @@ struct Networker {
         }
     }
     
-    func buildMultipartImageRequest(boundary: String, item: ItemForBackend) -> Data {        
+    func buildMultipartImageRequest(boundary: String, item: ItemForBackend, itemId:UInt = 0) -> Data {
         var data = Data()
         
         // add the image data to the raw http request data
@@ -85,6 +85,12 @@ struct Networker {
             data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
             data.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8)!)
             data.append("\(value)\r\n".data(using: .utf8)!)
+        }
+        
+        if itemId != 0 {
+            data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+            data.append("Content-Disposition: form-data; name=\"itemId\"\r\n\r\n".data(using: .utf8)!)
+            data.append("\(itemId)\r\n".data(using: .utf8)!)
         }
         
         data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
