@@ -117,15 +117,15 @@ struct AddItems: View {
                     }
                     
                     guard
-                        let plantImage = plantImage,
-                        let plantImage2 = plantImage2,
-                        let plantImage3 = plantImage3
+                        let plantImage = plantImage?.jpegData(compressionQuality: 0.5),
+                        let plantImage2 = plantImage2?.jpegData(compressionQuality: 0.5),
+                        let plantImage3 = plantImage3?.jpegData(compressionQuality: 0.5)
                     else {
                         return
                     }
 
 
-                    viewModel.savePlant(accountid: 5, plantImage: plantImage.jpegData(compressionQuality: 0.5)!, plantImage2: plantImage2.jpegData(compressionQuality: 0.5)!, plantImage3: plantImage3.jpegData(compressionQuality: 0.5)!)
+                    viewModel.savePlant(accountid: 5, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3)
                     
                     // reset everything now
                     viewModel.plantName = ""

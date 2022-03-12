@@ -158,14 +158,14 @@ struct EditItem: View {
                     }
                     
                     guard
-                        let plantImage = viewModel.plantImage,
-                        let plantImage2 = viewModel.plantImage2,
-                        let plantImage3 = viewModel.plantImage3
+                        let plantImage = viewModel.plantImage?.jpegData(compressionQuality: 0.5),
+                        let plantImage2 = viewModel.plantImage2?.jpegData(compressionQuality: 0.5),
+                        let plantImage3 = viewModel.plantImage3?.jpegData(compressionQuality: 0.5)
                     else {
                         return
                     }
                     
-                    viewModel.savePlant(accountid: 17, plantImage: viewModel.plantImage!.jpegData(compressionQuality: 0.5)!, plantImage2: viewModel.plantImage2!.jpegData(compressionQuality: 0.5)!, plantImage3: viewModel.plantImage3!.jpegData(compressionQuality: 0.5)!, itemId: itemId)
+                    viewModel.savePlant(accountid: 17, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, itemId: itemId)
                 }
                 .foregroundColor(Color("MainColor"))
                 .padding()
