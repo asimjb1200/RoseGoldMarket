@@ -10,15 +10,51 @@ import SwiftUI
 @main
 struct RoseGoldMarketApp: App {
     @State var firstAppear = true
+    @State var isLoading = true
+    @StateObject var user:UserModel = .buildInitialUser(username: "", accessToken: "", accountId: 0, avatarUrl: "")
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if user.isLoggedIn {
+                ContentView()
+                    .environmentObject(user)
+            } else {
+                if self.isLoading {
+                    Text("Loading...")
+                    .onAppear(){
+                        if user.isLoggedIn == false {
+                            self.startUpStuff()
+                        }
+                    }
+                } else {
+                    LogIn()
+                        .environmentObject(user)
+                }
+            }
         }
     }
 }
 
 extension RoseGoldMarketApp {
     func startUpStuff() {
-//        messenger.connectToServer(withId: 16)
+        // check for a user in user defaults storage
+        let storedUser:ServiceUser? = UserNetworking.shared.loadUserFromDevice()
+        if storedUser != nil {
+            user.username = storedUser!.username
+            user.accountId = storedUser!.accountId
+            user.avatarUrl = storedUser!.avatarUrl
+            
+            // now search for the user's access token from the keychain
+            let storedAccessToken = UserNetworking.shared.loadAccessToken()
+            guard let storedAccessToken = storedAccessToken else {
+                return
+            }
+            user.accessToken = storedAccessToken
+
+            user.isLoggedIn = true
+            self.isLoading = false
+        } else {
+            // user.isLoggedIn = false
+            self.isLoading = false
+        }
     }
 }
