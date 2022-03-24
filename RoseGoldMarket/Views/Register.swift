@@ -10,20 +10,7 @@ import CoreLocation
 
 struct Register: View {
     @Environment(\.presentationMode) var presentation
-    @State var username = ""
-    @State var email = ""
-    @State var password = ""
-    @State var address = ""
-    @State var zipCode = ""
-    @State var state = ""
-    @State var city = ""
-    @State var avatar:UIImage? = UIImage(named: "default")!
-    @State var dataPosted = false
-    @State var imageEnum: PlantOptions = .imageOne
-    @State var isShowingPhotoPicker = false
-    @State var spacesFoundInField = false
-    @State var fieldsEmpty = false
-    @State var statePicker: [String] = ["Select A State","AL","AK","AZ","AR","AS","CA","CO","CT","DE","DC","FL","GA","GU","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","CM","OH","OK","OR","PA","PR","RI","SC","SD","TN","TX","TT","UT","VT","VI","WA","WV","WI","WY"]
+    @StateObject var viewModel:RegisterUserViewModel = RegisterUserViewModel()
     
     var body: some View {
         VStack {
@@ -31,24 +18,24 @@ struct Register: View {
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundColor(Color("AccentColor"))
-                .alert(isPresented: $spacesFoundInField) {
+                .alert(isPresented: $viewModel.spacesFoundInField) {
                     Alert(title: Text("Check Your Info"), message: Text("You can only have spaces in the City and Address fields. Every other field should not have spaces between words and characters."), dismissButton: .default(Text("Got It")))
                 }
             
-            Image(uiImage: avatar!)
+            Image(uiImage: viewModel.avatar!)
                     .resizable()
                     .scaledToFit()
                     .clipShape(Circle())
                     .frame(width: 150, height: 150)
                     .onTapGesture {
-                        imageEnum = .imageOne
-                        isShowingPhotoPicker = true
+                        viewModel.imageEnum = .imageOne
+                        viewModel.isShowingPhotoPicker = true
                     }
             
             ScrollView {
                 HStack {
                     Image(systemName: "pencil").foregroundColor(Color("MainColor"))
-                    TextField("Username", text: $username).textInputAutocapitalization(.never).disableAutocorrection(true)
+                    TextField("Username", text: $viewModel.username).textInputAutocapitalization(.never).disableAutocorrection(true)
                 }.padding()
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
@@ -56,13 +43,13 @@ struct Register: View {
                         .foregroundColor(Color("MainColor"))
                 )
                 .padding()
-                .alert(isPresented: $fieldsEmpty) {
+                .alert(isPresented: $viewModel.fieldsEmpty) {
                     Alert(title: Text("Check Your Info"), message: Text("Fill out every field in the form to sign up."), dismissButton: .default(Text("Got It")))
                 }
                 
                 HStack {
                     Image(systemName: "key.fill").foregroundColor(Color("MainColor"))
-                    SecureField("Password", text: $password).textInputAutocapitalization(.never).disableAutocorrection(true)
+                    SecureField("Password", text: $viewModel.password).textInputAutocapitalization(.never).disableAutocorrection(true)
                 }.padding()
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
@@ -73,7 +60,7 @@ struct Register: View {
                 
                 HStack {
                     Text("@").foregroundColor(Color("MainColor"))
-                    TextField("Email", text: $email).textInputAutocapitalization(.never).disableAutocorrection(true)
+                    TextField("Email", text: $viewModel.email).textInputAutocapitalization(.never).disableAutocorrection(true)
                 }.padding()
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
@@ -84,7 +71,7 @@ struct Register: View {
                 
                 HStack {
                     Image(systemName: "signpost.right.fill").foregroundColor(Color("MainColor"))
-                    TextField("Address", text: $address).textInputAutocapitalization(.never).disableAutocorrection(true)
+                    TextField("Address", text: $viewModel.address).textInputAutocapitalization(.never).disableAutocorrection(true)
                 }.padding()
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
@@ -95,7 +82,7 @@ struct Register: View {
                 
                 HStack {
                     Image(systemName: "building.2.fill").foregroundColor(Color("MainColor"))
-                    TextField("City", text: $city)
+                    TextField("City", text: $viewModel.city)
                 }.padding()
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
@@ -106,8 +93,8 @@ struct Register: View {
                 
                 HStack {
                     Image(systemName: "map.fill").foregroundColor(Color("MainColor"))
-                    Picker("State", selection: $state) {
-                        ForEach(statePicker, id:\.self) {
+                    Picker("State", selection: $viewModel.state) {
+                        ForEach(viewModel.statePicker, id:\.self) {
                             Text($0)
                         }
                     }
@@ -124,7 +111,7 @@ struct Register: View {
                 
                 HStack {
                     Image(systemName: "mappin.and.ellipse").foregroundColor(Color("MainColor"))
-                    TextField("Zip Code", text: $zipCode)
+                    TextField("Zip Code", text: $viewModel.zipCode)
                 }
                 .padding()
                 .overlay(
@@ -136,93 +123,31 @@ struct Register: View {
                 
                 Button("Register") {
                     // perform make sure all fields aren't empty
-                    guard textFieldsEmpty() == false else {
-                        fieldsEmpty = true
+                    guard viewModel.textFieldsEmpty() == false else {
+                        viewModel.fieldsEmpty = true
                         return
                     }
                     
-                    guard state != "Select A State" else {
+                    guard viewModel.state != "Select A State" else {
                         return
                     }
                     
                     // the only fields that should have spaces are city and address
-                    guard spacesFound() == false else {
-                        spacesFoundInField = true
+                    guard viewModel.spacesFound() == false else {
+                        viewModel.spacesFoundInField = true
                         return
                     }
                     
-                    // unwrap the avatar optional
-                    guard avatar == avatar else {
-                        return
-                    }
-                    
-                    getAndSaveUserLocation()
-                }.alert(isPresented: $dataPosted) {
+                    viewModel.getAndSaveUserLocation()
+                }.alert(isPresented: $viewModel.dataPosted) {
                     Alert(title: Text("Success"), message: Text("You've now been signed up, go back and log in."), dismissButton: .default(Text("OK"), action: { self.presentation.wrappedValue.dismiss() }))
                 }
                 Spacer()
             }
             
-        }.sheet(isPresented: $isShowingPhotoPicker, content: {
-            PhotoPicker(plantImage: $avatar, plantImage2: Binding.constant(nil), plantImage3: Binding.constant(nil), plantEnum: $imageEnum)
+        }.sheet(isPresented: $viewModel.isShowingPhotoPicker, content: {
+            PhotoPicker(plantImage: $viewModel.avatar, plantImage2: Binding.constant(nil), plantImage3: Binding.constant(nil), plantEnum: $viewModel.imageEnum)
         })
-    }
-    
-    func getAndSaveUserLocation() {
-        let geocoder = CLGeocoder()
-        let checkAddressForGeoLo = "\(address), \(city), \(state) \(zipCode)"
-        geocoder.geocodeAddressString(checkAddressForGeoLo) { placemarks, error in
-            let placemark = placemarks?.first
-            let lat = placemark?.location?.coordinate.latitude
-            let lon = placemark?.location?.coordinate.longitude
-            
-            if let lon = lon, let lat = lat { // unwrap the optionals
-                // (long, lat) for database now send new addy and long/lat to the database
-                let geoLocation = "(\(lon),\(lat))"
-                
-                // register the new user
-                self.registerUser(geolocation: geoLocation)
-            }
-        }
-    }
-    
-    func registerUser(geolocation:String) -> () {
-        UserNetworking.shared.registerUser(username: self.username, email: self.email, pw: self.password, addy: self.address, zip: UInt(self.zipCode)!, state: self.state, city: self.city, geolocation: geolocation, avi: self.avatar!.jpegData(compressionQuality: 0.5)!) { registerResponse in
-            switch registerResponse {
-                case .success(let res):
-                    DispatchQueue.main.async {
-                        self.dataPosted = res
-                    }
-                case .failure(let err):
-                    DispatchQueue.main.async {
-                        print(err)
-                    }
-            }
-        }
-    }
-    
-    func textFieldsEmpty() -> Bool {
-        var fieldIsEmpty = false
-        for field in [username, email, password, address, zipCode, state, city] {
-            if field.isEmpty {
-                if fieldIsEmpty == false {
-                    fieldIsEmpty = true
-                }
-            }
-        }
-        return fieldIsEmpty
-    }
-    
-    func spacesFound() -> Bool {
-        var spacesFound = false
-        for field in [username, email, password, zipCode, state] {
-            if field.contains(" ") {
-                if spacesFound == false {
-                    spacesFound = true
-                }
-            }
-        }
-        return spacesFound
     }
 }
 
