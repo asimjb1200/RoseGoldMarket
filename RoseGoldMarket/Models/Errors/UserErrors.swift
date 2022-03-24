@@ -10,6 +10,7 @@ import Foundation
 enum UserErrors: String, Error {
     case success = "Successfully logged in user"
     case failure = "Not able to log user in"
+    case badPassword = "Bad password attempted"
     case badCreds = "Credentials weren't accepted by the server"
     case tokenExpired = "The access token has expired. Time to issue a new one"
 }

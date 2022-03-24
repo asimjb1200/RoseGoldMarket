@@ -11,7 +11,7 @@ import SwiftUI
 struct RoseGoldMarketApp: App {
     @State var firstAppear = true
     @State var isLoading = true
-    @StateObject var user:UserModel = .buildInitialUser(username: "", accessToken: "", accountId: 0, avatarUrl: "")
+    @StateObject var user:UserModel = .shared
     var body: some Scene {
         WindowGroup {
             if user.isLoggedIn {

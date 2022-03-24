@@ -14,6 +14,7 @@ class UserModel: ObservableObject, UserProtocol {
     var accountId: UInt
     var avatarUrl: String
     private var userService: UserNetworking = .shared
+    static let shared:UserModel = UserModel(username: "", accessToken: "", accountId: 0, avatarUrl: "")
     @Published var isLoggedIn = false
 
     let decoder = JSONDecoder()
@@ -25,9 +26,14 @@ class UserModel: ObservableObject, UserProtocol {
         self.avatarUrl = avatarUrl
     }
     
-    static func buildInitialUser(username:String, accessToken:String, accountId:UInt, avatarUrl:String) -> UserModel {
-        return UserModel(username: username, accessToken: accessToken, accountId: accountId, avatarUrl: avatarUrl)
-    }
+//    static func buildInitialUser(username:String, accessToken:String, accountId:UInt, avatarUrl:String) -> UserModel {
+//        if self.shared != nil {
+//            return self.shared!
+//        } else {
+//            self.shared = UserModel(username: username, accessToken: accessToken, accountId: accountId, avatarUrl: avatarUrl)
+//            return self.shared!
+//        }
+//    }
     
     func login(serviceUsr: ServiceUser) {
         self.username = serviceUsr.username
@@ -38,10 +44,12 @@ class UserModel: ObservableObject, UserProtocol {
     }
     
     func logout() {
+        self.userService.logout()
         self.username = ""
         self.accountId = 0
         self.avatarUrl = ""
         self.isLoggedIn = false
+        print("logout complete")
     }
 }
 

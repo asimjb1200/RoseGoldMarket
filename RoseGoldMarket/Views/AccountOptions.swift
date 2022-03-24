@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct AccountOptions: View {
-    let accountOptions = ["Change Location", "Favorites", "My Listings", "Email Support"]
+    @EnvironmentObject var user:UserModel
+    @State var confirmLogout = false
     
     var body: some View {
         NavigationView {
@@ -21,6 +22,17 @@ struct AccountOptions: View {
                     NavigationLink(destination: MyListings(), label: {Text("My Listings")})
 
                     NavigationLink(destination: EmailSupport(), label: {Text("Email Support")})
+                    
+                    Button("Log Out") {
+//                        user.logout()
+                        confirmLogout.toggle()
+                    }
+                    .alert(isPresented: $confirmLogout){
+                        Alert(title: Text("Are You Sure?"), primaryButton: .default(Text("Yes"), action: {
+                            user.logout()
+                        }),
+                              secondaryButton: .cancel())
+                    }
                 }
             }
         }.navigationBarHidden(true)
@@ -30,5 +42,6 @@ struct AccountOptions: View {
 struct AccountOptions_Previews: PreviewProvider {
     static var previews: some View {
         AccountOptions()
+            .environmentObject(UserModel.shared)
     }
 }

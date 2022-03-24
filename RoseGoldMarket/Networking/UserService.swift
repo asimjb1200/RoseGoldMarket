@@ -221,6 +221,16 @@ final class UserNetworking {
                 completion(.failure(.failure))
             }
             
+            guard let response = response as? HTTPURLResponse else {
+                return
+            }
+            
+            guard response.statusCode == 200 else {
+                completion(.failure(.badPassword))
+                return
+            }
+
+            
             guard let data = data else {
                 completion(.failure(.failure))
                 return
@@ -233,6 +243,11 @@ final class UserNetworking {
                 print(decodeError)
             }
         }.resume()
+    }
+    
+    func logout() {
+        self.deleteAccessToken()
+        self.deleteUserFromDevice()
     }
     
     func saveAccessToken(accessToken: String) {
@@ -251,16 +266,23 @@ final class UserNetworking {
     func saveUserToDevice(user: ServiceUser) {
         let defaults: UserDefaults = .standard
         // store the user's info
-        defaults.set(user.username, forKey: "username")
-        defaults.set(user.accountId, forKey: "accountId")
-        defaults.set(user.avatarUrl, forKey: "avatarUrl")
+        defaults.set(user.username, forKey: "rg-username")
+        defaults.set(user.accountId, forKey: "rg-accountId")
+        defaults.set(user.avatarUrl, forKey: "rg-avatarUrl")
+    }
+    
+    func deleteUserFromDevice() {
+        let defaults: UserDefaults = .standard
+        defaults.removeObject(forKey: "rg-username")
+        defaults.removeObject(forKey: "rg-accountId")
+        defaults.removeObject(forKey: "rg-avatarUrl")
     }
     
     func loadUserFromDevice() -> ServiceUser? {
         let defaults: UserDefaults = .standard
-        let username = defaults.string(forKey: "username")
-        let accountId = defaults.integer(forKey: "accountId")
-        let avatarUrl = defaults.string(forKey: "avatarUrl")
+        let username = defaults.string(forKey: "rg-username")
+        let accountId = defaults.integer(forKey: "rg-accountId")
+        let avatarUrl = defaults.string(forKey: "rg-avatarUrl")
         guard
             let username = username,
             let avatarUrl = avatarUrl
