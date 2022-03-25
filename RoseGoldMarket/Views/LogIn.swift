@@ -33,7 +33,7 @@ struct LogIn: View {
                     Alert(title: Text("Username"), message: Text("Your username contains invalid characters"), dismissButton: .default(Text("OK")))
                 }
                 
-                TextField("Password", text: $password)
+                SecureField("Password", text: $password)
                 .padding()
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
