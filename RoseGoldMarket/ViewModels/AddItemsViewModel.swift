@@ -33,7 +33,7 @@ final class AddItemsViewModel: ObservableObject {
     
     func savePlant(accountid: UInt, plantImage: Data, plantImage2: Data, plantImage3: Data) {
         let categoryIdList: [UInt] = self.categoryHolder.filter{ $0.isActive == true}.map{ $0.category }
-        let item = ItemForBackend(accountid: 17, image1: plantImage, image2: plantImage2, image3: plantImage3, isavailable: true, pickedup: false, zipcode: 64111, dateposted: Date(), name: self.plantName, description: self.plantDescription, categoryIds: categoryIdList)
+        let item = ItemForBackend(accountid: accountid, image1: plantImage, image2: plantImage2, image3: plantImage3, isavailable: true, pickedup: false, zipcode: 64111, dateposted: Date(), name: self.plantName, description: self.plantDescription, categoryIds: categoryIdList)
         
         itemService.postItem(itemData: item, completion: {[weak self] apiRes in
             switch apiRes {

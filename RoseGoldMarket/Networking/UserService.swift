@@ -104,7 +104,7 @@ final class UserNetworking {
     func fetchUsersItems(accountId: UInt, completion: @escaping (Result<[ItemNameAndId], AccountDetailsErrors>) -> ()) {
         let req = networker.constructRequest(uri: "http://localhost:4000/users/user-items?accountId=\(accountId)", post: false)
         
-        URLSession.shared.dataTask(with: req) {(data, response, error) in
+        URLSession.shared.dataTask(with: req) { (data, response, error) in
             if error != nil {
                 completion(.failure(.serverError))
             }

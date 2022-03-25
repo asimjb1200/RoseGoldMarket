@@ -54,8 +54,8 @@ final class MessagingViewModel: ObservableObject {
         }
     }
 
-    func getAllMessages() {
-        MessagingService().fetchAllThreadsForUser(userId: 16, completion: { chatResponse in
+    func getAllMessages(accountId:UInt) {
+        MessagingService().fetchAllThreadsForUser(userId: accountId, completion: { chatResponse in
             print("fetching messages")
             switch(chatResponse) {
                 case .success(let chatData):

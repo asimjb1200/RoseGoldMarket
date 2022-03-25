@@ -16,6 +16,7 @@ struct ChangeLocation: View {
     @State var dataSaved = false
     @State var dataNotSaved = false
     @State var addressData = ""
+    @EnvironmentObject var user:UserModel
     
     var body: some View {
         VStack {
@@ -135,7 +136,7 @@ struct ChangeLocation: View {
     
     func fetchCurrentAddress() {
         print("fetching the address")
-        UserNetworking.shared.fetchCurrentAddress(accountId: 16, completion: {addressData in
+        UserNetworking.shared.fetchCurrentAddress(accountId: user.accountId, completion: {addressData in
             switch addressData {
                 case .success(let addressData):
                     DispatchQueue.main.async {

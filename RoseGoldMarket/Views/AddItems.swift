@@ -12,6 +12,7 @@ struct AddItems: View {
     @State var plantImage2:UIImage? = UIImage(named: "circlePlaceholder")!
     @State var plantImage3:UIImage? = UIImage(named: "circlePlaceholder")!
     @StateObject var viewModel = AddItemsViewModel()
+    @EnvironmentObject var user:UserModel
     @Binding var tab: Int
     var categoryMapper = CategoryMapper()
     
@@ -125,7 +126,7 @@ struct AddItems: View {
                     }
 
 
-                    viewModel.savePlant(accountid: 5, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3)
+                    viewModel.savePlant(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3)
                     
                     // reset everything now
                     viewModel.plantName = ""

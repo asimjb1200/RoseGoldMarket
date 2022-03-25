@@ -24,7 +24,6 @@ struct AccountOptions: View {
                     NavigationLink(destination: EmailSupport(), label: {Text("Email Support")})
                     
                     Button("Log Out") {
-//                        user.logout()
                         confirmLogout.toggle()
                     }
                     .alert(isPresented: $confirmLogout){

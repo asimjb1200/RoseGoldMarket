@@ -11,10 +11,8 @@ struct MessageThread: View {
     @State var newMessage = ""
     @EnvironmentObject var viewModel: MessagingViewModel
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-    // @EnvironmentObject var user:UserModel
+     @EnvironmentObject var viewingUser:UserModel
     
-    var myUsername = "admin"
-    var myAccountId:UInt = 16
     var receiverId:UInt
     var receiverUsername:String
     
@@ -32,7 +30,7 @@ struct MessageThread: View {
                         }
                             NavigationLink(destination: AccountDetailsView(username: receiverUsername, accountid: receiverId)) {
                                 Text(
-                                    viewModel.allChats[String(receiverId)]!.first!.receiverUsername == myUsername ?
+                                    viewModel.allChats[String(receiverId)]!.first!.receiverUsername == viewingUser.username ?
                                     viewModel.allChats[String(receiverId)]!.first!.senderUsername :
                                     viewModel.allChats[String(receiverId)]!.first!.receiverUsername
                                 )
@@ -46,7 +44,7 @@ struct MessageThread: View {
                     VStack {
                             ScrollView {
                                 ForEach(viewModel.allChats[String(receiverId)]!, id: \.id) { x in
-                                    if x.senderUsername != myUsername {
+                                    if x.senderUsername != viewingUser.username {
                                         Text(x.message)
                                         .padding()
                                         .frame(width: 200)
@@ -86,8 +84,9 @@ struct MessageThread: View {
                             .onSubmit {
                                 if let chatHistory = viewModel.allChats[String(receiverId)] {
                                     if let lastChat = chatHistory.last {
-                                        let recUsername = lastChat.senderUsername == myUsername ? lastChat.receiverUsername : lastChat.senderUsername
-                                        let newChatId = viewModel.sendMessageToUser(newMessage: newMessage, receiverId: receiverId, receiverUsername: recUsername, senderUsername: myUsername, senderId: myAccountId)
+                                        let recUsername = lastChat.senderUsername == viewingUser.username ? lastChat.receiverUsername : lastChat.senderUsername
+                                        
+                                        let newChatId = viewModel.sendMessageToUser(newMessage: newMessage, receiverId: receiverId, receiverUsername: recUsername, senderUsername: viewingUser.username, senderId: viewingUser.accountId)
                                         newMessage = ""
 
                                         // scroll to the last chat

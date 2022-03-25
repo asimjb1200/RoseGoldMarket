@@ -8,6 +8,7 @@ import SwiftUI
 
 struct MyListings: View {
     @State var myItems:[ItemNameAndId] = []
+    @EnvironmentObject var user:UserModel
     var body: some View {
         VStack {
             if myItems.isEmpty {
@@ -17,7 +18,7 @@ struct MyListings: View {
                     .foregroundColor(Color("AccentColor"))
             } else {
                 List(myItems, id: \.self) { x in
-                    NavigationLink(destination: EditItem(itemName: x.name, ownerName: "dee", itemId: x.id)) {
+                    NavigationLink(destination: EditItem(itemName: x.name, ownerName: user.username, itemId: x.id)) {
                         Text(x.name)
                     }
                 }
@@ -28,7 +29,7 @@ struct MyListings: View {
     }
     
     func getUsersItems() {
-        UserNetworking.shared.fetchUsersItems(accountId: 17, completion: { itemResponse in
+        UserNetworking.shared.fetchUsersItems(accountId: user.accountId, completion: { itemResponse in
             switch itemResponse {
                 case .success(let itemData):
                     DispatchQueue.main.async {

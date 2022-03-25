@@ -12,7 +12,7 @@ struct ItemDetails: View {
     let viewingFromAccountDetails: Bool
     @State var inquirySent = false
     @EnvironmentObject var messenger:MessagingViewModel
-    //@EnvironmentObject var user:UserModel
+    @EnvironmentObject var user:UserModel
     
     var body: some View {
         VStack{
@@ -67,8 +67,9 @@ struct ItemDetails: View {
                 Button("Contact Owner About Plant") {
                     // if not coming from the account details view, then I know that the product's owner will be inside item object
                     let newMessage = "Hello, I am contacting you about the plant you own named \(item.name). I wanted to know if it is still available?"
+                    
                     if let itemOwnersUsername = item.ownerUsername {
-                        _ = messenger.sendMessageToUser(newMessage: newMessage, receiverId: item.owner, receiverUsername: itemOwnersUsername, senderUsername: "admin", senderId: 16)
+                        _ = messenger.sendMessageToUser(newMessage: newMessage, receiverId: item.owner, receiverUsername: itemOwnersUsername, senderUsername: user.username, senderId: user.accountId)
                         inquirySent = true
                     }
                 }

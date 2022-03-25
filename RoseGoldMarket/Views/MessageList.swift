@@ -9,11 +9,11 @@ import SwiftUI
 
 struct MessageList: View {
     @Binding var tab: Int
-    @EnvironmentObject var viewModel: MessagingViewModel
     @State var firstAppear = true
     @State var selection: UUID? = nil
     @State private var nextView: IdentifiableView? = nil
-    var myAccountId: UInt = 16
+    @EnvironmentObject var viewModel: MessagingViewModel
+    @EnvironmentObject var user:UserModel
     
     init(tab: Binding<Int>) {
         self._tab = tab
@@ -27,15 +27,15 @@ struct MessageList: View {
                         Button(action: {
                             self.nextView = IdentifiableView(
                                 view: AnyView(
-                                    MessageThread(receiverId: x.recid == myAccountId ? x.senderid : x.recid,
-                                                  receiverUsername: x.recid == myAccountId ? x.senderUsername : x.receiverUsername))
+                                    MessageThread(receiverId: x.recid == user.accountId ? x.senderid : x.recid,
+                                                  receiverUsername: x.recid == user.accountId ? x.senderUsername : x.receiverUsername))
                             )
                         }, label: {
                             HStack(spacing: 10) {
                                 Image(systemName: "person.fill").padding()
 
                                 VStack(alignment: .leading) {
-                                    Text(x.recid == myAccountId ? x.senderUsername : x.receiverUsername)
+                                    Text(x.recid == user.accountId ? x.senderUsername : x.receiverUsername)
                                     Text(x.message)
                                         .padding(.leading)
                                 }
