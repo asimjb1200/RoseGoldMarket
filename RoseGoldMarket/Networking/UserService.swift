@@ -298,6 +298,13 @@ final class UserNetworking {
         return serviceUser
     }
     
+    func loadAccountId() -> UInt {
+        let defaults: UserDefaults = .standard
+        let accountId = defaults.integer(forKey: "rg-accountId")
+        
+        return UInt(accountId)
+    }
+    
     func updateAccessToken(newToken: String) {
         let findTokenQuery = [
             kSecClass: kSecClassKey,

@@ -13,13 +13,16 @@ final class SocketUtils: ObservableObject {
     let manager = SocketManager(socketURL: URL(string: "http://localhost:4000")!, config: [.log(true), .compress])
     let decoder = JSONDecoder()
     let dateFormatter = DateFormatter()
+    let userService:UserNetworking = .shared
     
     private init() {
         // handle the UTC date type that will be coming through the wire
         self.dateFormatter.locale = Locale(identifier: "en_US_POSIX")
         self.dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         self.decoder.dateDecodingStrategy = .formatted(self.dateFormatter)
-        self.connectToServer(withId: 16)
+        
+        // grab the user's account id from the device which was saved on login
+        self.connectToServer(withId: userService.loadAccountId())
         
         manager.defaultSocket.on(clientEvent: .connect) {data, ack in
             print("socket connected")
