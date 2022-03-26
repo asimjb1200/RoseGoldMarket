@@ -87,6 +87,9 @@ struct HomeMarket: View {
                     }
                 }
             }
+            .onAppear() {
+                viewModel.getFilteredItems(user: user)
+            }
             .navigationBarTitle(Text("RoseGold"))
         }
     }
