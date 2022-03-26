@@ -27,7 +27,7 @@ final class EmailSupportViewModel: ObservableObject {
                 case .failure(let err):
                     if err == .tokenExpired {
                         DispatchQueue.main.async {
-//                            user.logUserOut()
+//                            user.logout()
                         }
                     } else {
                         DispatchQueue.main.async {

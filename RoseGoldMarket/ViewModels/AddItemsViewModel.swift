@@ -46,6 +46,9 @@ final class AddItemsViewModel: ObservableObject {
                     }
                 case .failure(let err):
                     DispatchQueue.main.async {
+                        if err == .tokenExpired {
+                            user.logout()
+                        }
                         print(err)
                     }
             }

@@ -26,15 +26,6 @@ class UserModel: ObservableObject, UserProtocol {
         self.avatarUrl = avatarUrl
     }
     
-//    static func buildInitialUser(username:String, accessToken:String, accountId:UInt, avatarUrl:String) -> UserModel {
-//        if self.shared != nil {
-//            return self.shared!
-//        } else {
-//            self.shared = UserModel(username: username, accessToken: accessToken, accountId: accountId, avatarUrl: avatarUrl)
-//            return self.shared!
-//        }
-//    }
-    
     func login(serviceUsr: ServiceUser) {
         self.username = serviceUsr.username
         self.accessToken = serviceUsr.accessToken

@@ -76,6 +76,9 @@ final class MessagingViewModel: ObservableObject {
                 
                 case .failure(let err):
                     DispatchQueue.main.async {
+                        if err == .tokenExpired {
+                            user.logout()
+                        }
                         print(err)
                     }
             }

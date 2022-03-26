@@ -57,6 +57,9 @@ final class EditItemVM:ObservableObject {
                     }
                 case .failure(let error):
                     DispatchQueue.main.async {
+                        if error == .tokenExpired {
+                            user.logout()
+                        }
                         print(error)
                     }
             }
@@ -97,6 +100,9 @@ final class EditItemVM:ObservableObject {
                     
                 case .failure(let error):
                     DispatchQueue.main.async {
+                        if error == .tokenExpired {
+                            user.logout()
+                        }
                         print(error)
                     }
             }
@@ -119,6 +125,9 @@ final class EditItemVM:ObservableObject {
                     }
                 case .failure(let err):
                     DispatchQueue.main.async {
+                        if err == .tokenExpired {
+                            user.logout()
+                        }
                         print(err)
                     }
             }

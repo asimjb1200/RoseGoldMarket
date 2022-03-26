@@ -19,8 +19,13 @@ struct MessagingService {
                 return
             }
             
-            guard let _ = response as? HTTPURLResponse else {
+            guard let response = response as? HTTPURLResponse else {
                 completion(.failure(.decodingError))
+                return
+            }
+            
+            guard response.statusCode != 403 else {
+                completion(.failure(.tokenExpired))
                 return
             }
             

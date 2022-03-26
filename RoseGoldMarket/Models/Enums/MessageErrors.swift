@@ -12,4 +12,5 @@ enum MessageErrors: String, Error {
     case decodingError = "could not properly decode the objects"
     case genError = "there was a problem I don't understand"
     case responseDecodingError = "the response was not of the expected type"
+    case tokenExpired = "The access token has expired. Time to issue a new one"
 }

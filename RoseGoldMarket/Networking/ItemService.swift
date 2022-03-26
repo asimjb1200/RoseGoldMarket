@@ -33,6 +33,11 @@ struct ItemService {
                 return
             }
             
+            guard response.statusCode != 403 else {
+                completion(.failure(.tokenExpired))
+                return
+            }
+            
             guard response.statusCode == 201 else {
                 print("the request failed")
                 completion(.failure(.genError))
@@ -82,6 +87,11 @@ struct ItemService {
             
             guard let response = response as? HTTPURLResponse else {
                 completion(.failure(.genError))
+                return
+            }
+            
+            guard response.statusCode != 403 else {
+                completion(.failure(.tokenExpired))
                 return
             }
             
@@ -135,6 +145,11 @@ struct ItemService {
                 return
             }
             
+            guard response.statusCode != 403 else {
+                completion(.failure(.tokenExpired))
+                return
+            }
+            
             guard response.statusCode == 200 else {
                 print("The status wasn't ok")
                 completion(.failure(.genError))
@@ -166,7 +181,7 @@ struct ItemService {
     func retrieveItemById(itemId:UInt, token: String, completion: @escaping (Result<ResponseFromServer<Item>, ItemErrors>) -> ()) {
         let req = Networker().constructRequest(uri: "http://localhost:4000/item-handler/item-details-for-edit?itemId=\(itemId)", token: token, post: false)
         
-        URLSession.shared.dataTask(with: req) { (data, _, err) in
+        URLSession.shared.dataTask(with: req) { (data, response, err) in
             if err != nil {
                 completion(.failure(.genError))
             }
@@ -175,6 +190,16 @@ struct ItemService {
                 completion(.failure(.genError))
                 return
             }
+            
+            guard let response = response as? HTTPURLResponse else {
+                return
+            }
+            
+            guard response.statusCode != 403 else {
+                completion(.failure(.tokenExpired))
+                return
+            }
+
             
             do {
                 let decoder = JSONDecoder()
@@ -201,10 +226,20 @@ struct ItemService {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
-        URLSession.shared.dataTask(with: request) { (data, _, error) in
+        URLSession.shared.dataTask(with: request) { (data, response, error) in
             if error != nil {
                 completion(.failure(.genError))
             }
+            
+            guard let response = response as? HTTPURLResponse else {
+                return
+            }
+            
+            guard response.statusCode != 403 else {
+                completion(.failure(.tokenExpired))
+                return
+            }
+
             
             guard let data = data else {
                 return
@@ -244,6 +279,11 @@ struct ItemService {
                 return
             }
             
+            guard response.statusCode != 403 else {
+                completion(.failure(.tokenExpired))
+                return
+            }
+            
             guard response.statusCode == 201 else {
                 print("the request failed")
                 completion(.failure(.genError))
@@ -273,4 +313,5 @@ struct ItemService {
 
 enum ItemErrors: String, Error {
     case genError = "error occurred"
+    case tokenExpired = "The access token has expired. Time to issue a new one"
 }

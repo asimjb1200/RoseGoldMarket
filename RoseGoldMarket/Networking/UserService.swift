@@ -86,6 +86,11 @@ final class UserNetworking {
                 return
             }
             
+            guard response.statusCode != 403 else {
+                completion(.failure(.tokenExpired))
+                return
+            }
+            
             guard (200...299).contains(response.statusCode) else {
                 return
             }
@@ -112,8 +117,13 @@ final class UserNetworking {
                 completion(.failure(.serverError))
             }
             
-            guard let _ = response as? HTTPURLResponse else {
+            guard let response = response as? HTTPURLResponse else {
                 completion(.failure(.responseConversionError))
+                return
+            }
+            
+            guard response.statusCode != 403 else {
+                completion(.failure(.tokenExpired))
                 return
             }
 

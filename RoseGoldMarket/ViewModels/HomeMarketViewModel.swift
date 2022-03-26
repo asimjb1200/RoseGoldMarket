@@ -60,7 +60,12 @@ final class HomeMarketViewModel: ObservableObject {
                         }
                     }
                 case .failure(let err):
-                    print(err)
+                    DispatchQueue.main.async {
+                        print(err)
+                        if err == .tokenExpired {
+                            user.logout()
+                        }
+                    }
             }
         })
     }
