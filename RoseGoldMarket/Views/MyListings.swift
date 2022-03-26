@@ -29,12 +29,15 @@ struct MyListings: View {
     }
     
     func getUsersItems() {
-        UserNetworking.shared.fetchUsersItems(accountId: user.accountId, completion: { itemResponse in
+        UserNetworking.shared.fetchUsersItems(accountId: user.accountId, token: user.accessToken, completion: { itemResponse in
             switch itemResponse {
                 case .success(let itemData):
                     DispatchQueue.main.async {
-                        if !itemData.isEmpty {
-                            myItems = itemData
+                        if itemData.newToken != nil {
+                            user.accessToken = itemData.newToken!
+                        }
+                        if !itemData.data.isEmpty {
+                            myItems = itemData.data
                         }
                     }
                 case .failure(let error):

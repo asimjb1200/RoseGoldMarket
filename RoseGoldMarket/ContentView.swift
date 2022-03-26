@@ -8,10 +8,9 @@
 import SwiftUI
 struct ContentView: View {
     @State var tab: Int = 0
-    // later, I'll grab the account id from the user object that's loaded in the prior view
-    @StateObject var messenger: MessagingViewModel = MessagingViewModel()
-    @EnvironmentObject var user:UserModel
     @State var firstAppear = true
+    @StateObject var messenger: MessagingViewModel = .shared
+    @EnvironmentObject var user:UserModel
     
     init() {
         UITabBar.appearance().backgroundColor = UIColor(Color.white) 
@@ -44,7 +43,7 @@ struct ContentView: View {
         }.accentColor(Color("AccentColor"))
         .onAppear() {
             if firstAppear {
-                messenger.getAllMessages(accountId: user.accountId)
+                messenger.getAllMessages(user: user)
                 firstAppear = false
             }
         }

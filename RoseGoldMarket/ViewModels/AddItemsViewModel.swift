@@ -31,14 +31,17 @@ final class AddItemsViewModel: ObservableObject {
         }
     }
     
-    func savePlant(accountid: UInt, plantImage: Data, plantImage2: Data, plantImage3: Data) {
+    func savePlant(accountid: UInt, plantImage: Data, plantImage2: Data, plantImage3: Data, user: UserModel) {
         let categoryIdList: [UInt] = self.categoryHolder.filter{ $0.isActive == true}.map{ $0.category }
         let item = ItemForBackend(accountid: accountid, image1: plantImage, image2: plantImage2, image3: plantImage3, isavailable: true, pickedup: false, zipcode: 64111, dateposted: Date(), name: self.plantName, description: self.plantDescription, categoryIds: categoryIdList)
         
-        itemService.postItem(itemData: item, completion: {[weak self] apiRes in
+        itemService.postItem(itemData: item, token: user.accessToken, completion: {[weak self] apiRes in
             switch apiRes {
-                case .success( _):
+                case .success(let response):
                     DispatchQueue.main.async {
+                        if response.newToken != nil {
+                            user.accessToken = response.newToken!
+                        }
                         self?.itemPosted = true
                     }
                 case .failure(let err):

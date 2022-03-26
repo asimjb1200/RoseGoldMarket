@@ -16,7 +16,7 @@ struct AccountDetailsView: View {
         GridItem(.flexible(), spacing: 0)
     ]
     @State var items: [Item] = []
-//    @EnvironmentObject var user:UserModel
+    @EnvironmentObject var user:UserModel
     
     var body: some View {
             VStack {
@@ -65,11 +65,14 @@ struct AccountDetailsView: View {
 
 extension AccountDetailsView {
     func fetchUserItems() {
-        service.retrieveItemsForAccount(accountId: accountid, completion: { dataRes in
+        service.retrieveItemsForAccount(accountId: accountid, token: user.accessToken, completion: { dataRes in
             switch dataRes {
             case .success(let itemData):
                 DispatchQueue.main.async {
-                    self.items = itemData
+                    self.items = itemData.data
+                    if itemData.newToken != nil {
+                        user.accessToken = itemData.newToken!
+                    }
                 }
                 
             case .failure(let error):

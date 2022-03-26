@@ -14,7 +14,6 @@ final class HomeMarketViewModel: ObservableObject {
     @Published var categoryHolder: [Category] = []
     @Published var isLoadingPage = false
     @Published var searchRadius: UInt = 20
-//    @Published var canLoadMorePages = true
     @Published var allDataLoaded = false
     var searchButtonPressed = false
     
@@ -27,10 +26,10 @@ final class HomeMarketViewModel: ObservableObject {
             // create a category object for each of the categories ids
             self.categoryHolder.append(Category(category: $0.rawValue, isActive: false))
         }
-        self.getFilteredItems()
+//        self.getFilteredItems(user: user)
     }
     
-    func getFilteredItems() -> () {
+    func getFilteredItems(user:UserModel) -> () {
         self.isLoadingPage = true
         let categoryIdList: [UInt] = self.categoryHolder.filter{ $0.isActive == true}.map{ $0.category }
         
@@ -42,13 +41,17 @@ final class HomeMarketViewModel: ObservableObject {
             self.searchButtonPressed = false
         }
         
-        service.retrieveItems(categoryIdFilters: categoryIdList, limit: 10, offset: currentOffset, longAndLat: "(-94.594299,39.044432)", miles: searchRadius, searchTerm: searchTerm, completion: {[weak self] itemResponse in
+        service.retrieveItems(categoryIdFilters: categoryIdList, limit: 10, offset: currentOffset, longAndLat: "(-94.594299,39.044432)", miles: searchRadius, searchTerm: searchTerm, token: user.accessToken, completion: {[weak self] itemResponse in
             switch itemResponse {
                 case .success(let itemData):
                     DispatchQueue.main.async {
-                        if !itemData.isEmpty {
+                        if itemData.newToken != nil {
+                            user.accessToken = itemData.newToken!
+                        }
+                        
+                        if !itemData.data.isEmpty {
                             self?.currentOffset += 10
-                            self?.items.append(contentsOf: itemData) // add new items to the end of array for infinite scroll
+                            self?.items.append(contentsOf: itemData.data) // add new items to the end of array for infinite scroll
                             self?.isLoadingPage = false
                         } else {
                             self?.currentOffset = 0

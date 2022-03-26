@@ -29,16 +29,19 @@ final class EditItemVM:ObservableObject {
         return 0 != self.categoryHolder.filter{ $0.isActive == true }.count
     }
     
-    func getItemData(itemId:UInt) {
-        service.retrieveItemById(itemId: itemId) {[weak self] itemDataResponse in
+    func getItemData(itemId:UInt, user:UserModel) {
+        service.retrieveItemById(itemId: itemId, token: user.accessToken) {[weak self] itemDataResponse in
             switch itemDataResponse {
                 case .success(let itemData):
                     DispatchQueue.main.async {
-                        self?.plantName = itemData.name
-                        self?.plantDescription = itemData.description
+                        if itemData.newToken != nil {
+                            user.accessToken = itemData.newToken!
+                        }
+                        self?.plantName = itemData.data.name
+                        self?.plantDescription = itemData.data.description
                         
                         // go through the category list and set the toggle to true if it is present
-                        for cat in itemData.categories {
+                        for cat in itemData.data.categories {
                             let catId = self?.categoryMapper.categoriesByDescription[cat]
                             
                             // now find that category id in my array
@@ -81,11 +84,14 @@ final class EditItemVM:ObservableObject {
         }
     }
     
-    func deleteItem(itemId:UInt) {
-        service.deleteItem(itemId: itemId, itemName: self.plantName) { deletionResponse in
+    func deleteItem(itemId:UInt, user:UserModel) {
+        service.deleteItem(itemId: itemId, itemName: self.plantName, token: user.accessToken) { deletionResponse in
             switch deletionResponse {
-                case .success( _):
+                case .success(let resData):
                     DispatchQueue.main.async {
+                        if resData.newToken != nil {
+                            user.accessToken = resData.newToken!
+                        }
                         self.itemIsDeleted = true
                     }
                     
@@ -97,14 +103,17 @@ final class EditItemVM:ObservableObject {
         }
     }
     
-    func savePlant(accountid: UInt, plantImage: Data, plantImage2: Data, plantImage3: Data, itemId:UInt) {
+    func savePlant(accountid: UInt, plantImage: Data, plantImage2: Data, plantImage3: Data, itemId:UInt, user:UserModel) {
         let categoryIdList: [UInt] = self.categoryHolder.filter{ $0.isActive == true}.map{ $0.category }
         let item = ItemForBackend(accountid: accountid, image1: plantImage, image2: plantImage2, image3: plantImage3, isavailable: self.isAvailable, pickedup: self.pickedUp, zipcode: 64111, dateposted: Date(), name: self.plantName, description: self.plantDescription, categoryIds: categoryIdList)
         
-        service.updateItem(itemData: item, itemId: itemId) {[weak self] apiRes in
+        service.updateItem(itemData: item, itemId: itemId, token: user.accessToken) {[weak self] apiRes in
             switch apiRes {
-                case .success( _):
+                case .success(let resData):
                     DispatchQueue.main.async {
+                        if resData.newToken != nil {
+                            user.accessToken = resData.newToken!
+                        }
                         self?.viewStateErrors = .allGood
                         self?.showUpdateError = true
                     }

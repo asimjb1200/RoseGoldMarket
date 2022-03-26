@@ -10,4 +10,5 @@ import Foundation
 struct ResponseFromServer<T: Codable>: Codable {
     let data: T
     let error: [String]
+    let newToken:String?
 }

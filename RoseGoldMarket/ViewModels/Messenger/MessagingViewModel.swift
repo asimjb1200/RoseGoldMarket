@@ -12,14 +12,15 @@ final class MessagingViewModel: ObservableObject {
     @Published var allChats: [String:[ChatData]] = [:]
     @Published var firstAppear = true
     @Published var newMsgCount = 0
+    @Published var listOfChats:[ChatData] = []
     let decoder = JSONDecoder()
     let iso8601DateFormatter = ISO8601DateFormatter()
     let encoder = JSONEncoder()
     let dateFormatter = DateFormatter()
     let socket:SocketUtils = .shared
-    @Published var listOfChats:[ChatData] = []
+    static let shared = MessagingViewModel()
     
-    init() {
+    private init() {
         print("message view model initialzied")
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
@@ -54,19 +55,22 @@ final class MessagingViewModel: ObservableObject {
         }
     }
 
-    func getAllMessages(accountId:UInt) {
-        MessagingService().fetchAllThreadsForUser(userId: accountId, completion: { chatResponse in
+    func getAllMessages(user:UserModel) {
+        MessagingService().fetchAllThreadsForUser(userId: user.accountId, token: user.accessToken, completion: { chatResponse in
             print("fetching messages")
             switch(chatResponse) {
                 case .success(let chatData):
                     DispatchQueue.main.async {
-                        self.allChats = chatData
-                        
+                        if chatData.newToken != nil {
+                            user.accessToken = chatData.newToken!
+                        }
+                        self.allChats = chatData.data
+
                         // go through each key and sort them by their time stamps in ascending order (I want the oldest message at top)
                         for (accountId, chatHistory) in self.allChats {
                             self.allChats[accountId] = chatHistory.sorted(by: {$0.timestamp < $1.timestamp})
                         }
-                        
+
                         self.listOfChats = self.buildUniqueChatList()
                     }
                 

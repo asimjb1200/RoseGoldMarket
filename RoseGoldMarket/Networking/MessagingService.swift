@@ -10,13 +10,9 @@ import Foundation
 struct MessagingService {
     let networker = Networker()
     
-    func fetchMessagesFromUser(senderId: UInt, receiverId: UInt) {
-        
-    }
-    
-    func fetchAllThreadsForUser(userId: UInt, completion: @escaping (Result<[String: [ChatData]], MessageErrors>) -> ()) {
-        let request = networker.constructRequest(uri: "http://localhost:4000/chat-handler/chat-history?accountId=\(userId)", post: false)
-        
+    func fetchAllThreadsForUser(userId: UInt, token: String, completion: @escaping (Result<ResponseFromServer<[String: [ChatData]]>, MessageErrors>) -> ()) {
+        let request = networker.constructRequest(uri: "http://localhost:4000/chat-handler/chat-history?accountId=\(userId)", token: token, post: false)
+
         URLSession.shared.dataTask(with: request) {(data, response, err) in
             guard err == nil else {
                 completion(.failure(.genError))
@@ -36,14 +32,14 @@ struct MessagingService {
             do {
                 let decoder = JSONDecoder()
                 let dateFormatter = DateFormatter()
-                
+
                 // handle the UTC date type that will be coming through the wire
                 dateFormatter.locale = Locale(identifier: "en_US_POSIX")
                 dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
                 decoder.dateDecodingStrategy = .formatted(dateFormatter)
                 
                 let chatData = try decoder.decode(ResponseFromServer<[String: [ChatData]]>.self, from: data)
-                completion(.success(chatData.data))
+                completion(.success(chatData))
             } catch let error {
                 print(error)
                 completion(.failure(.decodingError))

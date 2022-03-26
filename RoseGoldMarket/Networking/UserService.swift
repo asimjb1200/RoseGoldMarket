@@ -14,7 +14,7 @@ final class UserNetworking {
     static let shared: UserNetworking = UserNetworking()
     private let keyChainLabel = "rose-gold-access-token"
     
-    func emailSupport(subject: String, message: String, token: String, completion: @escaping (Result<Bool, SupportErrors>) -> ()) {
+    func emailSupport(subject: String, message: String, token: String, completion: @escaping (Result<ResponseFromServer<Bool>, SupportErrors>) -> ()) {
         let reqWithoutBody: URLRequest = networker.constructRequest(uri: "http://localhost:4000/users/email-support", token: token, post: true)
         let session = URLSession.shared
         let body = ["subject": subject, "message": message]
@@ -32,7 +32,8 @@ final class UserNetworking {
             
             let isOK = self.networker.checkOkStatus(res: response)
             if isOK {
-                completion(.success(true))
+                let resFromServer = ResponseFromServer<Bool>(data: true, error: [], newToken: nil)
+                completion(.success(resFromServer))
             } else if response.statusCode ~= 403 {
                 completion(.failure(.tokenExpired))
             } else {
@@ -41,14 +42,15 @@ final class UserNetworking {
         }.resume()
     }
     
-    func saveNewAddress(newAddress:String, newCity:String, newState:String, newZipCode:UInt, newGeoLocation:String, completion: @escaping (Result<Bool, SupportErrors>) -> ()) {
-        let request = networker.constructRequest(uri: "http://localhost:4000/users/change-address", post: true)
+    func saveNewAddress(newAddress:String, newCity:String, newState:String, newZipCode:UInt, newGeoLocation:String, token: String, completion: @escaping (Result<ResponseFromServer<Bool>, SupportErrors>) -> ()) {
+        let request = networker.constructRequest(uri: "http://localhost:4000/users/change-address", token: token, post: true)
         let body:[String:Any] = ["newAddress":newAddress, "newCity":newCity, "newState":newState, "newZip":newZipCode, "newGeolocation":newGeoLocation]
         let req = networker.buildReqBody(req: request, body: body)
         
         URLSession.shared.dataTask(with: req) {[weak self] (_, response, error) in
             if error != nil {
-                completion(.success(false))
+                let resFromServer = ResponseFromServer<Bool>(data: false, error: [], newToken: nil)
+                completion(.success(resFromServer))
             }
             
             guard let response = response as? HTTPURLResponse else {
@@ -60,7 +62,8 @@ final class UserNetworking {
             
             if let isOK = isOK {
                 if isOK {
-                    completion(.success(true))
+                    let resFromServer = ResponseFromServer<Bool>(data: true, error: [], newToken: nil)
+                    completion(.success(resFromServer))
                 } else if response.statusCode ~= 403 {
                     completion(.failure(.tokenExpired))
                 } else {
@@ -70,8 +73,8 @@ final class UserNetworking {
         }.resume()
     }
     
-    func fetchCurrentAddress(accountId: UInt, completion: @escaping (Result<AddressInfo, AccountDetailsErrors>) -> ()) {
-        let request = networker.constructRequest(uri: "http://localhost:4000/users/address-details?accountId=\(accountId)", post: false)
+    func fetchCurrentAddress(accountId: UInt, token: String, completion: @escaping (Result<ResponseFromServer<AddressInfo>, AccountDetailsErrors>) -> ()) {
+        let request = networker.constructRequest(uri: "http://localhost:4000/users/address-details?accountId=\(accountId)", token: token, post: false)
         
         URLSession.shared.dataTask(with: request) {(data, response, err) in
             if err != nil {
@@ -92,7 +95,7 @@ final class UserNetworking {
             }
             
             do {
-                let addy = try JSONDecoder().decode(AddressInfo.self, from: data)
+                let addy = try JSONDecoder().decode(ResponseFromServer<AddressInfo>.self, from: data)
                 completion(.success(addy))
             } catch let acctErr {
                 print(acctErr)
@@ -101,8 +104,8 @@ final class UserNetworking {
         }.resume()
     }
     
-    func fetchUsersItems(accountId: UInt, completion: @escaping (Result<[ItemNameAndId], AccountDetailsErrors>) -> ()) {
-        let req = networker.constructRequest(uri: "http://localhost:4000/users/user-items?accountId=\(accountId)", post: false)
+    func fetchUsersItems(accountId: UInt, token: String, completion: @escaping (Result<ResponseFromServer<[ItemNameAndId]>, AccountDetailsErrors>) -> ()) {
+        let req = networker.constructRequest(uri: "http://localhost:4000/users/user-items?accountId=\(accountId)", token: token, post: false)
         
         URLSession.shared.dataTask(with: req) { (data, response, error) in
             if error != nil {
@@ -120,7 +123,7 @@ final class UserNetworking {
             }
             
             do {
-                let itemData = try JSONDecoder().decode([ItemNameAndId].self, from: data)
+                let itemData = try JSONDecoder().decode(ResponseFromServer<[ItemNameAndId]>.self, from: data)
                 completion(.success(itemData))
             } catch let decodeError {
                 print(decodeError.localizedDescription)
@@ -206,7 +209,7 @@ final class UserNetworking {
         }.resume()
     }
     
-    func login(username:String, pw: String, completion: @escaping (Result<ServiceUser, UserErrors>) -> ()) {
+    func login(username:String, pw: String, completion: @escaping (Result<ResponseFromServer<ServiceUser>, UserErrors>) -> ()) {
 
         let reqWithoutBody: URLRequest = networker.constructRequest(uri: "http://localhost:4000/users/login", post: true)
         
@@ -238,7 +241,7 @@ final class UserNetworking {
 
             do {
                 let usrResponse = try JSONDecoder().decode(ResponseFromServer<ServiceUser>.self, from: data)
-                completion(.success(usrResponse.data))
+                completion(.success(usrResponse))
             } catch let decodeError {
                 print(decodeError)
             }

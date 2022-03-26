@@ -71,6 +71,6 @@ struct MessageList: View {
 
 struct MessageList_Previews: PreviewProvider {
     static var previews: some View {
-        MessageList(tab: Binding.constant(2)).environmentObject(MessagingViewModel())
+        MessageList(tab: Binding.constant(2)).environmentObject(MessagingViewModel.shared)
     }
 }

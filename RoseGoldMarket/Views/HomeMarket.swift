@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HomeMarket: View {
     @Binding var tab: Int
+    @EnvironmentObject var user:UserModel
     @StateObject var viewModel = HomeMarketViewModel()
     
     var categoryMapper = CategoryMapper()
@@ -64,7 +65,7 @@ struct HomeMarket: View {
                 
                 Button("Search") {
                     viewModel.searchButtonPressed = true
-                    viewModel.getFilteredItems()
+                    viewModel.getFilteredItems(user: user)
                 }
 
                 ScrollView {
@@ -74,7 +75,7 @@ struct HomeMarket: View {
                                 ItemPreview(itemId: x.id, itemTitle: x.name, itemImageLink: x.image1)
                                 .onAppear() {
                                     if x == viewModel.items.last, viewModel.allDataLoaded == false {
-                                        viewModel.getFilteredItems()
+                                        viewModel.getFilteredItems(user: user)
                                     }
                                 }
                             }

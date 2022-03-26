@@ -11,6 +11,7 @@ struct EditItem: View {
     @StateObject var viewModel = EditItemVM()
     @Environment(\.presentationMode) var presentation
     @State var areYouSure = false
+    @EnvironmentObject var user:UserModel
     var categoryMapper = CategoryMapper()
     let itemName:String
     let ownerName:String
@@ -64,7 +65,7 @@ struct EditItem: View {
             .navigationBarTitle("Edit Item")
             .frame(maxWidth: .infinity, alignment: .center)
             
-            Text("Plant Name:").foregroundColor(Color("AccentColor")).padding(.leading).onAppear(){ viewModel.getItemData(itemId: itemId) }
+            Text("Plant Name:").foregroundColor(Color("AccentColor")).padding(.leading).onAppear(){ viewModel.getItemData(itemId: itemId, user: user) }
             TextField("", text: $viewModel.plantName)
                 .textFieldStyle(OvalTextFieldStyle())
                 .padding([.leading, .trailing])
@@ -131,7 +132,7 @@ struct EditItem: View {
                         title: Text("Are You Sure?"),
                         message: Text("You're about to delete your item. You can't undo this."),
                         primaryButton: .destructive(Text("Delete")) {
-                            viewModel.deleteItem(itemId: itemId)
+                            viewModel.deleteItem(itemId: itemId, user:user)
                         },
                         secondaryButton: .cancel()
                     )
@@ -165,7 +166,7 @@ struct EditItem: View {
                         return
                     }
                     
-                    viewModel.savePlant(accountid: 17, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, itemId: itemId)
+                    viewModel.savePlant(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, itemId: itemId, user:user)
                 }
                 .foregroundColor(Color("MainColor"))
                 .padding()

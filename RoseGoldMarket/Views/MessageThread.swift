@@ -116,7 +116,7 @@ struct MessageThread: View {
 }
 
 struct MessageThread_Previews: PreviewProvider {
-    static let messenger = MessagingViewModel()
+    static let messenger = MessagingViewModel.shared
     static var previews: some View {
         MessageThread(receiverId: 15, receiverUsername: "test3")
             .environmentObject(messenger)

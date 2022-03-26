@@ -72,11 +72,11 @@ struct LogIn: View {
     func login() {
         service.login(username: username.filter { !$0.isWhitespace }, pw: password.filter{ !$0.isWhitespace }) { userData in
             switch (userData) {
-                case .success(let user):
+                case .success(let userRes):
                     DispatchQueue.main.async {
-                        service.saveUserToDevice(user: user)
-                        service.saveAccessToken(accessToken: user.accessToken)
-                        globalUser.login(serviceUsr: user)
+                        service.saveUserToDevice(user: userRes.data)
+                        service.saveAccessToken(accessToken: userRes.data.accessToken)
+                        globalUser.login(serviceUsr: userRes.data)
                     }
                 
             case .failure(let err):

@@ -93,7 +93,7 @@ struct ChangeLocation: View {
             
         }.onAppear() {
             // load in the user's current data
-             fetchCurrentAddress()
+             fetchCurrentAddress(user: user)
         }
     }
     
@@ -116,11 +116,11 @@ struct ChangeLocation: View {
     }
     
     func saveNewUserLocation(geoLocation: String) {
-        UserNetworking.shared.saveNewAddress(newAddress: address, newCity: city, newState: state, newZipCode: UInt(zipCode)!, newGeoLocation: geoLocation, completion: { response in
+        UserNetworking.shared.saveNewAddress(newAddress: address, newCity: city, newState: state, newZipCode: UInt(zipCode)!, newGeoLocation: geoLocation, token: user.accessToken, completion: { response in
             switch(response) {
                 case .success(let isSaved):
                     DispatchQueue.main.async {
-                        if isSaved {
+                        if isSaved.data {
                             self.dataSaved.toggle()
                         } else {
                             self.dataNotSaved.toggle()
@@ -134,13 +134,16 @@ struct ChangeLocation: View {
         })
     }
     
-    func fetchCurrentAddress() {
+    func fetchCurrentAddress(user:UserModel) {
         print("fetching the address")
-        UserNetworking.shared.fetchCurrentAddress(accountId: user.accountId, completion: {addressData in
+        UserNetworking.shared.fetchCurrentAddress(accountId: user.accountId, token: user.accessToken, completion: {addressData in
             switch addressData {
                 case .success(let addressData):
                     DispatchQueue.main.async {
-                        self.addressData = "\(addressData.address) \(addressData.zipcode)"
+                        if addressData.newToken != nil {
+                            user.accessToken = addressData.newToken!
+                        }
+                        self.addressData = "\(addressData.data.address) \(addressData.data.zipcode)"
                     }
                 case .failure(let error):
                     DispatchQueue.main.async {

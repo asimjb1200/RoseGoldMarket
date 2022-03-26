@@ -126,7 +126,7 @@ struct AddItems: View {
                     }
 
 
-                    viewModel.savePlant(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3)
+                    viewModel.savePlant(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, user: user)
                     
                     // reset everything now
                     viewModel.plantName = ""

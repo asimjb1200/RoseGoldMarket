@@ -8,7 +8,7 @@
 import Foundation
 
 struct ItemService {
-    func postItem(itemData items: ItemForBackend, completion: @escaping (Result<String, ItemErrors>) -> ()) {
+    func postItem(itemData items: ItemForBackend, token: String, completion: @escaping (Result<ResponseFromServer<String>, ItemErrors>) -> ()) {
         let networker = Networker()
         let serverUrl = URL(string: "http://localhost:4000/item-handler/add-items")
         var urlRequest = URLRequest(url: serverUrl!)
@@ -17,6 +17,7 @@ struct ItemService {
         
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
         let requestData = networker.buildMultipartImageRequest(boundary: boundary, item: items)
         
@@ -46,7 +47,7 @@ struct ItemService {
             }
             
             do {
-                let decoded = try JSONDecoder().decode(String.self, from: data)
+                let decoded = try JSONDecoder().decode(ResponseFromServer<String>.self, from: data)
                 print("Data posted")
                 completion(.success(decoded))
                 return
@@ -58,9 +59,9 @@ struct ItemService {
         }.resume()
     }
     
-    func retrieveItems(categoryIdFilters: [UInt], limit: UInt, offset: UInt, longAndLat: String, miles: UInt, searchTerm: String, completion: @escaping (Result<[Item], ItemErrors>) -> ()) {
+    func retrieveItems(categoryIdFilters: [UInt], limit: UInt, offset: UInt, longAndLat: String, miles: UInt, searchTerm: String, token: String, completion: @escaping (Result<ResponseFromServer<[Item]>, ItemErrors>) -> ()) {
         let networker = Networker()
-        let urlRequest = networker.constructRequest(uri: "http://localhost:4000/item-handler/fetch-filtered-items", post: true)
+        let urlRequest = networker.constructRequest(uri: "http://localhost:4000/item-handler/fetch-filtered-items",token: token , post: true)
         
         let body: [String:Any] = [
             "categories": categoryIdFilters,
@@ -85,7 +86,8 @@ struct ItemService {
             }
             
             guard response.statusCode != 404 else {
-                completion(.success([]))
+                let resData = ResponseFromServer<[Item]>(data: [], error: [], newToken: nil)
+                completion(.success(resData))
                 return
             }
             
@@ -109,7 +111,7 @@ struct ItemService {
                 
                 decoder.dateDecodingStrategy = .formatted(dateFormatter)
                 let itemsResponse = try decoder.decode(ResponseFromServer<[Item]>.self, from: data)
-                completion(.success(itemsResponse.data))
+                completion(.success(itemsResponse))
                 //return
             } catch let decodeError {
                 print(decodeError.localizedDescription)
@@ -119,9 +121,9 @@ struct ItemService {
         }.resume()
     }
     
-    func retrieveItemsForAccount(accountId: UInt, completion: @escaping (Result<[Item], ItemErrors>) -> ()) {
+    func retrieveItemsForAccount(accountId: UInt, token: String, completion: @escaping (Result<ResponseFromServer<[Item]>, ItemErrors>) -> ()) {
         let networker = Networker()
-        let req = networker.constructRequest(uri: "http://localhost:4000/users/items?accountId=\(accountId)")
+        let req = networker.constructRequest(uri: "http://localhost:4000/users/items?accountId=\(accountId)", token: token)
         
         URLSession.shared.dataTask(with: req) {(data, response, err) in
             guard err == nil else {
@@ -153,7 +155,7 @@ struct ItemService {
                 
                 decoder.dateDecodingStrategy = .formatted(dateFormatter)
                 let itemsResponse = try decoder.decode(ResponseFromServer<[Item]>.self, from: data)
-                completion(.success(itemsResponse.data))
+                completion(.success(itemsResponse))
             } catch let error {
                 print(error)
             }
@@ -161,8 +163,8 @@ struct ItemService {
         }.resume()
     }
     
-    func retrieveItemById(itemId:UInt, completion: @escaping (Result<Item, ItemErrors>) -> ()) {
-        let req = Networker().constructRequest(uri: "http://localhost:4000/item-handler/item-details-for-edit?itemId=\(itemId)", post: false)
+    func retrieveItemById(itemId:UInt, token: String, completion: @escaping (Result<ResponseFromServer<Item>, ItemErrors>) -> ()) {
+        let req = Networker().constructRequest(uri: "http://localhost:4000/item-handler/item-details-for-edit?itemId=\(itemId)", token: token, post: false)
         
         URLSession.shared.dataTask(with: req) { (data, _, err) in
             if err != nil {
@@ -182,7 +184,7 @@ struct ItemService {
                 
                 decoder.dateDecodingStrategy = .formatted(dateFormatter)
                 
-                let itemData = try decoder.decode(Item.self, from: data)
+                let itemData = try decoder.decode(ResponseFromServer<Item>.self, from: data)
                 completion(.success(itemData))
             } catch let itemError {
                 print(itemError)
@@ -191,12 +193,13 @@ struct ItemService {
         }.resume()
     }
     
-    func deleteItem(itemId:UInt, itemName:String, completion: @escaping (Result<Bool, ItemErrors>) -> ()) {
+    func deleteItem(itemId:UInt, itemName:String, token: String, completion: @escaping (Result<ResponseFromServer<Bool>, ItemErrors>) -> ()) {
         let url = URL(string: "http://localhost:4000/item-handler/delete-item?itemId=\(itemId)&itemName=\(itemName.replacingOccurrences(of: " ", with: "%20"))")!
         var request = URLRequest(url: url)
         
         request.httpMethod = "DELETE"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
         URLSession.shared.dataTask(with: request) { (data, _, error) in
             if error != nil {
@@ -208,7 +211,7 @@ struct ItemService {
             }
 
             do {
-                let dataPosted = try JSONDecoder().decode(Bool.self, from: data)
+                let dataPosted = try JSONDecoder().decode(ResponseFromServer<Bool>.self, from: data)
                 completion(.success(dataPosted))
             } catch let apiErr {
                 print(apiErr)
@@ -216,7 +219,7 @@ struct ItemService {
         }.resume()
     }
     
-    func updateItem(itemData items: ItemForBackend, itemId:UInt, completion: @escaping (Result<String, ItemErrors>) -> ()) {
+    func updateItem(itemData items: ItemForBackend, itemId:UInt, token: String, completion: @escaping (Result<ResponseFromServer<String>, ItemErrors>) -> ()) {
         let networker = Networker()
         let serverUrl = URL(string: "http://localhost:4000/item-handler/edit-item")
         var urlRequest = URLRequest(url: serverUrl!)
@@ -225,6 +228,7 @@ struct ItemService {
         
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
         let requestData = networker.buildMultipartImageRequest(boundary: boundary, item: items, itemId: itemId)
         
@@ -254,7 +258,7 @@ struct ItemService {
             }
             
             do {
-                let decoded = try JSONDecoder().decode(String.self, from: data)
+                let decoded = try JSONDecoder().decode(ResponseFromServer<String>.self, from: data)
                 print("Data posted")
                 completion(.success(decoded))
                 return
