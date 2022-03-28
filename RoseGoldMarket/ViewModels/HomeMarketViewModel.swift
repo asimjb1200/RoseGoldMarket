@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreLocation
 
 final class HomeMarketViewModel: ObservableObject {
     @Published var items: [Item] = [Item]()
@@ -29,7 +30,7 @@ final class HomeMarketViewModel: ObservableObject {
 //        self.getFilteredItems(user: user)
     }
     
-    func getFilteredItems(user:UserModel) -> () {
+    func getFilteredItems(user:UserModel, geoLocation:String) -> () {
         self.isLoadingPage = true
         let categoryIdList: [UInt] = self.categoryHolder.filter{ $0.isActive == true}.map{ $0.category }
         
@@ -41,7 +42,7 @@ final class HomeMarketViewModel: ObservableObject {
             self.searchButtonPressed = false
         }
         
-        service.retrieveItems(categoryIdFilters: categoryIdList, limit: 10, offset: currentOffset, longAndLat: "(-94.594299,39.044432)", miles: searchRadius, searchTerm: searchTerm, token: user.accessToken, completion: {[weak self] itemResponse in
+        service.retrieveItems(categoryIdFilters: categoryIdList, limit: 10, offset: currentOffset, longAndLat: geoLocation, miles: searchRadius, searchTerm: searchTerm, token: user.accessToken, completion: {[weak self] itemResponse in
             switch itemResponse {
                 case .success(let itemData):
                     DispatchQueue.main.async {

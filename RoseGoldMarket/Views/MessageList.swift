@@ -32,7 +32,21 @@ struct MessageList: View {
                             )
                         }, label: {
                             HStack(spacing: 10) {
-                                Image(systemName: "person.fill").padding()
+                                AsyncImage(url: URL(string: "http://localhost:4000/images/avatars/\(x.recid == user.accountId ? x.senderUsername : x.receiverUsername).jpg")) { phase in
+                                    if let image = phase.image {
+                                        image
+                                        .resizable()
+                                        .scaledToFill()
+                                        .clipShape(Circle())
+                                        .frame(width: 60, height: 60)
+                                    } else if phase.error != nil {
+                                        Color.red
+                                    } else {
+                                        ProgressView()
+                                            .foregroundColor(Color("MainColor"))
+                                            .frame(width: 25, height: 25)
+                                    }
+                                }
 
                                 VStack(alignment: .leading) {
                                     Text(x.recid == user.accountId ? x.senderUsername : x.receiverUsername)

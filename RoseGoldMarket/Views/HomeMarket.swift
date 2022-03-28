@@ -11,12 +11,17 @@ struct HomeMarket: View {
     @Binding var tab: Int
     @EnvironmentObject var user:UserModel
     @StateObject var viewModel = HomeMarketViewModel()
+    @StateObject var locationManager = LocationManager()
     
     var categoryMapper = CategoryMapper()
     let columns = [ // I want two columns of equal width on this view
         GridItem(.flexible(), spacing: 0),
         GridItem(.flexible(), spacing: 0)
     ]
+    
+    var userGeolocation: String {
+        return "(\(locationManager.lastLocation?.coordinate.longitude ?? 0), \(locationManager.lastLocation?.coordinate.latitude ?? 0))"
+    }
     
     init(tab: Binding<Int>) {// changing the color of the nav bar title
         UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(named: "MainColor")!]
@@ -65,30 +70,33 @@ struct HomeMarket: View {
                 
                 Button("Search") {
                     viewModel.searchButtonPressed = true
-                    viewModel.getFilteredItems(user: user)
+                    viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
                 }
-
-                ScrollView {
-                    LazyVGrid(columns: columns) {
-                        ForEach(viewModel.items, id: \.self) { x in
-                            NavigationLink(destination: ItemDetails(item: x, viewingFromAccountDetails: false)) {
-                                ItemPreview(itemId: x.id, itemTitle: x.name, itemImageLink: x.image1)
-                                .onAppear() {
-                                    if x == viewModel.items.last, viewModel.allDataLoaded == false {
-                                        viewModel.getFilteredItems(user: user)
+                if viewModel.items.isEmpty {
+                    Text("No Items Were Found In Your Area").foregroundColor(Color("MainColor")).padding()
+                    Spacer()
+                } else {
+                    ScrollView {
+                        LazyVGrid(columns: columns) {
+                            ForEach(viewModel.items, id: \.self) { x in
+                                NavigationLink(destination: ItemDetails(item: x, viewingFromAccountDetails: false)) {
+                                    ItemPreview(itemId: x.id, itemTitle: x.name, itemImageLink: x.image1)
+                                    .onAppear() {
+                                        if x == viewModel.items.last, viewModel.allDataLoaded == false {
+                                            viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
+                                        }
                                     }
                                 }
                             }
+                            if viewModel.isLoadingPage {
+                                ProgressView()
+                            }
                         }
-                        if viewModel.isLoadingPage {
-                            ProgressView()
-                            
-                        }
-                    }
+                }
                 }
             }
             .onAppear() {
-                viewModel.getFilteredItems(user: user)
+                viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
             }
             .navigationBarTitle(Text("RoseGold"))
         }
