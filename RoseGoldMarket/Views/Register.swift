@@ -11,6 +11,8 @@ import CoreLocation
 struct Register: View {
     @Environment(\.presentationMode) var presentation
     @StateObject var viewModel:RegisterUserViewModel = RegisterUserViewModel()
+    @State var specialCharFound = false
+    var inputChecker:InputChecker = .shared
     
     var body: some View {
         VStack {
@@ -57,6 +59,9 @@ struct Register: View {
                         .foregroundColor(Color("MainColor"))
                 )
                 .padding()
+                .alert(isPresented: $viewModel.specialCharFound) {
+                    Alert(title: Text("No Special Characters Allowed In Username"))
+                }
                 
                 HStack {
                     Text("@").foregroundColor(Color("MainColor"))
@@ -108,6 +113,9 @@ struct Register: View {
                         .foregroundColor(Color("MainColor"))
                 )
                 .padding()
+                .alert(isPresented: $viewModel.addressIsFake) {
+                    Alert(title: Text("Your address could not be verified."))
+                }
                 
                 HStack {
                     Image(systemName: "mappin.and.ellipse").foregroundColor(Color("MainColor"))
@@ -135,6 +143,11 @@ struct Register: View {
                     // the only fields that should have spaces are city and address
                     guard viewModel.spacesFound() == false else {
                         viewModel.spacesFoundInField = true
+                        return
+                    }
+                    
+                    guard inputChecker.containsSpecialChars(text: viewModel.username) == false else {
+                        viewModel.specialCharFound = true
                         return
                     }
                     

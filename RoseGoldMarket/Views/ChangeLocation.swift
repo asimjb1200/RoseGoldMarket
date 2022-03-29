@@ -16,6 +16,8 @@ struct ChangeLocation: View {
     @State var dataSaved = false
     @State var dataNotSaved = false
     @State var addressData = ""
+    @State var addressNotFound = false
+    @State var statePicker: [String] = ["Select A State","AL","AK","AZ","AR","AS","CA","CO","CT","DE","DC","FL","GA","GU","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","CM","OH","OK","OR","PA","PR","RI","SC","SD","TN","TX","TT","UT","VT","VI","WA","WV","WI","WY"]
     @EnvironmentObject var user:UserModel
     
     var body: some View {
@@ -46,10 +48,18 @@ struct ChangeLocation: View {
                     .foregroundColor(Color("MainColor"))
             )
             .padding()
+            .alert(isPresented: $addressNotFound) {
+                Alert(title: Text("Your new address could not be verified."))
+            }
             
             HStack {
                 Image(systemName: "map.fill").foregroundColor(Color("MainColor"))
-                TextField("State", text: $state)
+                Picker("State", selection: $state) {
+                    ForEach(statePicker, id:\.self) {
+                        Text($0)
+                    }
+                }
+                Spacer()
             }
             .padding()
             .overlay(
@@ -101,6 +111,11 @@ struct ChangeLocation: View {
         let geocoder = CLGeocoder()
         let checkAddressForGeoLo = "\(address), \(city), \(state) \(zipCode)"
         geocoder.geocodeAddressString(checkAddressForGeoLo) { placemarks, error in
+            guard error == nil else {
+                self.addressNotFound = true
+                return
+            }
+            
             let placemark = placemarks?.first
             let lat = placemark?.location?.coordinate.latitude
             let lon = placemark?.location?.coordinate.longitude

@@ -198,13 +198,13 @@ struct AddItems: View {
         else {
             return true
         }
-        
+
         let x: [Bool] = [
             plantImage.isEqual(UIImage(named: "circlePlaceholder")!),
             plantImage2.isEqual(UIImage(named: "circlePlaceholder")!),
             plantImage3.isEqual(UIImage(named: "circlePlaceholder")!)
         ]
-        
+
         return 0 != x.filter{ $0 == true }.count
     }
 }

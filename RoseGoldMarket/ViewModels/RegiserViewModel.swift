@@ -23,12 +23,18 @@ final class RegisterUserViewModel: ObservableObject {
     @Published var isShowingPhotoPicker = false
     @Published var spacesFoundInField = false
     @Published var fieldsEmpty = false
+    @Published var addressIsFake = false
+    @Published var specialCharFound = false
     @Published var statePicker: [String] = ["Select A State","AL","AK","AZ","AR","AS","CA","CO","CT","DE","DC","FL","GA","GU","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","CM","OH","OK","OR","PA","PR","RI","SC","SD","TN","TX","TT","UT","VT","VI","WA","WV","WI","WY"]
     
     func getAndSaveUserLocation() {
         let geocoder = CLGeocoder()
         let checkAddressForGeoLo = "\(self.address), \(self.city), \(self.state) \(self.zipCode)"
         geocoder.geocodeAddressString(checkAddressForGeoLo) { placemarks, error in
+            guard error == nil else {
+                self.addressIsFake = true
+                return
+            }
             let placemark = placemarks?.first
             let lat = placemark?.location?.coordinate.latitude
             let lon = placemark?.location?.coordinate.longitude
