@@ -14,7 +14,10 @@ struct AddItems: View {
     @StateObject var viewModel = AddItemsViewModel()
     @EnvironmentObject var user:UserModel
     @Binding var tab: Int
+    @State var profanityFound = false
+    @State var tooManyChars = false
     var categoryMapper = CategoryMapper()
+    var profanityChecker:InputChecker = .shared
     
     init(tab: Binding<Int>) {
         UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(named: "MainColor") ?? .black]
@@ -57,9 +60,12 @@ struct AddItems: View {
                 }.frame(maxWidth: .infinity, alignment: .center)
                 
                 Text("Plant Name:").foregroundColor(Color("AccentColor")).padding(.leading)
-                TextField("...", text: $viewModel.plantName)
+                TextField("20 characters max..", text: $viewModel.plantName)
                     .textFieldStyle(OvalTextFieldStyle())
                     .padding([.leading, .trailing])
+                    .alert(isPresented: $profanityFound) {
+                        Alert(title: Text("Remove the profanity"))
+                    }
                 
                 Text("Description").foregroundColor(Color("AccentColor")).padding([.leading, .top])
                 TextEditor(text: $viewModel.plantDescription)
@@ -71,6 +77,9 @@ struct AddItems: View {
                     )
                     .frame( height: 100)
                     .padding([.leading, .trailing, .bottom])
+                    .alert(isPresented: $tooManyChars) {
+                        Alert(title: Text("Too Many Characters"), message: Text("20 maximum for the plant's title and 200 maximum for the description."), dismissButton: .default(Text("OK")))
+                    }
 
                 Button("Choose Categories") {
                     viewModel.isShowingCategoryPicker = true
@@ -101,19 +110,39 @@ struct AddItems: View {
                         print("image wasn't changed")
                         return
                     }
+                    
                     guard !viewModel.plantName.isEmpty else {
                         viewModel.viewStateErrors = .nameEmpty
                         viewModel.showAlert = true
                         return
                     }
+                    
                     guard !viewModel.plantDescription.isEmpty else {
                         viewModel.viewStateErrors = .descriptionEmpty
                         viewModel.showAlert = true
                         return
                     }
+                    
                     guard viewModel.categoryChosen == true else {
                         viewModel.viewStateErrors = .noCategory
                         viewModel.showAlert = true
+                        return
+                    }
+                    
+                    guard
+                        viewModel.plantName.count <= 20,
+                        viewModel.plantDescription.count <= 200
+                    else {
+                        tooManyChars.toggle()
+                        return
+                    }
+                    
+                    // check for profanity
+                    guard
+                        profanityChecker.containsProfanity(message: viewModel.plantDescription) == false,
+                        profanityChecker.containsProfanity(message: viewModel.plantName) == false
+                    else {
+                        profanityFound.toggle()
                         return
                     }
                     

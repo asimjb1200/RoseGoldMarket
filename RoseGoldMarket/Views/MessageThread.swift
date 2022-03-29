@@ -10,8 +10,11 @@ import SwiftUI
 struct MessageThread: View {
     @State var newMessage = ""
     @EnvironmentObject var viewModel: MessagingViewModel
+    var profanityChecker:InputChecker = .shared
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-     @EnvironmentObject var viewingUser:UserModel
+    @EnvironmentObject var viewingUser:UserModel
+    @State var tooManyChars = false
+    @State var profanityFound = false
     
     var receiverId:UInt
     var receiverUsername:String
@@ -25,7 +28,6 @@ struct MessageThread: View {
                         .frame(maxWidth:.infinity, alignment: .leading)
                         .padding()
                         .onTapGesture {
-                            print("back arrow tapped")
                             self.presentationMode.wrappedValue.dismiss()
                         }
                             NavigationLink(destination: AccountDetailsView(username: receiverUsername, accountid: receiverId)) {
@@ -82,6 +84,17 @@ struct MessageThread: View {
                                     .fill(Color(hue: 1.0, saturation: 0.0, brightness: 0.812))
                             ).padding()
                             .onSubmit {
+                                if newMessage.count > 200 {
+                                    tooManyChars.toggle()
+                                    return
+                                }
+                                
+                                // check for profanity
+                                guard profanityChecker.containsProfanity(message: newMessage) == false else {
+                                    profanityFound.toggle()
+                                    return
+                                }
+                                
                                 if let chatHistory = viewModel.allChats[String(receiverId)] {
                                     if let lastChat = chatHistory.last {
                                         let recUsername = lastChat.senderUsername == viewingUser.username ? lastChat.receiverUsername : lastChat.senderUsername
@@ -94,6 +107,10 @@ struct MessageThread: View {
                                     }
                                 }
                             }
+                            .alert(isPresented: $tooManyChars) {
+                                Alert(title: Text("Over Character Limit"), message: Text("200 Characters Or Less"), dismissButton: .default(Text("OK")))
+                            }
+                        
                     }.onChange(of: viewModel.allChats[String(receiverId)]!){ _ in
                         if let chatHistory = viewModel.allChats[String(receiverId)] {
                             if let lastChat = chatHistory.last {
@@ -105,9 +122,14 @@ struct MessageThread: View {
                         }
                     }
                     
-                }.onDisappear() {
+                }
+                .onDisappear() {
                     viewModel.listOfChats = viewModel.buildUniqueChatList()
                 }
+                .alert(isPresented: $profanityFound) {
+                    Alert(title: Text("Remove your profanity"))
+                }
+                
             }.navigationBarHidden(true)
             Spacer()
         }.navigationViewStyle(.stack)

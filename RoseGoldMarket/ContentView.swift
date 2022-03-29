@@ -11,6 +11,7 @@ struct ContentView: View {
     @State var firstAppear = true
     @StateObject var messenger: MessagingViewModel = .shared
     @EnvironmentObject var user:UserModel
+    var profanityChecker:InputChecker = .shared
     
     init() {
         UITabBar.appearance().backgroundColor = UIColor(Color.white) 
@@ -48,6 +49,7 @@ struct ContentView: View {
             }
         }
         .environmentObject(messenger)
+//        .environmentObject(profanityChecker)
     }
 }
 
