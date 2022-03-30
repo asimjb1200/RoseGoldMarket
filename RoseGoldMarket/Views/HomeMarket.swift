@@ -72,10 +72,6 @@ struct HomeMarket: View {
                     viewModel.searchButtonPressed = true
                     viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
                 }
-                if viewModel.items.isEmpty {
-                    Text("No Items Were Found In Your Area").foregroundColor(Color("MainColor")).padding()
-                    Spacer()
-                } else {
                     ScrollView {
                         LazyVGrid(columns: columns) {
                             ForEach(viewModel.items, id: \.self) { x in
@@ -92,11 +88,7 @@ struct HomeMarket: View {
                                 ProgressView()
                             }
                         }
-                }
-                }
-            }
-            .onAppear() {
-                viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
+                    }
             }
             .navigationBarTitle(Text("RoseGold"))
         }

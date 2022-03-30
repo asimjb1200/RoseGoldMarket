@@ -33,6 +33,9 @@ struct Register: View {
                         viewModel.imageEnum = .imageOne
                         viewModel.isShowingPhotoPicker = true
                     }
+                    .alert(isPresented: $viewModel.specialCharFound) {
+                        Alert(title: Text("No Special Characters Allowed In Username"))
+                    }
             
             ScrollView {
                 HStack {
@@ -59,8 +62,8 @@ struct Register: View {
                         .foregroundColor(Color("MainColor"))
                 )
                 .padding()
-                .alert(isPresented: $viewModel.specialCharFound) {
-                    Alert(title: Text("No Special Characters Allowed In Username"))
+                .alert(isPresented: $viewModel.passwordTooShort) {
+                    Alert(title: Text("Password must be 8 characters or more."))
                 }
                 
                 HStack {
@@ -136,6 +139,11 @@ struct Register: View {
                         return
                     }
                     
+                    guard viewModel.password.count >= 8 else {
+                        viewModel.passwordTooShort = true
+                        return
+                    }
+
                     guard viewModel.state != "Select A State" else {
                         return
                     }
@@ -145,12 +153,12 @@ struct Register: View {
                         viewModel.spacesFoundInField = true
                         return
                     }
-                    
+
                     guard inputChecker.containsSpecialChars(text: viewModel.username) == false else {
                         viewModel.specialCharFound = true
                         return
                     }
-                    
+
                     viewModel.getAndSaveUserLocation()
                 }.alert(isPresented: $viewModel.dataPosted) {
                     Alert(title: Text("Success"), message: Text("You've now been signed up, go back and log in."), dismissButton: .default(Text("OK"), action: { self.presentation.wrappedValue.dismiss() }))

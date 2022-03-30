@@ -36,13 +36,10 @@ struct InputChecker {
     func containsProfanity(message:String) -> Bool {
         var badWordFound = false
         let wordsInMsg = message.components(separatedBy: " ")
-        while badWordFound == false {
-            for word in wordsInMsg {
-                if badWords!.contains(word.lowercased()) {
-                    badWordFound = true
-                }
-                // another loop to double check for squished words like this "hoebitch" lol...
-                
+        for word in wordsInMsg {// continuous loop never terminates
+            if badWords!.contains(word.lowercased()) {
+                badWordFound = true
+                break
             }
         }
         return badWordFound

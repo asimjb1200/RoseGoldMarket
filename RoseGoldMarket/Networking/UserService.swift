@@ -141,7 +141,7 @@ final class UserNetworking {
         }.resume()
     }
     
-    func registerUser(username:String, email:String, pw:String, addy:String, zip:UInt, state:String, city:String, geolocation:String, avi:Data, completion: @escaping (Result<Bool, SupportErrors>) -> ()) {
+    func registerUser(username:String, email:String, pw:String, addy:String, zip:UInt, state:String, city:String, geolocation:String, avi:Data, defaultAvi:Bool = false, completion: @escaping (Result<Bool, SupportErrors>) -> ()) {
         let serverUrl = URL(string: "http://localhost:4000/users/register-user")
         var urlRequest = URLRequest(url: serverUrl!)
         // construct the multipart request with the image data
