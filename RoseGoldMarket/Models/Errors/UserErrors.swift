@@ -12,5 +12,7 @@ enum UserErrors: String, Error {
     case failure = "Not able to log user in"
     case badPassword = "Bad password attempted"
     case badCreds = "Credentials weren't accepted by the server"
+    case serverError = "There was a server side problem"
+    case responseConversionError = "Couldn't convert the response to HTTP"
     case tokenExpired = "The access token has expired. Time to issue a new one"
 }

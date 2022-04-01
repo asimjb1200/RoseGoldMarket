@@ -40,7 +40,12 @@ struct Register: View {
             ScrollView {
                 HStack {
                     Image(systemName: "pencil").foregroundColor(Color("MainColor"))
-                    TextField("Username", text: $viewModel.username).textInputAutocapitalization(.never).disableAutocorrection(true)
+                    TextField("Username", text: $viewModel.username)
+                        .textInputAutocapitalization(.never)
+                        .disableAutocorrection(true)
+                        .alert(isPresented: $viewModel.usernameLengthIsInvalid) {
+                            Alert(title: Text("Username must be 16 characters or less."))
+                        }
                 }.padding()
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
@@ -62,8 +67,8 @@ struct Register: View {
                         .foregroundColor(Color("MainColor"))
                 )
                 .padding()
-                .alert(isPresented: $viewModel.passwordTooShort) {
-                    Alert(title: Text("Password must be 8 characters or more."))
+                .alert(isPresented: $viewModel.passwordLengthIsInvalid) {
+                    Alert(title: Text("Password must be between 8 and 16 characters."))
                 }
                 
                 HStack {
@@ -139,8 +144,13 @@ struct Register: View {
                         return
                     }
                     
-                    guard viewModel.password.count >= 8 else {
-                        viewModel.passwordTooShort = true
+                    guard viewModel.password.count >= 8, viewModel.password.count <= 16 else {
+                        viewModel.passwordLengthIsInvalid = true
+                        return
+                    }
+                    
+                    guard viewModel.username.count <= 16 else {
+                        viewModel.usernameLengthIsInvalid = true
                         return
                     }
 
@@ -164,6 +174,9 @@ struct Register: View {
                     Alert(title: Text("Success"), message: Text("You've now been signed up, go back and log in."), dismissButton: .default(Text("OK"), action: { self.presentation.wrappedValue.dismiss() }))
                 }
                 Spacer()
+                .alert(isPresented: $viewModel.nameNotAvailable) {
+                    Alert(title: Text("Username Not Available"))
+                }
             }
             
         }.sheet(isPresented: $viewModel.isShowingPhotoPicker, content: {

@@ -25,7 +25,9 @@ final class RegisterUserViewModel: ObservableObject {
     @Published var fieldsEmpty = false
     @Published var addressIsFake = false
     @Published var specialCharFound = false
-    @Published var passwordTooShort = false
+    @Published var passwordLengthIsInvalid = false
+    @Published var usernameLengthIsInvalid = false
+    @Published var nameNotAvailable = false
     @Published var statePicker: [String] = ["Select A State","AL","AK","AZ","AR","AS","CA","CO","CT","DE","DC","FL","GA","GU","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","CM","OH","OK","OR","PA","PR","RI","SC","SD","TN","TX","TT","UT","VT","VI","WA","WV","WI","WY"]
     
     func getAndSaveUserLocation() {
@@ -58,14 +60,17 @@ final class RegisterUserViewModel: ObservableObject {
             return
         }
 
-        UserNetworking.shared.registerUser(username: self.username, email: self.email, pw: self.password, addy: self.address, zip: UInt(self.zipCode)!, state: self.state, city: self.city, geolocation: geolocation, avi: avatarImgCompressed) { registerResponse in
+        UserNetworking.shared.registerUser(username: self.username, email: self.email, pw: self.password, addy: self.address, zip: UInt(self.zipCode)!, state: self.state, city: self.city, geolocation: geolocation, avi: avatarImgCompressed) {[weak self] registerResponse in
             switch registerResponse {
                 case .success(let res):
                     DispatchQueue.main.async {
-                        self.dataPosted = res
+                        self?.dataPosted = res
                     }
                 case .failure(let err):
                     DispatchQueue.main.async {
+                        if err == .usernameTaken {
+                            self?.nameNotAvailable = true
+                        }
                         print(err)
                     }
             }

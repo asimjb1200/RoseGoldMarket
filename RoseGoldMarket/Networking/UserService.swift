@@ -141,7 +141,58 @@ final class UserNetworking {
         }.resume()
     }
     
-    func registerUser(username:String, email:String, pw:String, addy:String, zip:UInt, state:String, city:String, geolocation:String, avi:Data, defaultAvi:Bool = false, completion: @escaping (Result<Bool, SupportErrors>) -> ()) {
+    func changeAvatar(imgJpgData:Data, username:String, token:String, completion: @escaping (Result<ResponseFromServer<Bool>, UserErrors>) -> ()) {
+        let serverUrl = URL(string: "http://localhost:4000/users/change-avatar")
+        var urlRequest = URLRequest(url: serverUrl!)
+        // construct the multipart request with the image data
+        let boundary = UUID().uuidString
+        urlRequest.httpMethod = "POST"
+        urlRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        // add the image data to the raw http request data
+        var requestData = Data()
+        requestData.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+        requestData.append("Content-Disposition: form-data; name=\"avatar\"; filename=\"\(username).jpg\"\r\n".data(using: .utf8)!)
+        requestData.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+        requestData.append(imgJpgData)
+        
+        // finish the request
+        requestData.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+        
+        // now send off the request
+        URLSession.shared.uploadTask(with: urlRequest, from: requestData) { (data, res, error) in
+            if error != nil {
+                completion(.failure(.serverError))
+            }
+          
+            guard let res = res as? HTTPURLResponse else {
+                completion(.failure(.responseConversionError))
+                return
+            }
+//            
+            guard res.statusCode != 403, res.statusCode != 401 else {
+                completion(.failure(.tokenExpired))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(.responseConversionError))
+                return
+            }
+//            
+            do {
+                let usrResponse = try JSONDecoder().decode(ResponseFromServer<Bool>.self, from: data)
+                completion(.success(usrResponse))
+            } catch let decodeErr {
+                print(decodeErr)
+                completion(.failure(.responseConversionError))
+            }
+            
+        }.resume()
+    }
+    
+    func registerUser(username:String, email:String, pw:String, addy:String, zip:UInt, state:String, city:String, geolocation:String, avi:Data, defaultAvi:Bool = false, completion: @escaping (Result<Bool, RegistrationErrors>) -> ()) {
         let serverUrl = URL(string: "http://localhost:4000/users/register-user")
         var urlRequest = URLRequest(url: serverUrl!)
         // construct the multipart request with the image data
@@ -207,6 +258,11 @@ final class UserNetworking {
             
             guard let res = res as? HTTPURLResponse else {
                 completion(.failure(.responseConversionError))
+                return
+            }
+            
+            guard res.statusCode != 409 else {
+                completion(.failure(.usernameTaken))
                 return
             }
             
@@ -366,6 +422,14 @@ enum SupportErrors: String, Error {
     case tokenExpired = "The access token has expired. Time to issue a new one"
     case requestError = "There was a problem making the request."
     case serverError = "There was an error with the request on the server."
+    case responseConversionError = "Unable to decode http response."
+}
+
+enum RegistrationErrors: String, Error {
+    case tokenExpired = "The access token has expired. Time to issue a new one"
+    case requestError = "There was a problem making the request."
+    case serverError = "There was an error with the request on the server."
+    case usernameTaken = "That username isn't available"
     case responseConversionError = "Unable to decode http response."
 }
 

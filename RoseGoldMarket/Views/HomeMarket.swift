@@ -72,23 +72,23 @@ struct HomeMarket: View {
                     viewModel.searchButtonPressed = true
                     viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
                 }
-                    ScrollView {
-                        LazyVGrid(columns: columns) {
-                            ForEach(viewModel.items, id: \.self) { x in
-                                NavigationLink(destination: ItemDetails(item: x, viewingFromAccountDetails: false)) {
-                                    ItemPreview(itemId: x.id, itemTitle: x.name, itemImageLink: x.image1)
-                                    .onAppear() {
-                                        if x == viewModel.items.last, viewModel.allDataLoaded == false {
-                                            viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
-                                        }
+                ScrollView {
+                    LazyVGrid(columns: columns) {
+                        ForEach(viewModel.items, id: \.self) { x in
+                            NavigationLink(destination: ItemDetails(item: x, viewingFromAccountDetails: false)) {
+                                ItemPreview(itemId: x.id, itemTitle: x.name, itemImageLink: x.image1)
+                                .onAppear() {
+                                    if x == viewModel.items.last, viewModel.allDataLoaded == false {
+                                        viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
                                     }
                                 }
                             }
-                            if viewModel.isLoadingPage {
-                                ProgressView()
-                            }
+                        }
+                        if viewModel.isLoadingPage {
+                            ProgressView()
                         }
                     }
+                }
             }
             .navigationBarTitle(Text("RoseGold"))
         }

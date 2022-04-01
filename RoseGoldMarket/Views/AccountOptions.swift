@@ -16,6 +16,8 @@ struct AccountOptions: View {
             VStack {
                 List {
                     NavigationLink(destination: ChangeLocation(), label: {Text("Change Your Location")})
+                    
+                    NavigationLink(destination: ChangeAvatar(), label: {Text("Change Your Avatar")})
 
                     NavigationLink(destination: FavoriteItems(), label: {Text("Favorite Items")})
 
