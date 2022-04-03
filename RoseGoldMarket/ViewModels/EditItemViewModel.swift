@@ -22,6 +22,7 @@ final class EditItemVM:ObservableObject {
     @Published var pickedUp = false
     @Published var itemIsDeleted = false
     @Published var showUpdateError = false
+    @Published var tooManyChars = false
     var viewStateErrors: EditItemViewStates = .allGood
     var categoryMapper = CategoryMapper()
     var service = ItemService()

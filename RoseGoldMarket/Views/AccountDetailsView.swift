@@ -26,7 +26,7 @@ struct AccountDetailsView: View {
                         .resizable()
                         .scaledToFit()
                         .clipShape(Circle())
-                        .frame(width: 200, height: 200)
+                        .frame(maxWidth: 200, maxHeight: 200)
                     } else if phase.error != nil {
                         Color.red
                     } else {
@@ -54,7 +54,7 @@ struct AccountDetailsView: View {
                             }
                         }
                     }
-                }
+                }.frame(height: 300)
                 Spacer()
                 
             }.onAppear() {
@@ -76,6 +76,9 @@ extension AccountDetailsView {
                 }
                 
             case .failure(let error):
+                if error == .tokenExpired {
+                    self.user.logout()
+                }
                 print(error.localizedDescription)
             }
         })

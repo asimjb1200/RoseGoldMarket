@@ -20,7 +20,7 @@ struct ItemDetails: View {
                 HStack {
                     AsyncImage(url: URL(string: "http://localhost:4000\(self.getImageLink(imageLink: item.image1))")) { imagePhase in
                         if let image = imagePhase.image {
-                            image.resizable().resizable().frame(width: 370, height: 370).cornerRadius(25)
+                            image.resizable().scaledToFill().frame(width: 200, height: 200).cornerRadius(25)
                         } else if imagePhase.error != nil {
                             Text("Problem loading image")
                         } else {
@@ -30,7 +30,7 @@ struct ItemDetails: View {
 
                     AsyncImage(url: URL(string: "http://localhost:4000\(self.getImageLink(imageLink: item.image2))")) { imagePhase in
                         if let image = imagePhase.image {
-                            image.resizable().resizable().frame(width: 370, height: 370).cornerRadius(25)
+                            image.resizable().scaledToFill().frame(width: 200, height: 200).cornerRadius(25)
                         } else if imagePhase.error != nil {
                             Text("Problem loading image")
                         } else {
@@ -40,14 +40,14 @@ struct ItemDetails: View {
 
                     AsyncImage(url: URL(string: "http://localhost:4000\(self.getImageLink(imageLink: item.image3))")) { imagePhase in
                         if let image = imagePhase.image {
-                            image.resizable().resizable().frame(width: 370, height: 370).cornerRadius(25)
+                            image.resizable().scaledToFill().frame(width: 200, height: 200).cornerRadius(25)
                         } else if imagePhase.error != nil {
                             Text("Problem loading image")
                         } else {
                             ProgressView()
                         }
                     }
-                }.frame(height: 400)
+                }.frame(height: 200)
                 
             }.alert(isPresented: $inquirySent) {
                 Alert(title: Text("Your Inquiry Was Sent"), message: Text("Give the owner some time to get back to you."), dismissButton: .default(Text("OK!"), action: {inquirySent = true}))
@@ -58,10 +58,10 @@ struct ItemDetails: View {
                 .font(.largeTitle)
                 .fontWeight(.heavy)
                 .foregroundColor(Color("MainColor"))
-                .padding(.bottom)
+                .padding()
             
-            Text(item.description)
-            Spacer()
+            Text(item.description).frame(height: 100).padding()
+            
             
             if viewingFromAccountDetails == false && inquirySent == false {
                 Button("Contact Owner About Plant") {
@@ -73,7 +73,7 @@ struct ItemDetails: View {
                         inquirySent = true
                     }
                 }
-                .padding(.bottom)
+                .padding()
                 Spacer()
             }
         }

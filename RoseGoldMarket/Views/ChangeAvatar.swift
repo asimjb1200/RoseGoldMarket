@@ -38,13 +38,15 @@ struct ChangeAvatar: View {
                 ProgressView()
             }
             Text(user.username).font(.title).padding()
-            Spacer()
+            
             Button("Submit") {
                 saveImage()
             }
+            .padding()
             .alert(isPresented: $dataPosted) {
                 Alert(title: Text("Avatar Updated!"), dismissButton: .destructive(Text("OK!"), action: { self.presentation.wrappedValue.dismiss() }))
             }
+            Spacer()
         }.sheet(isPresented: $isShowingPhotoPicker, content: {
             PhotoPicker(plantImage: $userImage, plantImage2: Binding.constant(nil), plantImage3: Binding.constant(nil), plantEnum: $imageEnum)
         })

@@ -65,12 +65,16 @@ struct EditItem: View {
             .navigationBarTitle("Edit Item")
             .frame(maxWidth: .infinity, alignment: .center)
             
-            Text("Plant Name:").foregroundColor(Color("AccentColor")).padding(.leading).onAppear(){ viewModel.getItemData(itemId: itemId, user: user) }
+            Text("Plant Name 20 character limit..").foregroundColor(Color("AccentColor")).padding(.leading).onAppear(){ viewModel.getItemData(itemId: itemId, user: user) }
             TextField("", text: $viewModel.plantName)
                 .textFieldStyle(OvalTextFieldStyle())
                 .padding([.leading, .trailing])
             
-            Text("Description").foregroundColor(Color("AccentColor")).padding([.leading, .top])
+            Text("Description 200 character limit..").foregroundColor(Color("AccentColor"))
+                .padding([.leading, .top])
+                .alert(isPresented: $viewModel.tooManyChars) {
+                    Alert(title: Text("Too Many Characters"), message: Text("Name field can have no more than 20 characters. The description field can have no more than 200."))
+                }
             TextEditor(text: $viewModel.plantDescription)
                 .padding(.leading)
                 .foregroundColor(.white)
@@ -155,6 +159,14 @@ struct EditItem: View {
                     guard viewModel.categoryChosen == true else {
                         viewModel.viewStateErrors = .noCategory
                         viewModel.showUpdateError = true
+                        return
+                    }
+                    
+                    guard
+                        viewModel.plantDescription.count <= 200,
+                        viewModel.plantName.count <= 20
+                    else {
+                        viewModel.tooManyChars = true
                         return
                     }
                     

@@ -67,7 +67,9 @@ struct MessageList: View {
                 .fontWeight(.bold)
                 .foregroundColor(Color("MainColor"))
             }
-        }.onDisappear() {
+        }
+        .padding()
+        .onDisappear() {
             viewModel.newMsgCount = 0
         }
     }
