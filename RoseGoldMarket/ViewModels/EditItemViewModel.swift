@@ -54,6 +54,8 @@ final class EditItemVM:ObservableObject {
                             
                             // now activate it since this category id was a pre-existing one in the db
                             self?.categoryHolder[indexOfCategoryToActivate].isActive = true
+                            
+                            self?.isAvailable = itemData.data.isavailable
                         }
                     }
                 case .failure(let error):
