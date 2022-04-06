@@ -10,6 +10,9 @@ import SwiftUI
 struct AccountOptions: View {
     @EnvironmentObject var user:UserModel
     @State var confirmLogout = false
+    @State var confirmDeletion = false
+    @State var deletetionErrorOccurred = false
+    var service:UserNetworking = .shared
     
     var body: some View {
         NavigationView {
@@ -19,7 +22,7 @@ struct AccountOptions: View {
                     
                     NavigationLink(destination: ChangeAvatar(), label: {Text("Change Your Avatar")})
 
-                    NavigationLink(destination: FavoriteItems(), label: {Text("Favorite Items")})
+//                    NavigationLink(destination: FavoriteItems(), label: {Text("Favorite Items")})
 
                     NavigationLink(destination: MyListings(), label: {Text("My Listings")})
 
@@ -34,9 +37,44 @@ struct AccountOptions: View {
                         }),
                               secondaryButton: .cancel())
                     }
+                    
+                    Button("Delete Account") {
+                        confirmDeletion.toggle()
+                    }
+                    .foregroundColor(.red)
+                    .alert(isPresented: $confirmDeletion) {
+                        Alert(
+                            title: Text("Are You Sure?"),
+                            message: Text("Your account can't be recovered if you move forward."),
+                            primaryButton:
+                                    .default(Text("Delete").foregroundColor(.red),
+                                    action: {
+                                        self.deleteAccount()
+                                    }),
+                            secondaryButton: .cancel())
+                    }
+                }.alert(isPresented: $deletetionErrorOccurred) {
+                    Alert(title:Text("An Error Occurred"), message: Text("Try again later."))
                 }
             }
         }.navigationBarHidden(true)
+    }
+}
+
+extension AccountOptions {
+    func deleteAccount() {
+        self.service.deleteUser(token: user.accessToken) { deletionResponse in
+            switch deletionResponse {
+                case .success( _):
+                    DispatchQueue.main.async {
+                        self.user.logout()
+                    }
+                case .failure(let err):
+                    DispatchQueue.main.async {
+                        print(err)
+                    }
+            }
+        }
     }
 }
 

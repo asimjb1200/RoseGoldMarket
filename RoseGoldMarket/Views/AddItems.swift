@@ -29,7 +29,13 @@ struct AddItems: View {
     var body: some View {
         NavigationView {
             VStack(alignment: .leading) {
-                Text("Add 3 photos of your plant").foregroundColor(Color("AccentColor")).padding([.leading, .top])
+                Text("Add 3 photos of your plant")
+                    .foregroundColor(Color("AccentColor"))
+                    .padding([.leading, .top])
+                    .alert(isPresented: $viewModel.errorOccurred) {
+                        Alert(title: Text("There was a problem. Try again later."))
+                    }
+                
                 HStack {
                     Image(uiImage: plantImage!)
                             .resizable()

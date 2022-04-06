@@ -227,8 +227,9 @@ struct ItemService {
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
         URLSession.shared.dataTask(with: request) { (data, response, error) in
-            if error != nil {
+            guard error == nil else {
                 completion(.failure(.genError))
+                return
             }
             
             guard let response = response as? HTTPURLResponse else {

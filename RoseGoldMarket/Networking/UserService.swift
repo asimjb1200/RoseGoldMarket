@@ -13,6 +13,7 @@ final class UserNetworking {
     let networker: Networker = Networker()
     static let shared: UserNetworking = UserNetworking()
     private let keyChainLabel = "rose-gold-access-token"
+    private init(){}
     
     func emailSupport(subject: String, message: String, token: String, completion: @escaping (Result<ResponseFromServer<Bool>, SupportErrors>) -> ()) {
         let reqWithoutBody: URLRequest = networker.constructRequest(uri: "http://localhost:4000/users/email-support", token: token, post: true)
@@ -39,6 +40,35 @@ final class UserNetworking {
             } else {
                 completion(.failure(.serverError))
             }
+        }.resume()
+    }
+    
+    func deleteUser(token:String, completion: @escaping (Result<Bool, DeleteUserErrrors>) -> ()) {
+        let url = URL(string: "http://localhost:4000/users/delete-user")!
+        var request = URLRequest(url: url)
+        
+        request.httpMethod = "DELETE"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        URLSession.shared.dataTask(with: request) { (_, response, error) in
+            guard error == nil else {
+                completion(.failure(.serverError))
+                return
+            }
+            
+            guard let response = response as? HTTPURLResponse else {
+                completion(.failure(.responseConversionError))
+                return
+            }
+            
+            guard response.statusCode == 200 else {
+                completion(.failure(.serverError))
+                return
+            }
+            
+            completion(.success(true))
+
         }.resume()
     }
     
@@ -434,6 +464,13 @@ enum RegistrationErrors: String, Error {
 }
 
 enum AccountDetailsErrors: String, Error {
+    case serverError = "There was an error processing the request."
+    case tokenExpired = "The access token has expired. Time to issue a new one."
+    case dataDecodingError = "There was a problem decoding the data."
+    case responseConversionError = "Unable to decode http response."
+}
+
+enum DeleteUserErrrors: String, Error {
     case serverError = "There was an error processing the request."
     case tokenExpired = "The access token has expired. Time to issue a new one."
     case dataDecodingError = "There was a problem decoding the data."

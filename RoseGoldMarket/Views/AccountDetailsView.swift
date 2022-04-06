@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct AccountDetailsView: View {
+    @State var errorOccurred = false
     let username:String
     let accountid:UInt
     let service = ItemService()
@@ -39,6 +40,9 @@ struct AccountDetailsView: View {
                 Text(username)
                     .font(.largeTitle)
                     .fontWeight(.bold)
+                    .alert(isPresented: $errorOccurred) {
+                        Alert(title: Text("There was a problem."), message: Text("Your items could not be retrieved at this time. Come back later."))
+                    }
                 
                 
                 Text("Their Items")
@@ -76,6 +80,7 @@ extension AccountDetailsView {
                 }
                 
             case .failure(let error):
+                self.errorOccurred = true
                 if error == .tokenExpired {
                     self.user.logout()
                 }

@@ -17,6 +17,7 @@ final class AddItemsViewModel: ObservableObject {
     @Published var categories: [UInt] = []
     @Published var categoryHolder: [Category] = []
     @Published var showAlert = false
+    @Published var errorOccurred = false
     var viewStateErrors: AddItemViewStates = .imagesEmpty
     var categoryChosen: Bool {
         return 0 != self.categoryHolder.filter{ $0.isActive == true }.count
@@ -33,7 +34,7 @@ final class AddItemsViewModel: ObservableObject {
     
     func savePlant(accountid: UInt, plantImage: Data, plantImage2: Data, plantImage3: Data, user: UserModel) {
         let categoryIdList: [UInt] = self.categoryHolder.filter{ $0.isActive == true}.map{ $0.category }
-        let item = ItemForBackend(accountid: accountid, image1: plantImage, image2: plantImage2, image3: plantImage3, isavailable: true, pickedup: false, zipcode: 64111, dateposted: Date(), name: self.plantName, description: self.plantDescription, categoryIds: categoryIdList)
+        let item = ItemForBackend(accountid: accountid, image1: plantImage, image2: plantImage2, image3: plantImage3, isavailable: true, pickedup: false, zipcode: 00000, dateposted: Date(), name: self.plantName, description: self.plantDescription, categoryIds: categoryIdList)
         
         itemService.postItem(itemData: item, token: user.accessToken, completion: {[weak self] apiRes in
             switch apiRes {
@@ -46,9 +47,11 @@ final class AddItemsViewModel: ObservableObject {
                     }
                 case .failure(let err):
                     DispatchQueue.main.async {
+                        self?.errorOccurred = true
                         if err == .tokenExpired {
                             user.logout()
                         }
+                        
                         print(err)
                     }
             }

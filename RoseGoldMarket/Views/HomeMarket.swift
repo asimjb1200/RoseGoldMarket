@@ -9,6 +9,8 @@ import SwiftUI
 
 struct HomeMarket: View {
     @Binding var tab: Int
+    @State var firstAppear = true
+    @State var locationLoaded = false
     @EnvironmentObject var user:UserModel
     @StateObject var viewModel = HomeMarketViewModel()
     @StateObject var locationManager = LocationManager()
@@ -29,6 +31,9 @@ struct HomeMarket: View {
     }
 
     var body: some View {
+        if locationManager.lastLocation == nil {
+            Text("We need to access your location in order to use this application. Your location is used to connect you to people in your area.").padding()
+        } else {
         NavigationView {
             VStack {
                 HStack {
@@ -72,6 +77,13 @@ struct HomeMarket: View {
                     viewModel.searchButtonPressed = true
                     viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
                 }
+                .onAppear() {
+                    if firstAppear {
+                        firstAppear = false
+                        viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
+                    }
+                }
+
                 ScrollView {
                     LazyVGrid(columns: columns) {
                         ForEach(viewModel.items, id: \.self) { x in
@@ -91,6 +103,7 @@ struct HomeMarket: View {
                 }
             }
             .navigationBarTitle(Text("RoseGold"))
+        }
         }
     }
 }

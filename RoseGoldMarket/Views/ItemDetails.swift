@@ -63,7 +63,7 @@ struct ItemDetails: View {
             Text(item.description).frame(height: 100).padding()
             
             
-            if viewingFromAccountDetails == false && inquirySent == false {
+            if viewingFromAccountDetails == false && inquirySent == false && item.owner != user.accountId{
                 Button("Contact Owner About Plant") {
                     // if not coming from the account details view, then I know that the product's owner will be inside item object
                     let newMessage = "Hello, I am contacting you about the plant you own named \(item.name). I wanted to know if it is still available?"
