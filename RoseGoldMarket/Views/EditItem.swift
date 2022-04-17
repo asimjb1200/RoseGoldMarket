@@ -64,6 +64,9 @@ struct EditItem: View {
             }
             .navigationBarTitle("Edit Item")
             .frame(maxWidth: .infinity, alignment: .center)
+            .alert(isPresented: $viewModel.networkError) {
+                Alert(title:Text("A Problem Occurred"), message: Text("Something went wrong on our end. try again later"))
+            }
             
             Text("Plant Name 20 character limit..").foregroundColor(Color("AccentColor")).padding(.leading).onAppear(){ viewModel.getItemData(itemId: itemId, user: user) }
             TextField("", text: $viewModel.plantName)

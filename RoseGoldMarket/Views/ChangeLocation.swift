@@ -119,7 +119,7 @@ struct ChangeLocation: View {
             let placemark = placemarks?.first
             let lat = placemark?.location?.coordinate.latitude
             let lon = placemark?.location?.coordinate.longitude
-            
+
             if let lon = lon, let lat = lat { // unwrap the optionals
                 // (long, lat) for database now send new addy and long/lat to the database
                 let geoLocation = "(\(lon),\(lat))"

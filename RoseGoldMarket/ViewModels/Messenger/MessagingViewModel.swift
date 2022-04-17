@@ -9,9 +9,12 @@ import Foundation
 import SocketIO
 
 final class MessagingViewModel: ObservableObject {
+    /// Holds every chat thread that the user is involved in. Each chat thread can be accessed by the recipient's account id. The value that the account id key accesses is a list of chat objects that have been exchanged between the two users
     @Published var allChats: [String:[ChatData]] = [:]
     @Published var firstAppear = true
     @Published var newMsgCount = 0
+    /// Contains unique chats only. it is intended to be used to show a list to the user of each chat they are involved in. For example, if the user has chatted with 'John' and 'Tony' the
+    /// list will contain the latest message in each of their respective threads (and ONLY the latest message).
     @Published var listOfChats:[ChatData] = []
     let decoder = JSONDecoder()
     let iso8601DateFormatter = ISO8601DateFormatter()
@@ -49,7 +52,7 @@ final class MessagingViewModel: ObservableObject {
                     }
                     self.listOfChats = self.buildUniqueChatList()
                 } catch let err {
-                    print(err)
+                    print("[MessagingVM] tried to set up private message listener for user: \(err)")
                 }
             }
         }
@@ -79,12 +82,14 @@ final class MessagingViewModel: ObservableObject {
                         if err == .tokenExpired {
                             user.logout()
                         }
-                        print(err)
+                        print("[MessagingVM] problem occurred when fetching all msgs for user \(user.accountId): \(err)")
                     }
             }
         })
     }
 
+    /// used to build the chat list for the MessageList view. This function will ensure that only the latest message from each of the user's chat threads will be inlcuded in the list.
+    /// As a result, you can use the result of this function to display a list of unique chat threads that the viewing user is involved in
     func buildUniqueChatList() -> [ChatData] {
         var tempHolder:[ChatData] = []
         // iterate through allChats
@@ -95,6 +100,7 @@ final class MessagingViewModel: ObservableObject {
     }
 
 
+    /// sends a message to the user via a socket connection
     func sendMessageToUser(newMessage: String, receiverId: UInt, receiverUsername: String, senderUsername: String, senderId: UInt) -> UUID? {
         // build the chat block for the server
         let today = Date()
@@ -123,7 +129,7 @@ final class MessagingViewModel: ObservableObject {
             // send the data through the socket, which will save it to the db
             socket.manager.defaultSocket.emit("Private Message", jsonString)
         } catch let err {
-            print(err)
+            print("[MessagingVM] problem occurred when trying to send message through socket between users (rec)\(receiverId) and (sender)\(senderId): \(err)")
         }
         return newChatBlockForUser.id
     }

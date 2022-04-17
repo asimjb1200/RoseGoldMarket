@@ -23,6 +23,7 @@ final class EditItemVM:ObservableObject {
     @Published var itemIsDeleted = false
     @Published var showUpdateError = false
     @Published var tooManyChars = false
+    @Published var networkError = false
     var viewStateErrors: EditItemViewStates = .allGood
     var categoryMapper = CategoryMapper()
     var service = ItemService()
@@ -63,7 +64,8 @@ final class EditItemVM:ObservableObject {
                         if error == .tokenExpired {
                             user.logout()
                         }
-                        print(error)
+                        print("[EditItemVM] tried to get data for item \(itemId): \(error)")
+                        self?.networkError = true
                     }
             }
         }
@@ -86,19 +88,19 @@ final class EditItemVM:ObservableObject {
             self.plantImage2 = UIImage(data: image2)
             self.plantImage3 = UIImage(data: image3)
         } catch let requestError {
-            print(requestError.localizedDescription)
+            print("[EditItemVM] tried fetching item images: \(requestError.localizedDescription)")
         }
     }
     
     func deleteItem(itemId:UInt, user:UserModel) {
-        service.deleteItem(itemId: itemId, itemName: self.plantName, token: user.accessToken) { deletionResponse in
+        service.deleteItem(itemId: itemId, itemName: self.plantName, token: user.accessToken) {[weak self] deletionResponse in
             switch deletionResponse {
                 case .success(let resData):
                     DispatchQueue.main.async {
                         if resData.newToken != nil {
                             user.accessToken = resData.newToken!
                         }
-                        self.itemIsDeleted = true
+                        self?.itemIsDeleted = true
                     }
                     
                 case .failure(let error):
@@ -106,7 +108,8 @@ final class EditItemVM:ObservableObject {
                         if error == .tokenExpired {
                             user.logout()
                         }
-                        print(error)
+                        print("[EditItemVM] tried deleting item: \(error)")
+                        self?.networkError = true
                     }
             }
         }
@@ -114,7 +117,7 @@ final class EditItemVM:ObservableObject {
     
     func savePlant(accountid: UInt, plantImage: Data, plantImage2: Data, plantImage3: Data, itemId:UInt, user:UserModel) {
         let categoryIdList: [UInt] = self.categoryHolder.filter{ $0.isActive == true}.map{ $0.category }
-        let item = ItemForBackend(accountid: accountid, image1: plantImage, image2: plantImage2, image3: plantImage3, isavailable: self.isAvailable, pickedup: self.pickedUp, zipcode: 64111, dateposted: Date(), name: self.plantName, description: self.plantDescription, categoryIds: categoryIdList)
+        let item = ItemForBackend(accountid: accountid, image1: plantImage, image2: plantImage2, image3: plantImage3, isavailable: self.isAvailable, pickedup: self.pickedUp, zipcode: 00000, dateposted: Date(), name: self.plantName, description: self.plantDescription, categoryIds: categoryIdList)
         
         service.updateItem(itemData: item, itemId: itemId, token: user.accessToken) {[weak self] apiRes in
             switch apiRes {
@@ -131,7 +134,8 @@ final class EditItemVM:ObservableObject {
                         if err == .tokenExpired {
                             user.logout()
                         }
-                        print(err)
+                        print("[EditItemVM] tried to save item \(itemId) after updates: \(err)")
+                        self?.networkError = true
                     }
             }
         }

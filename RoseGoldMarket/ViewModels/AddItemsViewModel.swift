@@ -52,7 +52,7 @@ final class AddItemsViewModel: ObservableObject {
                             user.logout()
                         }
                         
-                        print(err)
+                        print("[AddItemsVM] problem when trying to add a new plant for user \(user.accountId): \(err)")
                     }
             }
         })

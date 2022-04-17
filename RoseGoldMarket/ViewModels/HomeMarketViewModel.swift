@@ -16,6 +16,7 @@ final class HomeMarketViewModel: ObservableObject {
     @Published var isLoadingPage = false
     @Published var searchRadius: UInt = 20
     @Published var allDataLoaded = false
+    @Published var errorOccurred = false
     var searchButtonPressed = false
     
     private var currentOffset: UInt = 0
@@ -62,10 +63,11 @@ final class HomeMarketViewModel: ObservableObject {
                     }
                 case .failure(let err):
                     DispatchQueue.main.async {
-                        print(err)
+                        print("[HomeMarketVM] problem occurred when fetching items: \(err)")
                         if err == .tokenExpired {
                             user.logout()
                         }
+                        self?.errorOccurred = true
                     }
             }
         })

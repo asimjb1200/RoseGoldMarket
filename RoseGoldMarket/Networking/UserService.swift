@@ -10,10 +10,46 @@ import Foundation
 
 
 final class UserNetworking {
-    let networker: Networker = Networker()
+    private let networker: Networker = Networker()
     static let shared: UserNetworking = UserNetworking()
     private let keyChainLabel = "rose-gold-access-token"
     private init(){}
+    
+    func getGeolocation(token:String, completion: @escaping (Result<ResponseFromServer<String>, UserErrors>) -> ()) {
+        let request:URLRequest = networker.constructRequest(uri: "http://localhost:4000/users/user-geolocation", token: token, post: false)
+        let session = URLSession.shared
+        
+        session.dataTask(with: request) {(data, response, error) in
+            guard error == nil else {
+                completion(.failure(.serverError))
+                return
+            }
+            
+            guard let response = response as? HTTPURLResponse else {
+                completion(.failure(.responseConversionError))
+                return
+            }
+            
+            guard response.statusCode == 200 else {
+                completion(.failure(.responseConversionError))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(.dataConversionError))
+                return
+            }
+
+            do {
+                let usrGeolocation = try JSONDecoder().decode(ResponseFromServer<String>.self, from: data)
+                completion(.success(usrGeolocation))
+            } catch let decodingError {
+                print("[UserNetworking] tried to fetch user's geolocation \(decodingError)")
+                completion(.failure(.failure))
+            }
+
+        }.resume()
+    }
     
     func emailSupport(subject: String, message: String, token: String, completion: @escaping (Result<ResponseFromServer<Bool>, SupportErrors>) -> ()) {
         let reqWithoutBody: URLRequest = networker.constructRequest(uri: "http://localhost:4000/users/email-support", token: token, post: true)

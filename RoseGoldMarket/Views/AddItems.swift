@@ -76,7 +76,6 @@ struct AddItems: View {
                 Text("Description").foregroundColor(Color("AccentColor")).padding([.leading, .top])
                 TextEditor(text: $viewModel.plantDescription)
                     .padding(.leading)
-                    .foregroundColor(.white)
                     .background(
                         RoundedRectangle(cornerRadius: 25)
                             .fill(Color(red: 0.778, green: 0.817, blue: 0.851))

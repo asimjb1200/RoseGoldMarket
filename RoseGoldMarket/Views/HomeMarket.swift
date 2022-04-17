@@ -31,8 +31,10 @@ struct HomeMarket: View {
     }
 
     var body: some View {
-        if locationManager.lastLocation == nil {
-            Text("We need to access your location in order to use this application. Your location is used to connect you to people in your area.").padding()
+        if locationManager.lastLocation == nil && locationManager.databaseLocation == nil {
+            Text("We need to access your location in order to use this application. Your location is used to connect you to people in your area.")
+                .padding()
+
         } else {
         NavigationView {
             VStack {
@@ -80,30 +82,46 @@ struct HomeMarket: View {
                 .onAppear() {
                     if firstAppear {
                         firstAppear = false
-                        viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
+                        determineUserLocation()
                     }
                 }
-
-                ScrollView {
-                    LazyVGrid(columns: columns) {
-                        ForEach(viewModel.items, id: \.self) { x in
-                            NavigationLink(destination: ItemDetails(item: x, viewingFromAccountDetails: false)) {
-                                ItemPreview(itemId: x.id, itemTitle: x.name, itemImageLink: x.image1)
-                                .onAppear() {
-                                    if x == viewModel.items.last, viewModel.allDataLoaded == false {
-                                        viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
+                
+                if viewModel.items.isEmpty {
+                    Text("No items in your area")
+                } else {
+                    ScrollView {
+                        LazyVGrid(columns: columns) {
+                            ForEach(viewModel.items, id: \.self) { x in
+                                NavigationLink(destination: ItemDetails(item: x, viewingFromAccountDetails: false)) {
+                                    ItemPreview(itemId: x.id, itemTitle: x.name, itemImageLink: x.image1)
+                                    .onAppear() {
+                                        if x == viewModel.items.last, viewModel.allDataLoaded == false {
+                                            determineUserLocation()
+                                        }
                                     }
                                 }
                             }
-                        }
-                        if viewModel.isLoadingPage {
-                            ProgressView()
+                            if viewModel.isLoadingPage {
+                                ProgressView()
+                            }
                         }
                     }
                 }
+
             }
             .navigationBarTitle(Text("RoseGold"))
         }
+        }
+    }
+    
+    func determineUserLocation() {
+        if locationManager.lastLocation != nil {
+            viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
+        } else {
+            guard let databaseLocation = locationManager.databaseLocation else {
+                return
+            }
+            viewModel.getFilteredItems(user: user, geoLocation: databaseLocation)
         }
     }
 }

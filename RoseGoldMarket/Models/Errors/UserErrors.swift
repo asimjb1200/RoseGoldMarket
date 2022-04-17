@@ -15,4 +15,5 @@ enum UserErrors: String, Error {
     case serverError = "There was a server side problem"
     case responseConversionError = "Couldn't convert the response to HTTP"
     case tokenExpired = "The access token has expired. Time to issue a new one"
+    case dataConversionError = "Couldn't decode the data object from the server"
 }

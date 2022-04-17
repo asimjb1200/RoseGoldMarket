@@ -14,7 +14,7 @@ struct ContentView: View {
     var profanityChecker:InputChecker = .shared
     
     init() {
-        UITabBar.appearance().backgroundColor = UIColor(Color.white) 
+        UITabBar.appearance().backgroundColor = .systemBackground
     }
     
     var body: some View {
