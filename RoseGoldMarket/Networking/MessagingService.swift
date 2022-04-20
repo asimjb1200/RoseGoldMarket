@@ -11,7 +11,7 @@ struct MessagingService {
     let networker = Networker()
     
     func fetchAllThreadsForUser(userId: UInt, token: String, completion: @escaping (Result<ResponseFromServer<[String: [ChatData]]>, MessageErrors>) -> ()) {
-        let request = networker.constructRequest(uri: "http://localhost:4000/chat-handler/chat-history?accountId=\(userId)", token: token, post: false)
+        let request = networker.constructRequest(uri: "https://rosegoldgardens.com/api/chat-handler/chat-history?accountId=\(userId)", token: token, post: false)
 
         URLSession.shared.dataTask(with: request) {(data, response, err) in
             guard err == nil else {

@@ -10,7 +10,7 @@ import Foundation
 struct ItemService {
     func postItem(itemData items: ItemForBackend, token: String, completion: @escaping (Result<ResponseFromServer<String>, ItemErrors>) -> ()) {
         let networker = Networker()
-        let serverUrl = URL(string: "http://localhost:4000/item-handler/add-items")
+        let serverUrl = URL(string: "https://rosegoldgardens.com/api/item-handler/add-items")
         var urlRequest = URLRequest(url: serverUrl!)
         
         let boundary = UUID().uuidString
@@ -66,7 +66,7 @@ struct ItemService {
     
     func retrieveItems(categoryIdFilters: [UInt], limit: UInt, offset: UInt, longAndLat: String, miles: UInt, searchTerm: String, token: String, completion: @escaping (Result<ResponseFromServer<[Item]>, ItemErrors>) -> ()) {
         let networker = Networker()
-        let urlRequest = networker.constructRequest(uri: "http://localhost:4000/item-handler/fetch-filtered-items",token: token , post: true)
+        let urlRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/item-handler/fetch-filtered-items",token: token , post: true)
         
         let body: [String:Any] = [
             "categories": categoryIdFilters,
@@ -133,7 +133,7 @@ struct ItemService {
     
     func retrieveItemsForAccount(accountId: UInt, token: String, completion: @escaping (Result<ResponseFromServer<[Item]>, ItemErrors>) -> ()) {
         let networker = Networker()
-        let req = networker.constructRequest(uri: "http://localhost:4000/users/items?accountId=\(accountId)", token: token)
+        let req = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/items?accountId=\(accountId)", token: token)
         
         URLSession.shared.dataTask(with: req) {(data, response, err) in
             guard err == nil else {
@@ -179,7 +179,7 @@ struct ItemService {
     }
     
     func retrieveItemById(itemId:UInt, token: String, completion: @escaping (Result<ResponseFromServer<Item>, ItemErrors>) -> ()) {
-        let req = Networker().constructRequest(uri: "http://localhost:4000/item-handler/item-details-for-edit?itemId=\(itemId)", token: token, post: false)
+        let req = Networker().constructRequest(uri: "https://rosegoldgardens.com/api/item-handler/item-details-for-edit?itemId=\(itemId)", token: token, post: false)
         
         URLSession.shared.dataTask(with: req) { (data, response, err) in
             if err != nil {
@@ -219,7 +219,7 @@ struct ItemService {
     }
     
     func deleteItem(itemId:UInt, itemName:String, token: String, completion: @escaping (Result<ResponseFromServer<Bool>, ItemErrors>) -> ()) {
-        let url = URL(string: "http://localhost:4000/item-handler/delete-item?itemId=\(itemId)&itemName=\(itemName.replacingOccurrences(of: " ", with: "%20"))")!
+        let url = URL(string: "https://rosegoldgardens.com/api/item-handler/delete-item?itemId=\(itemId)&itemName=\(itemName.replacingOccurrences(of: " ", with: "%20"))")!
         var request = URLRequest(url: url)
         
         request.httpMethod = "DELETE"
@@ -257,7 +257,7 @@ struct ItemService {
     
     func updateItem(itemData items: ItemForBackend, itemId:UInt, token: String, completion: @escaping (Result<ResponseFromServer<String>, ItemErrors>) -> ()) {
         let networker = Networker()
-        let serverUrl = URL(string: "http://localhost:4000/item-handler/edit-item")
+        let serverUrl = URL(string: "https://rosegoldgardens.com/api/item-handler/edit-item")
         var urlRequest = URLRequest(url: serverUrl!)
         
         let boundary = UUID().uuidString

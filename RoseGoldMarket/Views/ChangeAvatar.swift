@@ -56,7 +56,7 @@ struct ChangeAvatar: View {
 extension ChangeAvatar {
     func getAvatarImage() {
         do {
-            let avatarUrl = URL(string: "http://localhost:4000/images/avatars/\(user.username).jpg")!
+            let avatarUrl = URL(string: "https://rosegoldgardens.com/api/images/avatars/\(user.username).jpg")!
             let avatarPicData = try Data(contentsOf: avatarUrl)
             self.userImage = UIImage(data: avatarPicData)
         } catch let error {

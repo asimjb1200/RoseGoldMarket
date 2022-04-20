@@ -32,7 +32,7 @@ struct MessageList: View {
                             )
                         }, label: {
                             HStack(spacing: 10) {
-                                AsyncImage(url: URL(string: "http://localhost:4000/images/avatars/\(x.recid == user.accountId ? x.senderUsername : x.receiverUsername).jpg")) { phase in
+                                AsyncImage(url: URL(string: "https://rosegoldgardens.com/api/images/avatars/\(x.recid == user.accountId ? x.senderUsername : x.receiverUsername).jpg")) { phase in
                                     if let image = phase.image {
                                         image
                                         .resizable()

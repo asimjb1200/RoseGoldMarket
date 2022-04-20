@@ -75,9 +75,9 @@ final class EditItemVM:ObservableObject {
         let itemNameWithoutSpaces = itemName.replacingOccurrences(of: " ", with: "%20")
         // hit the server and grab the images for the item
         do {
-            let imageUrl = URL(string: "http://localhost:4000/images/\(ownerName)/\(itemNameWithoutSpaces)/image1.jpg")!
-            let image2Url = URL(string: "http://localhost:4000/images/\(ownerName)/\(itemNameWithoutSpaces)/image2.jpg")!
-            let image3Url = URL(string: "http://localhost:4000/images/\(ownerName)/\(itemNameWithoutSpaces)/image3.jpg")!
+            let imageUrl = URL(string: "https://rosegoldgardens.com/api/images/\(ownerName)/\(itemNameWithoutSpaces)/image1.jpg")!
+            let image2Url = URL(string: "https://rosegoldgardens.com/api/images/\(ownerName)/\(itemNameWithoutSpaces)/image2.jpg")!
+            let image3Url = URL(string: "https://rosegoldgardens.com/api/images/\(ownerName)/\(itemNameWithoutSpaces)/image3.jpg")!
             
             let image1 = try Data(contentsOf: imageUrl)
             let image2 = try Data(contentsOf: image2Url)
