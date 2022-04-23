@@ -34,7 +34,6 @@ struct HomeMarket: View {
         if locationManager.lastLocation == nil && locationManager.databaseLocation == nil {
             Text("We need to access your location in order to use this application. Your location is used to connect you to people in your area.")
                 .padding()
-
         } else {
         NavigationView {
             VStack {
@@ -51,6 +50,7 @@ struct HomeMarket: View {
                             
                         ForEach($viewModel.categoryHolder) { $cat in
                             Toggle("\(categoryMapper.categories[cat.category]!)", isOn: $cat.isActive)
+                                .tint(Color("MainColor"))
                                 .padding([.leading, .trailing])
                         }
                         Spacer()
@@ -68,17 +68,18 @@ struct HomeMarket: View {
                     Image(systemName: "magnifyingglass").foregroundColor(Color("MainColor")).padding(.leading)
                     TextField("", text: $viewModel.searchTerm).padding([.top, .bottom], 2.0)
                 }
-                .overlay(
+                .padding(5.0)
+                .background(
                     RoundedRectangle(cornerRadius: 10)
-                        .stroke(lineWidth: 1)
-                        .foregroundColor(Color("MainColor"))
+                        .fill(Color(hue: 0.578, saturation: 0.0, brightness: 0.879))
                 )
-                .padding()
+                
                 
                 Button("Search") {
                     viewModel.searchButtonPressed = true
                     viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
                 }
+                .padding(.horizontal)
                 .onAppear() {
                     if firstAppear {
                         firstAppear = false
@@ -88,6 +89,8 @@ struct HomeMarket: View {
                 
                 if viewModel.items.isEmpty {
                     Text("No items in your area")
+                        .padding()
+                    Spacer()
                 } else {
                     ScrollView {
                         LazyVGrid(columns: columns) {

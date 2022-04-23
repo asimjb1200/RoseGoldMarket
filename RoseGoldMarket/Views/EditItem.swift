@@ -80,7 +80,6 @@ struct EditItem: View {
                 }
             TextEditor(text: $viewModel.plantDescription)
                 .padding(.leading)
-                .foregroundColor(.white)
                 .background(
                     RoundedRectangle(cornerRadius: 25)
                         .fill(Color(red: 0.778, green: 0.817, blue: 0.851))
@@ -90,13 +89,13 @@ struct EditItem: View {
             
             Toggle("Still available?", isOn: $viewModel.isAvailable)
                 .padding(.leading)
-                .foregroundColor(Color("AccentColor"))
+                .tint(Color("MainColor"))
                 .alert(isPresented: $viewModel.itemIsDeleted) {
                     Alert(title: Text("Success"), message: Text("Your item has been deleted"), dismissButton: .default(Text("OK"), action: {self.presentation.wrappedValue.dismiss()}))
                 }
             
             if !viewModel.isAvailable {
-                Toggle("Has it been picked up?", isOn: $viewModel.pickedUp).padding(.leading)
+                Toggle("Has it been picked up?", isOn: $viewModel.pickedUp).padding(.leading).tint(Color("MainColor"))
             }
             
             Button("Change Categories") {
@@ -119,6 +118,7 @@ struct EditItem: View {
 
                 ForEach($viewModel.categoryHolder) { $cat in
                     Toggle("\(categoryMapper.categories[cat.category]!)", isOn: $cat.isActive)
+                        .tint(Color("MainColor"))
                         .padding([.leading, .trailing])
                 }
                 Spacer()
