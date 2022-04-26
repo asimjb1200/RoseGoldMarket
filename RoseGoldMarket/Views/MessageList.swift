@@ -55,7 +55,8 @@ struct MessageList: View {
                                 }
 
                                 Spacer()
-                            }.frame(height: 70)
+                            }.frame(height: 70).shadow(radius: 5)
+                            
                         })
                     }
                 }.fullScreenCover(item: self.$nextView, onDismiss: { nextView = nil}) { view in

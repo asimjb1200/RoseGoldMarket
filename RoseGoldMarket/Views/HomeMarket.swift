@@ -84,7 +84,8 @@ struct HomeMarket: View {
                         }
                     }
                     
-                }
+                }.shadow(radius: 5)
+                Divider().shadow(radius: 5)
                 
                 if viewModel.items.isEmpty {
                     Text("No items in your area")
@@ -96,6 +97,7 @@ struct HomeMarket: View {
                             ForEach(viewModel.items, id: \.self) { x in
                                 NavigationLink(destination: ItemDetails(item: x, viewingFromAccountDetails: false)) {
                                     ItemPreview(itemId: x.id, itemTitle: x.name, itemImageLink: x.image1)
+                                    .shadow(radius: 5)
                                     .onAppear() {
                                         if x == viewModel.items.last, viewModel.allDataLoaded == false {
                                             determineUserLocation()

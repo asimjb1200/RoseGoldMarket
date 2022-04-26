@@ -42,6 +42,7 @@ struct MessageThread: View {
                                 .padding()
                             }
                 }
+                Divider()
                 
                 ScrollViewReader { scroller in
                     VStack {
@@ -77,7 +78,7 @@ struct MessageThread: View {
                                     }
                                 }
                             }
-
+                        Divider()
                         TextField("New Message..", text: $newMessage)
                             .padding()
                             .textFieldStyle(OvalTextFieldStyle())
