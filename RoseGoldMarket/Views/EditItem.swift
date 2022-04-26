@@ -16,6 +16,10 @@ struct EditItem: View {
     let itemName:String
     let ownerName:String
     let itemId:UInt
+    private enum Fields: Int, CaseIterable {
+        case name, description
+    }
+    @FocusState private var focusedField:Fields?
     
     var body: some View {
         VStack {
@@ -62,16 +66,24 @@ struct EditItem: View {
             }.onAppear{
                 viewModel.getImages(itemName: self.itemName, ownerName: self.ownerName)
             }
-            .navigationBarTitle("Edit Item")
+            .navigationBarTitle("Edit Item", displayMode: .inline)
             .frame(maxWidth: .infinity, alignment: .center)
             .alert(isPresented: $viewModel.networkError) {
                 Alert(title:Text("A Problem Occurred"), message: Text("Something went wrong on our end. try again later"))
             }
             
-            Text("Plant Name 20 character limit..").foregroundColor(Color("AccentColor")).padding(.leading).onAppear(){ viewModel.getItemData(itemId: itemId, user: user) }
+            Text("Plant Name 20 character limit..").padding(.leading).onAppear(){ viewModel.getItemData(itemId: itemId, user: user) }
             TextField("", text: $viewModel.plantName)
                 .textFieldStyle(OvalTextFieldStyle())
                 .padding([.leading, .trailing])
+                .focused($focusedField, equals: .name)
+                .toolbar {
+                    ToolbarItem(placement: .keyboard) {
+                        Button("Done") {
+                            focusedField = nil
+                        }.frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
             
             Text("Description 200 character limit..").foregroundColor(Color("AccentColor"))
                 .padding([.leading, .top])
@@ -82,10 +94,11 @@ struct EditItem: View {
                 .padding(.leading)
                 .background(
                     RoundedRectangle(cornerRadius: 25)
-                        .fill(Color(red: 0.778, green: 0.817, blue: 0.851))
+                        .fill(Color.gray)
                 )
                 .frame( height: 100)
                 .padding([.leading, .trailing, .bottom])
+                .focused($focusedField, equals: .description)
             
             Toggle("Still available?", isOn: $viewModel.isAvailable)
                 .padding(.leading)

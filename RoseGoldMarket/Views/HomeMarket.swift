@@ -37,54 +37,53 @@ struct HomeMarket: View {
         } else {
         NavigationView {
             VStack {
-                HStack {
-                    Button("Filters") {
-                        viewModel.showFilterSheet = true
-                    }
-                    .padding()
-                    .sheet(isPresented: $viewModel.showFilterSheet) {
-                        Text("Choose Your Filters")
-                            .fontWeight(.bold)
-                            .foregroundColor(Color("MainColor"))
-                            .padding([.top, .bottom])
-                            
-                        ForEach($viewModel.categoryHolder) { $cat in
-                            Toggle("\(categoryMapper.categories[cat.category]!)", isOn: $cat.isActive)
-                                .tint(Color("MainColor"))
-                                .padding([.leading, .trailing])
+                VStack {
+                    HStack {
+                        Button("Filters") {
+                            viewModel.showFilterSheet = true
+                        }
+                        .padding()
+                        .sheet(isPresented: $viewModel.showFilterSheet) {
+                            Text("Choose Your Filters")
+                                .fontWeight(.bold)
+                                .foregroundColor(Color("MainColor"))
+                                .padding([.top, .bottom])
+                                
+                            ForEach($viewModel.categoryHolder) { $cat in
+                                Toggle("\(categoryMapper.categories[cat.category]!)", isOn: $cat.isActive)
+                                    .tint(Color("MainColor"))
+                                    .padding([.leading, .trailing])
+                            }
+                            Spacer()
                         }
                         Spacer()
+                        Text("Search Radius: ")
+                        Picker("Search Radius", selection: $viewModel.searchRadius) {
+                            ForEach(viewModel.mileOptions, id: \.self) {
+                                Text("\($0)")
+                            }
+                        }.pickerStyle(MenuPickerStyle()).padding()
+                    }.frame(height: 30)
+                    
+                    HStack {
+                        Image(systemName: "magnifyingglass").foregroundColor(Color("MainColor")).padding(.leading)
+                        TextField("", text: $viewModel.searchTerm).padding([.top, .bottom], 2.0).textFieldStyle(OvalTextFieldStyle())
                     }
-                    Spacer()
-                    Text("Search Radius: ")
-                    Picker("Search Radius", selection: $viewModel.searchRadius) {
-                        ForEach(viewModel.mileOptions, id: \.self) {
-                            Text("\($0)")
+                    .padding(5.0)
+                    
+                    
+                    Button("Search") {
+                        viewModel.searchButtonPressed = true
+                        viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
+                    }
+                    .padding(.horizontal)
+                    .onAppear() {
+                        if firstAppear {
+                            firstAppear = false
+                            determineUserLocation()
                         }
-                    }.pickerStyle(MenuPickerStyle()).padding()
-                }.frame(height: 30)
-                
-                HStack {
-                    Image(systemName: "magnifyingglass").foregroundColor(Color("MainColor")).padding(.leading)
-                    TextField("", text: $viewModel.searchTerm).padding([.top, .bottom], 2.0)
-                }
-                .padding(5.0)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color(hue: 0.578, saturation: 0.0, brightness: 0.879))
-                )
-                
-                
-                Button("Search") {
-                    viewModel.searchButtonPressed = true
-                    viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
-                }
-                .padding(.horizontal)
-                .onAppear() {
-                    if firstAppear {
-                        firstAppear = false
-                        determineUserLocation()
                     }
+                    
                 }
                 
                 if viewModel.items.isEmpty {
@@ -110,8 +109,7 @@ struct HomeMarket: View {
                         }
                     }
                 }
-            }
-            .navigationBarTitle(Text("RoseGold"))
+            }.navigationBarTitle(Text("RoseGold"), displayMode: .inline)
         }
         }
     }

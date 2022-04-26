@@ -15,6 +15,7 @@ struct MessageThread: View {
     @EnvironmentObject var viewingUser:UserModel
     @State var tooManyChars = false
     @State var profanityFound = false
+    @FocusState var messageIsFocus:Bool
     
     var receiverId:UInt
     var receiverUsername:String
@@ -79,10 +80,17 @@ struct MessageThread: View {
 
                         TextField("New Message..", text: $newMessage)
                             .padding()
-                            .background(
-                                RoundedRectangle(cornerRadius: 15)
-                                    .fill(Color(hue: 1.0, saturation: 0.0, brightness: 0.812))
-                            ).padding()
+                            .textFieldStyle(OvalTextFieldStyle())
+                            .padding()
+                            .focused($messageIsFocus)
+                            .toolbar {
+                                ToolbarItem(placement: .keyboard) {
+                                    Button("Done") {
+                                        messageIsFocus = false
+                                    }
+                                    .frame(maxWidth:.infinity, alignment:.leading)
+                                }
+                            }
                             .onSubmit {
                                 if newMessage.count > 200 {
                                     tooManyChars.toggle()

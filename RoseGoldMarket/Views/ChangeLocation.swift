@@ -19,6 +19,10 @@ struct ChangeLocation: View {
     @State var addressNotFound = false
     @State var statePicker: [String] = ["Select A State","AL","AK","AZ","AR","AS","CA","CO","CT","DE","DC","FL","GA","GU","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","CM","OH","OK","OR","PA","PR","RI","SC","SD","TN","TX","TT","UT","VT","VI","WA","WV","WI","WY"]
     @EnvironmentObject var user:UserModel
+    private enum Fields: Int, CaseIterable {
+        case address, zipcode, state, city
+    }
+    @FocusState private var focusedField: Fields?
     
     var body: some View {
         VStack {
@@ -29,7 +33,7 @@ struct ChangeLocation: View {
             Text(addressData)
             HStack {
                 Image(systemName: "signpost.right.fill").foregroundColor(Color("MainColor"))
-                TextField("Address", text: $address)
+                TextField("Address", text: $address).focused($focusedField, equals: .address)
             }.padding()
                 .overlay(
                 RoundedRectangle(cornerRadius: 10)
@@ -40,7 +44,7 @@ struct ChangeLocation: View {
             
             HStack {
                 Image(systemName: "building.2.fill").foregroundColor(Color("MainColor"))
-                TextField("City", text: $city)
+                TextField("City", text: $city).focused($focusedField, equals: .city)
             }.padding()
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
@@ -71,7 +75,7 @@ struct ChangeLocation: View {
             
             HStack {
                 Image(systemName: "mappin.and.ellipse").foregroundColor(Color("MainColor"))
-                TextField("Zip Code", text: $zipCode)
+                TextField("Zip Code", text: $zipCode).focused($focusedField, equals: .zipcode)
             }
             .padding()
                 .overlay(
@@ -80,6 +84,13 @@ struct ChangeLocation: View {
                     .foregroundColor(Color("MainColor"))
             )
             .padding().keyboardType(.decimalPad)
+            .toolbar {
+                ToolbarItem(placement: .keyboard) {
+                    Button("Done") {
+                        focusedField = nil
+                    }.frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
             .alert(isPresented: $dataNotSaved) {
                 Alert(title: Text("Address Not Updated"), message: Text("There was a problem saving your data. Try again later."), dismissButton: .default(Text("OK")))
             }
@@ -100,6 +111,8 @@ struct ChangeLocation: View {
             .alert(isPresented: $dataSaved) {
                 Alert(title: Text("Address Updated"), dismissButton: .default(Text("OK")))
             }
+            
+            Spacer()
             
         }.onAppear() {
             // load in the user's current data

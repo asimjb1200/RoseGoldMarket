@@ -95,7 +95,7 @@ struct AddItems: View {
                     .padding(.leading)
                     .background(
                         RoundedRectangle(cornerRadius: 25)
-                            .fill(Color(red: 0.778, green: 0.817, blue: 0.851))
+                            .fill(Color.gray)
                     )
                     .frame( height: 100)
                     .padding([.leading, .trailing, .bottom])
@@ -208,7 +208,7 @@ struct AddItems: View {
                 
                 Spacer()
             }
-            .navigationBarTitle(Text("Upload Your Plant"))
+            .navigationBarTitle(Text("Upload Your Plant"), displayMode: .inline)
             .sheet(isPresented: $viewModel.isShowingPhotoPicker, content: {
                 PhotoPicker(plantImage: $plantImage, plantImage2: $plantImage2, plantImage3: $plantImage3, plantEnum: $viewModel.plantEnum)
             })
@@ -247,7 +247,7 @@ struct OvalTextFieldStyle: TextFieldStyle {
     func _body(configuration: TextField<Self._Label>) -> some View {
         configuration
             .padding(10)
-            .background(Color(red: 0.778, green: 0.817, blue: 0.851))
+            .background(Color.gray)
             .cornerRadius(20)
     }
 }
