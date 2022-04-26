@@ -14,17 +14,17 @@ struct HomeMarket: View {
     @EnvironmentObject var user:UserModel
     @StateObject var viewModel = HomeMarketViewModel()
     @StateObject var locationManager = LocationManager()
-    
+
     var categoryMapper = CategoryMapper()
     let columns = [ // I want two columns of equal width on this view
         GridItem(.flexible(), spacing: 0),
         GridItem(.flexible(), spacing: 0)
     ]
-    
+
     var userGeolocation: String {
         return "(\(locationManager.lastLocation?.coordinate.longitude ?? 0), \(locationManager.lastLocation?.coordinate.latitude ?? 0))"
     }
-    
+
     init(tab: Binding<Int>) {// changing the color of the nav bar title
         UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(named: "MainColor")!]
         self._tab = tab
@@ -110,7 +110,6 @@ struct HomeMarket: View {
                         }
                     }
                 }
-
             }
             .navigationBarTitle(Text("RoseGold"))
         }

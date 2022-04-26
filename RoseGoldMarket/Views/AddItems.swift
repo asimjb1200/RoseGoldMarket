@@ -16,6 +16,8 @@ struct AddItems: View {
     @Binding var tab: Int
     @State var profanityFound = false
     @State var tooManyChars = false
+    @FocusState var descriptionFieldIsFocus:Bool
+    @FocusState var nameFieldIsFocus:Bool
     var categoryMapper = CategoryMapper()
     var profanityChecker:InputChecker = .shared
     
@@ -69,6 +71,21 @@ struct AddItems: View {
                 TextField("20 characters max..", text: $viewModel.plantName)
                     .textFieldStyle(OvalTextFieldStyle())
                     .padding([.leading, .trailing])
+                    .focused($nameFieldIsFocus)
+                    .toolbar { // I guess setting it once sets the keyboard for the entire view
+                        ToolbarItem(placement: .keyboard) {
+                            Button("Done") {
+                                if nameFieldIsFocus {
+                                    nameFieldIsFocus = false
+                                }
+                                if descriptionFieldIsFocus {
+                                    descriptionFieldIsFocus = false
+                                }
+                            }
+                            .foregroundColor(Color("AccentColor"))
+                            .frame(maxWidth:.infinity, alignment:.leading)
+                        }
+                    }
                     .alert(isPresented: $profanityFound) {
                         Alert(title: Text("Remove the profanity"))
                     }
@@ -82,6 +99,7 @@ struct AddItems: View {
                     )
                     .frame( height: 100)
                     .padding([.leading, .trailing, .bottom])
+                    .focused($descriptionFieldIsFocus)
                     .alert(isPresented: $tooManyChars) {
                         Alert(title: Text("Too Many Characters"), message: Text("20 maximum for the plant's title and 200 maximum for the description."), dismissButton: .default(Text("OK")))
                     }
@@ -97,6 +115,7 @@ struct AddItems: View {
                         
                     ForEach($viewModel.categoryHolder) { $cat in
                         Toggle("\(categoryMapper.categories[cat.category]!)", isOn: $cat.isActive)
+                            .tint(Color("MainColor"))
                             .padding([.leading, .trailing])
                     }
                     Spacer()
@@ -165,6 +184,7 @@ struct AddItems: View {
                     // reset everything now
                     viewModel.plantName = ""
                     viewModel.plantDescription = ""
+                    descriptionFieldIsFocus = false
                 }
                 .padding()
                 .foregroundColor(.white)
@@ -188,7 +208,7 @@ struct AddItems: View {
                 
                 Spacer()
             }
-            .navigationBarTitle(Text("Add Plant"))
+            .navigationBarTitle(Text("Upload Your Plant"))
             .sheet(isPresented: $viewModel.isShowingPhotoPicker, content: {
                 PhotoPicker(plantImage: $plantImage, plantImage2: $plantImage2, plantImage3: $plantImage3, plantEnum: $viewModel.plantEnum)
             })
