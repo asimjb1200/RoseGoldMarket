@@ -56,6 +56,7 @@ struct MessageThread: View {
                                         .foregroundColor(.white)
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                         .padding().listRowSeparator(.hidden)
+                                        .shadow(radius: 5)
                                         .id(x.id) // this will be used by the scroller to find chats
                                     } else {
                                         Text(x.message)
@@ -65,6 +66,7 @@ struct MessageThread: View {
                                         .foregroundColor(.white)
                                         .frame(maxWidth: .infinity, alignment: .trailing)
                                         .padding().listRowSeparator(.hidden)
+                                        .shadow(radius: 5)
                                         .id(x.id) // this will be used by the scroller to find chats
                                     }
                                 }

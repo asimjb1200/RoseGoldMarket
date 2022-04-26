@@ -72,6 +72,7 @@ struct AddItems: View {
                     .textFieldStyle(OvalTextFieldStyle())
                     .padding([.leading, .trailing])
                     .focused($nameFieldIsFocus)
+                    .shadow(radius: 5)
                     .toolbar { // I guess setting it once sets the keyboard for the entire view
                         ToolbarItem(placement: .keyboard) {
                             Button("Done") {
@@ -100,6 +101,7 @@ struct AddItems: View {
                     .frame( height: 100)
                     .padding([.leading, .trailing, .bottom])
                     .focused($descriptionFieldIsFocus)
+                    .shadow(radius: 5)
                     .alert(isPresented: $tooManyChars) {
                         Alert(title: Text("Too Many Characters"), message: Text("20 maximum for the plant's title and 200 maximum for the description."), dismissButton: .default(Text("OK")))
                     }
@@ -193,6 +195,7 @@ struct AddItems: View {
                     .fill(Color("AccentColor"))
                 )
                 .frame(maxWidth: .infinity, maxHeight: 100, alignment: .center)
+                .shadow(radius: 5)
                 .alert(isPresented: $viewModel.showAlert) {
                     switch viewModel.viewStateErrors {
                         case .imagesEmpty:

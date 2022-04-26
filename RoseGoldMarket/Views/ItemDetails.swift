@@ -20,7 +20,7 @@ struct ItemDetails: View {
                 HStack {
                     AsyncImage(url: URL(string: "https://rosegoldgardens.com/api\(self.getImageLink(imageLink: item.image1))")) { imagePhase in
                         if let image = imagePhase.image {
-                            image.resizable().scaledToFill().frame(width: 350, height: 350).cornerRadius(25)
+                            image.resizable().scaledToFill().frame(width: 350, height: 350).cornerRadius(25).shadow(radius: 5)
                         } else if imagePhase.error != nil {
                             Text("Problem loading image")
                         } else {
@@ -30,7 +30,7 @@ struct ItemDetails: View {
 
                     AsyncImage(url: URL(string: "https://rosegoldgardens.com/api\(self.getImageLink(imageLink: item.image2))")) { imagePhase in
                         if let image = imagePhase.image {
-                            image.resizable().scaledToFill().frame(width: 350, height: 350).cornerRadius(25)
+                            image.resizable().scaledToFill().frame(width: 350, height: 350).cornerRadius(25).shadow(radius: 5)
                         } else if imagePhase.error != nil {
                             Text("Problem loading image")
                         } else {
@@ -40,7 +40,7 @@ struct ItemDetails: View {
 
                     AsyncImage(url: URL(string: "https://rosegoldgardens.com/api\(self.getImageLink(imageLink: item.image3))")) { imagePhase in
                         if let image = imagePhase.image {
-                            image.resizable().scaledToFill().frame(width: 350, height: 350).cornerRadius(25)
+                            image.resizable().scaledToFill().frame(width: 350, height: 350).cornerRadius(25).shadow(radius: 5)
                         } else if imagePhase.error != nil {
                             Text("Problem loading image")
                         } else {
