@@ -12,11 +12,13 @@ struct ContentView: View {
     @StateObject var messenger: MessagingViewModel = .shared
     @EnvironmentObject var user:UserModel
     @Environment(\.scenePhase) var scenePhase
+    @Environment(\.colorScheme) var colorScheme
     var profanityChecker:InputChecker = .shared
     let socket:SocketUtils = .shared
     
     init() {
-        UITabBar.appearance().backgroundColor = .systemBackground
+        let appearance = UITabBar.appearance()
+        appearance.backgroundColor = colorScheme == .light ? UIColor(Color.white.opacity(0.5)) : UIColor(Color.gray)
     }
     
     var body: some View {

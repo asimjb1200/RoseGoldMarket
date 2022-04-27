@@ -12,6 +12,7 @@ struct HomeMarket: View {
     @State var firstAppear = true
     @State var locationLoaded = false
     @EnvironmentObject var user:UserModel
+    @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel = HomeMarketViewModel()
     @StateObject var locationManager = LocationManager()
 
@@ -84,8 +85,15 @@ struct HomeMarket: View {
                         }
                     }
                     
-                }.shadow(radius: 5)
-                Divider().shadow(radius: 5)
+                    Divider().shadow(radius: 5)
+                }
+                .padding(.bottom, 2.0)
+                .background(
+                    colorScheme == .dark ? Color.gray.opacity(0.5) : Color.white
+                )
+                .shadow(radius: 5)
+                
+                
                 
                 if viewModel.items.isEmpty {
                     Text("No items in your area")

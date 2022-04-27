@@ -96,7 +96,7 @@ struct AddItems: View {
                     .padding(.leading)
                     .background(
                         RoundedRectangle(cornerRadius: 25)
-                            .fill(Color.gray)
+                            .fill(Color.gray.opacity(0.5))
                     )
                     .frame( height: 100)
                     .padding([.leading, .trailing, .bottom])
@@ -133,7 +133,6 @@ struct AddItems: View {
                     guard self.imageWasntChanged() == false else {
                         viewModel.viewStateErrors = .imagesEmpty
                         viewModel.showAlert = true
-                        print("image wasn't changed")
                         return
                     }
                     
@@ -179,7 +178,6 @@ struct AddItems: View {
                     else {
                         return
                     }
-
 
                     viewModel.savePlant(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, user: user)
                     
@@ -250,7 +248,7 @@ struct OvalTextFieldStyle: TextFieldStyle {
     func _body(configuration: TextField<Self._Label>) -> some View {
         configuration
             .padding(10)
-            .background(Color.gray)
+            .background(Color.gray.opacity(0.5))
             .cornerRadius(20)
     }
 }
