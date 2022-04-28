@@ -78,7 +78,7 @@ struct ChangeLocation: View {
                 TextField("Zip Code", text: $zipCode).focused($focusedField, equals: .zipcode)
             }
             .padding()
-                .overlay(
+            .overlay(
                 RoundedRectangle(cornerRadius: 10)
                     .stroke(lineWidth: 1)
                     .foregroundColor(Color("MainColor"))

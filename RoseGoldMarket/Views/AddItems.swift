@@ -31,7 +31,7 @@ struct AddItems: View {
     var body: some View {
         NavigationView {
             VStack(alignment: .leading) {
-                Text("Add 3 photos of your plant")
+                Text("Add 3 photos")
                     .foregroundColor(Color("AccentColor"))
                     .padding([.leading, .top])
                     .alert(isPresented: $viewModel.errorOccurred) {
@@ -65,9 +65,10 @@ struct AddItems: View {
                                 viewModel.plantEnum = .imageThree
                                 viewModel.isShowingPhotoPicker = true
                             }
-                }.frame(maxWidth: .infinity, alignment: .center)
+                }
+                .frame(maxWidth: .infinity, alignment: .center)
                 
-                Text("Plant Name:").foregroundColor(Color("AccentColor")).padding(.leading)
+                Text("Name:").foregroundColor(Color("AccentColor")).padding(.leading)
                 TextField("20 characters max..", text: $viewModel.plantName)
                     .textFieldStyle(OvalTextFieldStyle())
                     .padding([.leading, .trailing])

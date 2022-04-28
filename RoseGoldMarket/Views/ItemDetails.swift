@@ -15,12 +15,14 @@ struct ItemDetails: View {
     @EnvironmentObject var user:UserModel
     
     var body: some View {
+        GeometryReader { geo in
         VStack{
             ScrollView(.horizontal, showsIndicators: true) {
                 HStack {
+                    
                     AsyncImage(url: URL(string: "https://rosegoldgardens.com/api\(self.getImageLink(imageLink: item.image1))")) { imagePhase in
                         if let image = imagePhase.image {
-                            image.resizable().scaledToFill().frame(width: 350, height: 350).cornerRadius(25).shadow(radius: 5)
+                            image.resizable().scaledToFill().frame(width: determinePhotoDimensions(viewHeight: geo.size.height), height: determinePhotoDimensions(viewHeight: geo.size.height)).cornerRadius(25).shadow(radius: 5)
                         } else if imagePhase.error != nil {
                             Text("Problem loading image")
                         } else {
@@ -30,7 +32,7 @@ struct ItemDetails: View {
 
                     AsyncImage(url: URL(string: "https://rosegoldgardens.com/api\(self.getImageLink(imageLink: item.image2))")) { imagePhase in
                         if let image = imagePhase.image {
-                            image.resizable().scaledToFill().frame(width: 350, height: 350).cornerRadius(25).shadow(radius: 5)
+                            image.resizable().scaledToFill().frame(width: determinePhotoDimensions(viewHeight: geo.size.height), height: determinePhotoDimensions(viewHeight: geo.size.height)).cornerRadius(25).shadow(radius: 5)
                         } else if imagePhase.error != nil {
                             Text("Problem loading image")
                         } else {
@@ -40,14 +42,14 @@ struct ItemDetails: View {
 
                     AsyncImage(url: URL(string: "https://rosegoldgardens.com/api\(self.getImageLink(imageLink: item.image3))")) { imagePhase in
                         if let image = imagePhase.image {
-                            image.resizable().scaledToFill().frame(width: 350, height: 350).cornerRadius(25).shadow(radius: 5)
+                            image.resizable().scaledToFill().frame(width: determinePhotoDimensions(viewHeight: geo.size.height), height: determinePhotoDimensions(viewHeight: geo.size.height)).cornerRadius(25).shadow(radius: 5)
                         } else if imagePhase.error != nil {
                             Text("Problem loading image")
                         } else {
                             ProgressView()
                         }
                     }
-                }.frame(height: 350)
+                }.frame(height: determinePhotoDimensions(viewHeight: geo.size.height))
                 
             }.alert(isPresented: $inquirySent) {
                 Alert(title: Text("Your Inquiry Was Sent"), message: Text("Give the owner some time to get back to you."), dismissButton: .default(Text("OK!"), action: {inquirySent = true}))
@@ -62,6 +64,9 @@ struct ItemDetails: View {
             ScrollView {
                 Text(item.description)
                     .fixedSize(horizontal: false, vertical: true)
+                    .padding()
+                    .background(RoundedRectangle(cornerRadius: 25.0).fill(Color.gray.opacity(0.5)))
+                    .padding([.leading, .trailing])
                 
                 
                 if viewingFromAccountDetails == false && inquirySent == false && item.owner != user.accountId {
@@ -79,6 +84,15 @@ struct ItemDetails: View {
                 }
             }
             Spacer()
+        }
+        }
+    }
+    
+    func determinePhotoDimensions(viewHeight: CGFloat) -> CGFloat {
+        if viewHeight < 600 {
+            return 250
+        } else {
+            return 350
         }
     }
 }

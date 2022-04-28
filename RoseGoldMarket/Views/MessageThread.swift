@@ -44,8 +44,8 @@ struct MessageThread: View {
                                     .resizable()
                                     .scaledToFill()
                                     .clipShape(Circle())
-                                    .frame(width: 60, height: 60)
-                                    .padding()
+                                    .frame(width: 40, height: 40)
+                                    .padding(.trailing)
                                     .shadow(radius: 5.0)
                                 } else if phase.error != nil {
                                     Color.red

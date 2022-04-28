@@ -119,7 +119,7 @@ struct HomeMarket: View {
                         }
                     }
                 }
-            }.navigationBarTitle(Text("RoseGold"), displayMode: .inline)
+            }.navigationBarTitle(Text("Market"), displayMode: .inline).navigationBarHidden(true)
         }
         }
     }
