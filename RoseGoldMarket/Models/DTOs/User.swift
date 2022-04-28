@@ -32,6 +32,7 @@ class UserModel: ObservableObject, UserProtocol {
         self.accessToken = serviceUsr.accessToken
         self.accountId = serviceUsr.accountId
         self.avatarUrl = serviceUsr.avatarUrl
+        socket.connectToServer(withId: serviceUsr.accountId)
         self.isLoggedIn = true
     }
     

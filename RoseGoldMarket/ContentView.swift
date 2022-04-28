@@ -55,7 +55,7 @@ struct ContentView: View {
         .environmentObject(messenger)
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
-                if !firstAppear {
+                if !firstAppear && user.accountId != 0 {
                     socket.connectToServer(withId: user.accountId)
                     messenger.getAllMessages(user: user)
                 }
