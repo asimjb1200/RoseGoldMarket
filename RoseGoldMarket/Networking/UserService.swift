@@ -16,7 +16,7 @@ final class UserNetworking {
     private init(){}
     
     func getGeolocation(token:String, completion: @escaping (Result<ResponseFromServer<String>, UserErrors>) -> ()) {
-        let request:URLRequest = networker.constructRequest(uri: "http://localhost:4000/users/user-geolocation", token: token, post: false)
+        let request:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/user-geolocation", token: token, post: false)
         let session = URLSession.shared
         
         session.dataTask(with: request) {(data, response, error) in
@@ -52,7 +52,7 @@ final class UserNetworking {
     }
     
     func emailSupport(subject: String, message: String, token: String, completion: @escaping (Result<ResponseFromServer<Bool>, SupportErrors>) -> ()) {
-        let reqWithoutBody: URLRequest = networker.constructRequest(uri: "http://localhost:4000/users/email-support", token: token, post: true)
+        let reqWithoutBody: URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/email-support", token: token, post: true)
         let session = URLSession.shared
         let body = ["subject": subject, "message": message]
         
@@ -80,7 +80,7 @@ final class UserNetworking {
     }
     
     func deleteUser(token:String, completion: @escaping (Result<Bool, DeleteUserErrrors>) -> ()) {
-        let url = URL(string: "http://localhost:4000/users/delete-user")!
+        let url = URL(string: "https://rosegoldgardens.com/api/users/delete-user")!
         var request = URLRequest(url: url)
         
         request.httpMethod = "DELETE"
@@ -109,7 +109,7 @@ final class UserNetworking {
     }
     
     func saveNewAddress(newAddress:String, newCity:String, newState:String, newZipCode:UInt, newGeoLocation:String, token: String, completion: @escaping (Result<ResponseFromServer<Bool>, SupportErrors>) -> ()) {
-        let request = networker.constructRequest(uri: "http://localhost:4000/users/change-address", token: token, post: true)
+        let request = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/change-address", token: token, post: true)
         let body:[String:Any] = ["newAddress":newAddress, "newCity":newCity, "newState":newState, "newZip":newZipCode, "newGeolocation":newGeoLocation]
         let req = networker.buildReqBody(req: request, body: body)
         
@@ -140,7 +140,7 @@ final class UserNetworking {
     }
     
     func fetchCurrentAddress(accountId: UInt, token: String, completion: @escaping (Result<ResponseFromServer<AddressInfo>, AccountDetailsErrors>) -> ()) {
-        let request = networker.constructRequest(uri: "http://localhost:4000/users/address-details?accountId=\(accountId)", token: token, post: false)
+        let request = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/address-details?accountId=\(accountId)", token: token, post: false)
         
         URLSession.shared.dataTask(with: request) {(data, response, err) in
             if err != nil {
@@ -176,7 +176,7 @@ final class UserNetworking {
     }
     
     func fetchUsersItems(accountId: UInt, token: String, completion: @escaping (Result<ResponseFromServer<[ItemNameAndId]>, AccountDetailsErrors>) -> ()) {
-        let req = networker.constructRequest(uri: "http://localhost:4000/users/user-items?accountId=\(accountId)", token: token, post: false)
+        let req = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/user-items?accountId=\(accountId)", token: token, post: false)
         
         URLSession.shared.dataTask(with: req) { (data, response, error) in
             if error != nil {
@@ -208,7 +208,7 @@ final class UserNetworking {
     }
     
     func changeAvatar(imgJpgData:Data, username:String, token:String, completion: @escaping (Result<ResponseFromServer<Bool>, UserErrors>) -> ()) {
-        let serverUrl = URL(string: "http://localhost:4000/users/change-avatar")
+        let serverUrl = URL(string: "https://rosegoldgardens.com/api/users/change-avatar")
         var urlRequest = URLRequest(url: serverUrl!)
         // construct the multipart request with the image data
         let boundary = UUID().uuidString
@@ -259,7 +259,7 @@ final class UserNetworking {
     }
     
     func registerUser(username:String, email:String, pw:String, addy:String, zip:UInt, state:String, city:String, geolocation:String, avi:Data, defaultAvi:Bool = false, completion: @escaping (Result<Bool, RegistrationErrors>) -> ()) {
-        let serverUrl = URL(string: "http://localhost:4000/users/register-user")
+        let serverUrl = URL(string: "https://rosegoldgardens.com/api/users/register-user")
         var urlRequest = URLRequest(url: serverUrl!)
         // construct the multipart request with the image data
         let boundary = UUID().uuidString
@@ -343,7 +343,7 @@ final class UserNetworking {
     
     func login(username:String, pw: String, completion: @escaping (Result<ResponseFromServer<ServiceUser>, UserErrors>) -> ()) {
 
-        let reqWithoutBody: URLRequest = networker.constructRequest(uri: "http://localhost:4000/users/login", post: true)
+        let reqWithoutBody: URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/login", post: true)
         
         let session = URLSession.shared
         let body = ["username": username, "password": pw]

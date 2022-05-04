@@ -60,7 +60,7 @@ final class MessagingViewModel: ObservableObject {
 
     func getAllMessages(user:UserModel) {
         MessagingService().fetchAllThreadsForUser(userId: user.accountId, token: user.accessToken, completion: { chatResponse in
-            print("fetching messages")
+            print("[MessagingVM] fetching messages")
             switch(chatResponse) {
                 case .success(let chatData):
                     DispatchQueue.main.async {

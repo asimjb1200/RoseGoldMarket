@@ -15,6 +15,7 @@ class UserModel: ObservableObject, UserProtocol {
     var avatarUrl: String
     private var userService: UserNetworking = .shared
     static let shared:UserModel = UserModel(username: "", accessToken: "", accountId: 0, avatarUrl: "")
+    let socket:SocketUtils = .shared
     @Published var isLoggedIn = false
 
     let decoder = JSONDecoder()
@@ -31,16 +32,18 @@ class UserModel: ObservableObject, UserProtocol {
         self.accessToken = serviceUsr.accessToken
         self.accountId = serviceUsr.accountId
         self.avatarUrl = serviceUsr.avatarUrl
+        socket.connectToServer(withId: serviceUsr.accountId)
         self.isLoggedIn = true
     }
     
     func logout() {
+        socket.disconnectFromServer(accountId: self.accountId)
         self.userService.logout()
         self.username = ""
         self.accountId = 0
         self.avatarUrl = ""
         self.isLoggedIn = false
-        print("logout complete")
+        print("[UserModel] logout complete")
     }
 }
 

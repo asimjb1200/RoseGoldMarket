@@ -13,7 +13,7 @@ struct MessageList: View {
     @State var selection: UUID? = nil
     @State private var nextView: IdentifiableView? = nil
     @EnvironmentObject var viewModel: MessagingViewModel
-    @EnvironmentObject var user:UserModel
+    @EnvironmentObject var currentUser:UserModel
     
     init(tab: Binding<Int>) {
         self._tab = tab
@@ -27,12 +27,12 @@ struct MessageList: View {
                         Button(action: {
                             self.nextView = IdentifiableView(
                                 view: AnyView(
-                                    MessageThread(receiverId: x.recid == user.accountId ? x.senderid : x.recid,
-                                                  receiverUsername: x.recid == user.accountId ? x.senderUsername : x.receiverUsername))
+                                    MessageThread(receiverId: getReceiverId(chatBlock: x),
+                                                  receiverUsername: getReceiverUsername(chatBlock: x)))
                             )
                         }, label: {
                             HStack(spacing: 10) {
-                                AsyncImage(url: URL(string: "http://localhost:4000/images/avatars/\(x.recid == user.accountId ? x.senderUsername : x.receiverUsername).jpg")) { phase in
+                                AsyncImage(url: URL(string: "https://rosegoldgardens.com/api/images/avatars/\(getReceiverUsername(chatBlock: x)).jpg")) { phase in
                                     if let image = phase.image {
                                         image
                                         .resizable()
@@ -49,14 +49,16 @@ struct MessageList: View {
                                 }
 
                                 VStack(alignment: .leading) {
-                                    Text(x.recid == user.accountId ? x.senderUsername : x.receiverUsername)
+                                    Text(getReceiverUsername(chatBlock: x))
                                     Text(x.message)
                                         .padding(.leading)
                                 }
-
                                 Spacer()
-                            }.frame(height: 70)
+                                
+                            }.frame(maxHeight: 70).shadow(radius: 5)
+                            
                         })
+                        Divider()
                     }
                 }.fullScreenCover(item: self.$nextView, onDismiss: { nextView = nil}) { view in
                     view.view
@@ -82,6 +84,16 @@ struct MessageList: View {
         }
 
         return tempHolder.sorted(by: {$0.timestamp > $1.timestamp})
+    }
+    
+    func getReceiverId(chatBlock:ChatData) -> UInt {
+        let receiversAccountId = chatBlock.recid == currentUser.accountId ? chatBlock.senderid : chatBlock.recid
+        return receiversAccountId
+    }
+    
+    func getReceiverUsername(chatBlock:ChatData) -> String {
+        let receiversUsername = chatBlock.recid == currentUser.accountId ? chatBlock.senderUsername : chatBlock.receiverUsername
+        return receiversUsername
     }
 }
 

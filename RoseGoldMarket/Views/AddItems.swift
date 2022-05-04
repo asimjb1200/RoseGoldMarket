@@ -16,6 +16,8 @@ struct AddItems: View {
     @Binding var tab: Int
     @State var profanityFound = false
     @State var tooManyChars = false
+    @FocusState var descriptionFieldIsFocus:Bool
+    @FocusState var nameFieldIsFocus:Bool
     var categoryMapper = CategoryMapper()
     var profanityChecker:InputChecker = .shared
     
@@ -29,7 +31,7 @@ struct AddItems: View {
     var body: some View {
         NavigationView {
             VStack(alignment: .leading) {
-                Text("Add 3 photos of your plant")
+                Text("Add 3 photos")
                     .foregroundColor(Color("AccentColor"))
                     .padding([.leading, .top])
                     .alert(isPresented: $viewModel.errorOccurred) {
@@ -63,12 +65,29 @@ struct AddItems: View {
                                 viewModel.plantEnum = .imageThree
                                 viewModel.isShowingPhotoPicker = true
                             }
-                }.frame(maxWidth: .infinity, alignment: .center)
+                }
+                .frame(maxWidth: .infinity, alignment: .center)
                 
-                Text("Plant Name:").foregroundColor(Color("AccentColor")).padding(.leading)
+                Text("Name:").foregroundColor(Color("AccentColor")).padding(.leading)
                 TextField("20 characters max..", text: $viewModel.plantName)
                     .textFieldStyle(OvalTextFieldStyle())
                     .padding([.leading, .trailing])
+                    .focused($nameFieldIsFocus)
+                    .shadow(radius: 5)
+                    .toolbar { // I guess setting it once sets the keyboard for the entire view
+                        ToolbarItem(placement: .keyboard) {
+                            Button("Done") {
+                                if nameFieldIsFocus {
+                                    nameFieldIsFocus = false
+                                }
+                                if descriptionFieldIsFocus {
+                                    descriptionFieldIsFocus = false
+                                }
+                            }
+                            .foregroundColor(Color("AccentColor"))
+                            .frame(maxWidth:.infinity, alignment:.leading)
+                        }
+                    }
                     .alert(isPresented: $profanityFound) {
                         Alert(title: Text("Remove the profanity"))
                     }
@@ -78,10 +97,12 @@ struct AddItems: View {
                     .padding(.leading)
                     .background(
                         RoundedRectangle(cornerRadius: 25)
-                            .fill(Color(red: 0.778, green: 0.817, blue: 0.851))
+                            .fill(Color.gray.opacity(0.5))
                     )
                     .frame( height: 100)
                     .padding([.leading, .trailing, .bottom])
+                    .focused($descriptionFieldIsFocus)
+                    .shadow(radius: 5)
                     .alert(isPresented: $tooManyChars) {
                         Alert(title: Text("Too Many Characters"), message: Text("20 maximum for the plant's title and 200 maximum for the description."), dismissButton: .default(Text("OK")))
                     }
@@ -97,6 +118,7 @@ struct AddItems: View {
                         
                     ForEach($viewModel.categoryHolder) { $cat in
                         Toggle("\(categoryMapper.categories[cat.category]!)", isOn: $cat.isActive)
+                            .tint(Color("MainColor"))
                             .padding([.leading, .trailing])
                     }
                     Spacer()
@@ -112,7 +134,6 @@ struct AddItems: View {
                     guard self.imageWasntChanged() == false else {
                         viewModel.viewStateErrors = .imagesEmpty
                         viewModel.showAlert = true
-                        print("image wasn't changed")
                         return
                     }
                     
@@ -159,12 +180,12 @@ struct AddItems: View {
                         return
                     }
 
-
                     viewModel.savePlant(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, user: user)
                     
                     // reset everything now
                     viewModel.plantName = ""
                     viewModel.plantDescription = ""
+                    descriptionFieldIsFocus = false
                 }
                 .padding()
                 .foregroundColor(.white)
@@ -173,6 +194,7 @@ struct AddItems: View {
                     .fill(Color("AccentColor"))
                 )
                 .frame(maxWidth: .infinity, maxHeight: 100, alignment: .center)
+                .shadow(radius: 5)
                 .alert(isPresented: $viewModel.showAlert) {
                     switch viewModel.viewStateErrors {
                         case .imagesEmpty:
@@ -188,7 +210,7 @@ struct AddItems: View {
                 
                 Spacer()
             }
-            .navigationBarTitle(Text("Add Plant"))
+            .navigationBarTitle(Text("Upload Your Plant"), displayMode: .inline)
             .sheet(isPresented: $viewModel.isShowingPhotoPicker, content: {
                 PhotoPicker(plantImage: $plantImage, plantImage2: $plantImage2, plantImage3: $plantImage3, plantEnum: $viewModel.plantEnum)
             })
@@ -227,7 +249,7 @@ struct OvalTextFieldStyle: TextFieldStyle {
     func _body(configuration: TextField<Self._Label>) -> some View {
         configuration
             .padding(10)
-            .background(Color(red: 0.778, green: 0.817, blue: 0.851))
+            .background(Color.gray.opacity(0.5))
             .cornerRadius(20)
     }
 }

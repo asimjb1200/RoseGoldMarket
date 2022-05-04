@@ -81,9 +81,8 @@ final class RegisterUserViewModel: ObservableObject {
         var fieldIsEmpty = false
         for field in [self.username, self.email, self.password, self.address, self.zipCode, self.state, self.city] {
             if field.isEmpty {
-                if fieldIsEmpty == false {
-                    fieldIsEmpty = true
-                }
+                fieldIsEmpty = true
+                break
             }
         }
         return fieldIsEmpty

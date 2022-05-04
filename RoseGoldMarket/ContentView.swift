@@ -11,10 +11,14 @@ struct ContentView: View {
     @State var firstAppear = true
     @StateObject var messenger: MessagingViewModel = .shared
     @EnvironmentObject var user:UserModel
+    @Environment(\.scenePhase) var scenePhase
+    @Environment(\.colorScheme) var colorScheme
     var profanityChecker:InputChecker = .shared
+    let socket:SocketUtils = .shared
     
     init() {
-        UITabBar.appearance().backgroundColor = .systemBackground
+        let appearance = UITabBar.appearance()
+        appearance.backgroundColor = colorScheme == .light ? UIColor(Color.white.opacity(0.5)) : UIColor(Color.gray)
     }
     
     var body: some View {
@@ -49,7 +53,18 @@ struct ContentView: View {
             }
         }
         .environmentObject(messenger)
-//        .environmentObject(profanityChecker)
+        .onChange(of: scenePhase) { newPhase in
+            if newPhase == .active {
+                if !firstAppear && user.accountId != 0 {
+                    socket.connectToServer(withId: user.accountId)
+                    messenger.getAllMessages(user: user)
+                }
+            } else if newPhase == .inactive {
+                print("Inactive")
+            } else if newPhase == .background {
+                socket.disconnectFromServer(accountId: user.accountId)
+            }
+        }
     }
 }
 

@@ -64,7 +64,7 @@ struct LogIn: View {
                 }
                 
                 NavigationLink("Register", destination: Register())
-            }
+            }.navigationBarTitle("Welcome").navigationBarHidden(true)
             .padding()
         }
     }

@@ -21,7 +21,7 @@ struct AccountDetailsView: View {
     
     var body: some View {
             VStack {
-                AsyncImage(url: URL(string: "http://localhost:4000/images/avatars/\(username).jpg")) { phase in
+                AsyncImage(url: URL(string: "https://rosegoldgardens.com/api/images/avatars/\(username).jpg")) { phase in
                     if let image = phase.image {
                         image
                         .resizable()

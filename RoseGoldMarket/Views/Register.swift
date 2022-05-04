@@ -12,18 +12,14 @@ struct Register: View {
     @Environment(\.presentationMode) var presentation
     @StateObject var viewModel:RegisterUserViewModel = RegisterUserViewModel()
     @State var specialCharFound = false
+    private enum FormFields: Int, CaseIterable {
+        case username, address, password, email, city, zipcode
+    }
+    @FocusState private var focusedField:FormFields?
     var inputChecker:InputChecker = .shared
     
     var body: some View {
         VStack {
-            Text("Profile Picture and Information")
-                .font(.title2)
-                .fontWeight(.bold)
-                .foregroundColor(Color("AccentColor"))
-                .alert(isPresented: $viewModel.spacesFoundInField) {
-                    Alert(title: Text("Check Your Info"), message: Text("You can only have spaces in the City and Address fields. Every other field should not have spaces between words and characters."), dismissButton: .default(Text("Got It")))
-                }
-            
             Image(uiImage: viewModel.avatar!)
                     .resizable()
                     .scaledToFit()
@@ -43,10 +39,16 @@ struct Register: View {
                     TextField("Username", text: $viewModel.username)
                         .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
-                        .alert(isPresented: $viewModel.usernameLengthIsInvalid) {
-                            Alert(title: Text("Username must be 16 characters or less."))
+                        .focused($focusedField, equals: .username)
+                        .toolbar {
+                            ToolbarItem(placement: .keyboard) {
+                                Button("Done") {
+                                    focusedField = nil
+                                }.frame(maxWidth: .infinity, alignment: .leading)
+                            }
                         }
-                }.padding()
+                }
+                .padding()
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
                         .stroke(lineWidth: 1)
@@ -56,10 +58,13 @@ struct Register: View {
                 .alert(isPresented: $viewModel.fieldsEmpty) {
                     Alert(title: Text("Check Your Info"), message: Text("Fill out every field in the form to sign up."), dismissButton: .default(Text("Got It")))
                 }
-                
+
                 HStack {
                     Image(systemName: "key.fill").foregroundColor(Color("MainColor"))
-                    SecureField("Password", text: $viewModel.password).textInputAutocapitalization(.never).disableAutocorrection(true)
+                    SecureField("Password", text: $viewModel.password)
+                        .textInputAutocapitalization(.never)
+                        .disableAutocorrection(true)
+                        .focused($focusedField, equals: .password)
                 }.padding()
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
@@ -73,7 +78,13 @@ struct Register: View {
                 
                 HStack {
                     Text("@").foregroundColor(Color("MainColor"))
-                    TextField("Email", text: $viewModel.email).textInputAutocapitalization(.never).disableAutocorrection(true)
+                    TextField("Email", text: $viewModel.email)
+                        .textInputAutocapitalization(.never)
+                        .disableAutocorrection(true)
+                        .focused($focusedField, equals: .email)
+                        .alert(isPresented: $viewModel.usernameLengthIsInvalid) {
+                            Alert(title: Text("Username must be 16 characters or less."))
+                        }
                 }.padding()
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
@@ -84,7 +95,10 @@ struct Register: View {
                 
                 HStack {
                     Image(systemName: "signpost.right.fill").foregroundColor(Color("MainColor"))
-                    TextField("Address", text: $viewModel.address).textInputAutocapitalization(.never).disableAutocorrection(true)
+                    TextField("Address", text: $viewModel.address)
+                        .textInputAutocapitalization(.never)
+                        .disableAutocorrection(true)
+                        .focused($focusedField, equals: .address)
                 }.padding()
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
@@ -96,6 +110,7 @@ struct Register: View {
                 HStack {
                     Image(systemName: "building.2.fill").foregroundColor(Color("MainColor"))
                     TextField("City", text: $viewModel.city)
+                        .focused($focusedField, equals: .city)
                 }.padding()
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
@@ -128,6 +143,10 @@ struct Register: View {
                 HStack {
                     Image(systemName: "mappin.and.ellipse").foregroundColor(Color("MainColor"))
                     TextField("Zip Code", text: $viewModel.zipCode)
+                        .focused($focusedField, equals: .zipcode)
+                        .alert(isPresented: $viewModel.spacesFoundInField) {
+                            Alert(title: Text("Check Your Info"), message: Text("You can only have spaces in the City and Address fields. Every other field should not have spaces between words and characters."), dismissButton: .default(Text("Got It")))
+                        }
                 }
                 .padding()
                 .overlay(
@@ -177,7 +196,7 @@ struct Register: View {
                 .alert(isPresented: $viewModel.nameNotAvailable) {
                     Alert(title: Text("Username Not Available"))
                 }
-            }
+            }.navigationBarTitle("Information", displayMode: .inline)
             
         }.sheet(isPresented: $viewModel.isShowingPhotoPicker, content: {
             PhotoPicker(plantImage: $viewModel.avatar, plantImage2: Binding.constant(nil), plantImage3: Binding.constant(nil), plantEnum: $viewModel.imageEnum)
