@@ -258,7 +258,7 @@ final class UserNetworking {
         }.resume()
     }
     
-    func registerUser(username:String, email:String, pw:String, addy:String, zip:UInt, state:String, city:String, geolocation:String, avi:Data, defaultAvi:Bool = false, completion: @escaping (Result<Bool, RegistrationErrors>) -> ()) {
+    func registerUser(firstName: String, lastName: String, username:String, email:String, pw:String, addy:String, zip:UInt, state:String, city:String, geolocation:String, avi:Data, defaultAvi:Bool = false, completion: @escaping (Result<Bool, RegistrationErrors>) -> ()) {
         let serverUrl = URL(string: "https://rosegoldgardens.com/api/users/register-user")
         var urlRequest = URLRequest(url: serverUrl!)
         // construct the multipart request with the image data
@@ -272,6 +272,16 @@ final class UserNetworking {
         requestData.append("Content-Disposition: form-data; name=\"avatar\"; filename=\"\(username).jpg\"\r\n".data(using: .utf8)!)
         requestData.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
         requestData.append(avi)
+        
+        // first name
+        requestData.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+        requestData.append("Content-Disposition: form-data; name=\"firstName\"\r\n\r\n".data(using: .utf8)!)
+        requestData.append("\(firstName)\r\n".data(using: .utf8)!)
+        
+        // last name
+        requestData.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+        requestData.append("Content-Disposition: form-data; name=\"lastName\"\r\n\r\n".data(using: .utf8)!)
+        requestData.append("\(lastName)\r\n".data(using: .utf8)!)
         
         // username
         requestData.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
