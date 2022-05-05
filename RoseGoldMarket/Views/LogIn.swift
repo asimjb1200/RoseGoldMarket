@@ -29,6 +29,7 @@ struct LogIn: View {
                         .foregroundColor(Color("AccentColor"))
                 )
                 .padding()
+                .textInputAutocapitalization(.never)
                 .alert(isPresented: $badUsername) {
                     Alert(title: Text("Username"), message: Text("Your username contains invalid characters"), dismissButton: .default(Text("OK")))
                 }
@@ -70,7 +71,7 @@ struct LogIn: View {
     }
     
     func login() {
-        service.login(username: username.filter { !$0.isWhitespace }, pw: password.filter{ !$0.isWhitespace }) { userData in
+        service.login(username: username.lowercased().filter { !$0.isWhitespace }, pw: password.filter{ !$0.isWhitespace }) { userData in
             switch (userData) {
                 case .success(let userRes):
                     DispatchQueue.main.async {
