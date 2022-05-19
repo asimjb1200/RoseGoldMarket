@@ -6,13 +6,22 @@
 //
 
 import SwiftUI
+
+class PopToRoot: ObservableObject {
+    @Published var navToHome = false
+    @Published var selectedTab: Int = 0
+}
+
 struct ContentView: View {
+    @StateObject var context = PopToRoot()
     @State var tab: Int = 0
     @State var firstAppear = true
     @StateObject var messenger: MessagingViewModel = .shared
     @EnvironmentObject var user:UserModel
     @Environment(\.scenePhase) var scenePhase
     @Environment(\.colorScheme) var colorScheme
+    
+    
     var profanityChecker:InputChecker = .shared
     let socket:SocketUtils = .shared
     
@@ -22,18 +31,18 @@ struct ContentView: View {
     }
     
     var body: some View {
-        TabView(selection: $tab) {
-            HomeMarket(tab: $tab)
+        TabView(selection: $context.selectedTab) {
+            HomeMarket(tab: $context.selectedTab).environmentObject(context)
                 .tabItem {
                     Label("Market", systemImage: "house.fill")
                 }.tag(0)
 
-            AddItems(tab: $tab)
+            AddItems(tab: $context.selectedTab)
                 .tabItem {
                     Label("Add Item", systemImage: "plus.circle")
                 }.tag(1)
 
-            MessageList(tab: $tab)
+            MessageList(tab: $context.selectedTab)
                 .tabItem {
                     Label("Messages", systemImage: "envelope.fill")
                 }
@@ -45,7 +54,13 @@ struct ContentView: View {
                     Label("Account", systemImage: "person.crop.circle.fill")
                 }.tag(3)
 
-        }.accentColor(Color("AccentColor"))
+        }
+        .onReceive(context.$selectedTab) {
+            if $0 == 0 {
+                context.navToHome.toggle()
+            }
+        }
+        .accentColor(Color("AccentColor"))
         .onAppear() {
             if firstAppear {
                 messenger.getAllMessages(user: user)
