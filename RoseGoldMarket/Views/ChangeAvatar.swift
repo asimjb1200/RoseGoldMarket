@@ -8,7 +8,7 @@ import SwiftUI
 
 struct ChangeAvatar: View {
     @EnvironmentObject var user:UserModel
-    @Environment(\.presentationMode) var presentation
+    @Environment(\.dismiss) private var dismiss
     @State var userImage:UIImage? = nil
     @State var isShowingPhotoPicker = false
     @State var imageEnum: PlantOptions = .imageOne
@@ -44,7 +44,7 @@ struct ChangeAvatar: View {
             }
             .padding()
             .alert(isPresented: $dataPosted) {
-                Alert(title: Text("Avatar Updated!"), dismissButton: .destructive(Text("OK!"), action: { self.presentation.wrappedValue.dismiss() }))
+                Alert(title: Text("Avatar Updated!"), dismissButton: .destructive(Text("OK!"), action: { dismiss() }))
             }
             Spacer()
         }.sheet(isPresented: $isShowingPhotoPicker, content: {

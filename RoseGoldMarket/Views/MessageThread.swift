@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MessageThread: View {
     @EnvironmentObject var viewModel: MessagingViewModel
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var viewingUser:UserModel
     @FocusState var messageIsFocus:Bool
@@ -36,7 +36,7 @@ struct MessageThread: View {
                         .padding()
                         .shadow(radius: 5.0)
                         .onTapGesture {
-                            self.presentationMode.wrappedValue.dismiss()
+                            dismiss()
                         }
                     Spacer()
                     if !otherUsersName.isEmpty {

@@ -14,7 +14,7 @@ struct ItemDetails: View {
     @EnvironmentObject var messenger:MessagingViewModel
     @EnvironmentObject var user:UserModel
     @EnvironmentObject var context:PopToRoot // detect when usr hits home tab btn
-    @Environment(\.presentationMode) private var presentation
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         GeometryReader { geo in
@@ -89,7 +89,7 @@ struct ItemDetails: View {
             }
         }.onChange(of: context.navToHome) { _ in
             // when this value is changed, get the user out of the detail view
-            presentation.wrappedValue.dismiss()
+            dismiss()
         }
     }
     

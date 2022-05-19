@@ -9,7 +9,7 @@ import SwiftUI
 
 struct EditItem: View {
     @StateObject var viewModel = EditItemVM()
-    @Environment(\.presentationMode) var presentation
+    @Environment(\.dismiss) private var dismiss
     @State var areYouSure = false
     @EnvironmentObject var user:UserModel
     var categoryMapper = CategoryMapper()
@@ -104,7 +104,7 @@ struct EditItem: View {
                 .padding(.leading)
                 .tint(Color("MainColor"))
                 .alert(isPresented: $viewModel.itemIsDeleted) {
-                    Alert(title: Text("Success"), message: Text("Your item has been deleted"), dismissButton: .default(Text("OK"), action: {self.presentation.wrappedValue.dismiss()}))
+                    Alert(title: Text("Success"), message: Text("Your item has been deleted"), dismissButton: .default(Text("OK"), action: { dismiss() }))
                 }
             
             if !viewModel.isAvailable {
@@ -214,7 +214,7 @@ struct EditItem: View {
                                 message: Text("Your item has been updated."),
                                 dismissButton: .default(
                                     Text("OK"),
-                                    action: { self.presentation.wrappedValue.dismiss() }
+                                    action: { dismiss() }
                                 )
                             )
                     }

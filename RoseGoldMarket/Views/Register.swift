@@ -9,7 +9,7 @@ import SwiftUI
 import CoreLocation
 
 struct Register: View {
-    @Environment(\.presentationMode) var presentation
+    @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel:RegisterUserViewModel = RegisterUserViewModel()
     @State var specialCharFound = false
     private enum FormFields: Int, CaseIterable {
@@ -260,7 +260,7 @@ struct Register: View {
 
                     viewModel.getAndSaveUserLocation()
                 }.alert(isPresented: $viewModel.dataPosted) {
-                    Alert(title: Text("Success"), message: Text("You've now been signed up, go back and log in."), dismissButton: .default(Text("OK"), action: { self.presentation.wrappedValue.dismiss() }))
+                    Alert(title: Text("Success"), message: Text("You've now been signed up, go back and log in."), dismissButton: .default(Text("OK"), action: { dismiss() }))
                 }
                 Spacer()
                 .alert(isPresented: $viewModel.nameNotAvailable) {
