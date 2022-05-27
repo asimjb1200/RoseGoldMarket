@@ -13,6 +13,7 @@ final class UserNetworking {
     private let networker: Networker = Networker()
     static let shared: UserNetworking = UserNetworking()
     private let keyChainLabel = "rose-gold-access-token"
+    private let keyChainPwLabel = "rose-gold-user-password"
     private init(){}
     
     func getGeolocation(token:String, completion: @escaping (Result<ResponseFromServer<String>, UserErrors>) -> ()) {
@@ -408,6 +409,65 @@ final class UserNetworking {
         print("Save operation finished with status: \(status)")
     }
     
+    func saveUserPassword(password: String, username: String) {
+        let passwordData = password.data(using: String.Encoding.utf8)!
+        let addQuery = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrLabel as String: self.keyChainPwLabel,
+            kSecValueData as String: passwordData,
+            kSecAttrAccount as String: username
+        ] as CFDictionary
+        
+        let status = SecItemAdd(addQuery, nil)
+        print("Save password operation finished with status: \(status)")
+    }
+    
+    func loadUserPassword() -> String {
+        let getquery = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrLabel as String: self.keyChainPwLabel,
+            kSecReturnData: true,
+            kSecReturnAttributes: true
+        ] as CFDictionary
+        
+        var item: AnyObject?
+        let status = SecItemCopyMatching(getquery as CFDictionary, &item)
+        if status == errSecItemNotFound {
+            print("no password in the keychain: \(status)")
+        }
+        print("Load password operation finished with status: \(status)")
+        let dict = item as? NSDictionary
+
+        if dict != nil {
+            let keyData = dict![kSecValueData] as! Data
+            //let username = dict![kSecAttrAccount] as! String
+            let passwordData = String(data: keyData, encoding: .utf8)!
+
+            return passwordData
+        } else {
+            return ""
+        }
+    }
+    
+    func updateUserPassword(newPassword:String) {
+        let passwordData = newPassword.data(using: String.Encoding.utf8)!
+        let searchQuery = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrLabel as String: self.keyChainPwLabel,
+        ] as CFDictionary
+        
+        let changesQuery = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrLabel as String: self.keyChainPwLabel,
+            kSecValueData as String: passwordData,
+        ] as CFDictionary
+        
+        // execute the update
+        let status = SecItemUpdate(searchQuery, changesQuery)
+        
+        print("update password operation finished with status: \(status)")
+    }
+    
     func saveUserToDevice(user: ServiceUser) {
         let defaults: UserDefaults = .standard
         // store the user's info
@@ -418,7 +478,7 @@ final class UserNetworking {
     
     func deleteUserFromDevice() {
         let defaults: UserDefaults = .standard
-        defaults.removeObject(forKey: "rg-username")
+//        defaults.removeObject(forKey: "rg-username")
         defaults.removeObject(forKey: "rg-accountId")
         defaults.removeObject(forKey: "rg-avatarUrl")
     }
@@ -438,6 +498,16 @@ final class UserNetworking {
          let serviceUser: ServiceUser = ServiceUser(avatarUrl: avatarUrl, accountId: UInt(accountId), username: username, accessToken: "")
         
         return serviceUser
+    }
+    
+    func loadUsernameFromDevice() -> String {
+        let defaults: UserDefaults = .standard
+        let username = defaults.string(forKey: "rg-username")
+        guard let username = username else {
+            return ""
+        }
+        
+        return username
     }
     
     func loadAccountId() -> UInt {

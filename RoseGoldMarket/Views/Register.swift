@@ -40,6 +40,7 @@ struct Register: View {
                 Group {
                     TextField("First Name", text: $viewModel.firstName)
                         .padding()
+                        .foregroundColor(.white)
                         .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
                         .focused($focusedField, equals: .firstName)

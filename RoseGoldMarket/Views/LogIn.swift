@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import LocalAuthentication
 
 struct LogIn: View {
     @State var username = ""
@@ -65,8 +66,19 @@ struct LogIn: View {
                 }
                 
                 NavigationLink("Register", destination: Register())
-            }.navigationBarTitle("Welcome").navigationBarHidden(true)
+            }
+            .navigationBarTitle("Welcome")
+            .navigationBarHidden(true)
             .padding()
+            .onAppear() {
+                self.username = service.loadUsernameFromDevice()
+                self.password = service.loadUserPassword()
+                
+                // if these fields aren't empty, I know that they've logged in before
+                if !self.username.isEmpty, !self.password.isEmpty {
+                    self.scanFaceID()
+                }
+            }
         }
     }
     
@@ -77,6 +89,14 @@ struct LogIn: View {
                     DispatchQueue.main.async {
                         service.saveUserToDevice(user: userRes.data)
                         service.saveAccessToken(accessToken: userRes.data.accessToken)
+                        let savedPassword = service.loadUserPassword()
+
+                        if savedPassword.isEmpty {// in the case that we've never saved their pw due to first login attempt
+                            service.saveUserPassword(password: password, username: username)
+                        } else if savedPassword != password { // maybe they've changed their pw
+                            service.updateUserPassword(newPassword: password)
+                        }
+                        
                         globalUser.login(serviceUsr: userRes.data)
                     }
                 
@@ -88,6 +108,29 @@ struct LogIn: View {
                     print(err.localizedDescription)
                 }
             }
+        }
+    }
+    
+    func scanFaceID() {
+        let context = LAContext()
+        var error: NSError?
+        
+        // check whether biometric authentication is possible
+        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+            // it's possible, so go ahead and use it
+            let reason = "We need to unlock your data."
+            
+            context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, authError in
+                // authentication has now completed
+                if success {
+                    // authenticated successfully
+                    self.login()
+                } else {
+                    // there was a problem
+                }
+            }
+        } else {
+            // no biometrics so make them manually press login
         }
     }
 }

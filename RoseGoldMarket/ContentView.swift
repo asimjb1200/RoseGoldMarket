@@ -24,12 +24,12 @@ struct ContentView: View {
     
     var profanityChecker:InputChecker = .shared
     let socket:SocketUtils = .shared
-    
+
     init() {
         let appearance = UITabBar.appearance()
         appearance.backgroundColor = colorScheme == .light ? UIColor(Color.white.opacity(0.5)) : UIColor(Color.gray)
     }
-    
+
     var body: some View {
         TabView(selection: $context.selectedTab) {
             HomeMarket(tab: $context.selectedTab).environmentObject(context)
@@ -53,7 +53,6 @@ struct ContentView: View {
                 .tabItem {
                     Label("Account", systemImage: "person.crop.circle.fill")
                 }.tag(3)
-
         }
         .onReceive(context.$selectedTab) {
             if $0 == 0 {
