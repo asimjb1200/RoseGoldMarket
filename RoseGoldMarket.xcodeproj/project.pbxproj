@@ -24,6 +24,7 @@
 		683854B927E2CDE6008E4F88 /* ServiceUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 683854B827E2CDE6008E4F88 /* ServiceUser.swift */; };
 		683854BC27E2CE19008E4F88 /* UserErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 683854BB27E2CE19008E4F88 /* UserErrors.swift */; };
 		684452D228406AAD0019DF7F /* PlaceholderStyling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684452D128406AAD0019DF7F /* PlaceholderStyling.swift */; };
+		684452D428406F8E0019DF7F /* ForgotPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684452D328406F8E0019DF7F /* ForgotPassword.swift */; };
 		684867832798BAC70033969D /* RoseGoldMarketApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684867822798BAC70033969D /* RoseGoldMarketApp.swift */; };
 		684867852798BAC70033969D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684867842798BAC70033969D /* ContentView.swift */; };
 		684867872798BAC80033969D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 684867862798BAC80033969D /* Assets.xcassets */; };
@@ -80,6 +81,7 @@
 		683854B827E2CDE6008E4F88 /* ServiceUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceUser.swift; sourceTree = "<group>"; };
 		683854BB27E2CE19008E4F88 /* UserErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserErrors.swift; sourceTree = "<group>"; };
 		684452D128406AAD0019DF7F /* PlaceholderStyling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderStyling.swift; sourceTree = "<group>"; };
+		684452D328406F8E0019DF7F /* ForgotPassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPassword.swift; sourceTree = "<group>"; };
 		6848677F2798BAC70033969D /* RoseGoldMarket.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RoseGoldMarket.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		684867822798BAC70033969D /* RoseGoldMarketApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoseGoldMarketApp.swift; sourceTree = "<group>"; };
 		684867842798BAC70033969D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -173,6 +175,16 @@
 			path = ViewModifier;
 			sourceTree = "<group>";
 		};
+		684452D528406FB50019DF7F /* LoginRegistration */ = {
+			isa = PBXGroup;
+			children = (
+				684452D328406F8E0019DF7F /* ForgotPassword.swift */,
+				682E194027DD2F5E00C304DA /* LogIn.swift */,
+				682E193E27DD2F4700C304DA /* Register.swift */,
+			);
+			path = LoginRegistration;
+			sourceTree = "<group>";
+		};
 		684867762798BAC70033969D = {
 			isa = PBXGroup;
 			children = (
@@ -217,14 +229,13 @@
 		684867902798BAE30033969D /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				684452D528406FB50019DF7F /* LoginRegistration */,
 				684452D028406A7C0019DF7F /* ViewModifier */,
 				68E9192727D025B000154DBB /* AccountOptions */,
 				68E083D427ACAF8500DA0110 /* Messenger */,
 				68C48A0227A4AF7F00AEF0F5 /* HomeMarket */,
 				6823B7D327990844008F2CB7 /* AddItems.swift */,
 				688F476727C86C1800B81715 /* AccountDetailsView.swift */,
-				682E193E27DD2F4700C304DA /* Register.swift */,
-				682E194027DD2F5E00C304DA /* LogIn.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -475,6 +486,7 @@
 				68A4296427D1C15600CC8DF2 /* AddressInfo.swift in Sources */,
 				68E083D827ACAFC400DA0110 /* MessageThread.swift in Sources */,
 				68F6188F27F1F5F3001BEF70 /* LocationManager.swift in Sources */,
+				684452D428406F8E0019DF7F /* ForgotPassword.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -65,6 +65,8 @@ struct LogIn: View {
                 }
                 
                 NavigationLink("Register", destination: Register())
+                
+                NavigationLink("Forgot Password", destination: Text("I Forgot My Password"))
             }
             .navigationBarTitle("Welcome")
             .navigationBarHidden(true)
