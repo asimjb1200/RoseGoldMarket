@@ -38,9 +38,9 @@ struct Register: View {
 
             ScrollView {
                 Group {
-                    TextField("First Name", text: $viewModel.firstName)
+                    TextField("", text: $viewModel.firstName)
+                        .modifier(PlaceholderStyle(showPlaceHolder: viewModel.firstName.isEmpty, placeHolder: "First Name..."))
                         .padding()
-                        .foregroundColor(.white)
                         .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
                         .focused($focusedField, equals: .firstName)
@@ -48,8 +48,10 @@ struct Register: View {
                             RoundedRectangle(cornerRadius: 10).fill(gradient)
                         )
                         .padding()
+                        
                     
-                    TextField("Last Name", text: $viewModel.lastName)
+                    TextField("", text: $viewModel.lastName)
+                        .modifier(PlaceholderStyle(showPlaceHolder: viewModel.lastName.isEmpty, placeHolder: "Last Name..."))
                         .padding()
                         .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
@@ -67,7 +69,8 @@ struct Register: View {
                 Group {
                     HStack {
                         Image(systemName: "pencil").foregroundColor(accent)
-                        TextField("Username (case-insensitive)", text: $viewModel.username)
+                        TextField("", text: $viewModel.username)
+                            .modifier(PlaceholderStyle(showPlaceHolder: viewModel.username.isEmpty, placeHolder: "Username..."))
                             .textInputAutocapitalization(.never)
                             .disableAutocorrection(true)
                             .focused($focusedField, equals: .username)
@@ -104,7 +107,8 @@ struct Register: View {
                 Group {
                     HStack {
                         Image(systemName: "key.fill").foregroundColor(accent)
-                        SecureField("Password", text: $viewModel.password)
+                        SecureField("", text: $viewModel.password)
+                            .modifier(PlaceholderStyle(showPlaceHolder: viewModel.password.isEmpty, placeHolder: "Password..."))
                             .textInputAutocapitalization(.never)
                             .disableAutocorrection(true)
                             .focused($focusedField, equals: .password)
@@ -132,7 +136,8 @@ struct Register: View {
                 
                 HStack {
                     Text("@").foregroundColor(accent)
-                    TextField("Email", text: $viewModel.email)
+                    TextField("", text: $viewModel.email)
+                        .modifier(PlaceholderStyle(showPlaceHolder: viewModel.email.isEmpty, placeHolder: "Email..."))
                         .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
                         .focused($focusedField, equals: .email)
@@ -146,6 +151,7 @@ struct Register: View {
                 HStack {
                     Image(systemName: "signpost.right.fill").foregroundColor(accent)
                     TextField("Address", text: $viewModel.address)
+                        .modifier(PlaceholderStyle(showPlaceHolder: viewModel.address.isEmpty, placeHolder: "Address..."))
                         .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
                         .focused($focusedField, equals: .address)
@@ -159,6 +165,7 @@ struct Register: View {
                 HStack {
                     Image(systemName: "building.2.fill").foregroundColor(accent)
                     TextField("City", text: $viewModel.city)
+                        .modifier(PlaceholderStyle(showPlaceHolder: viewModel.city.isEmpty, placeHolder: "City..."))
                         .focused($focusedField, equals: .city)
                 }
                 .padding()
@@ -188,7 +195,8 @@ struct Register: View {
                 
                 HStack {
                     Image(systemName: "mappin.and.ellipse").foregroundColor(accent)
-                    TextField("Zip Code", text: $viewModel.zipCode)
+                    TextField("", text: $viewModel.zipCode)
+                        .modifier(PlaceholderStyle(showPlaceHolder: viewModel.zipCode.isEmpty, placeHolder: "Zip Code..."))
                         .focused($focusedField, equals: .zipcode)
                         .alert(isPresented: $viewModel.spacesFoundInField) {
                             Alert(title: Text("Check Your Info"), message: Text("You can only have spaces in the City and Address fields. Every other field should not have spaces between words and characters."), dismissButton: .default(Text("Got It")))

@@ -16,6 +16,7 @@ struct LogIn: View {
     @State var badCreds = false
     @EnvironmentObject var globalUser:UserModel
     var service:UserNetworking = .shared
+    var gradient = LinearGradient(gradient: Gradient(colors: [.white,  Color("MainColor")]), startPoint: .leading, endPoint: .trailing)
     var body: some View {
         NavigationView {
             VStack {
@@ -23,11 +24,10 @@ struct LogIn: View {
                     .fontWeight(.heavy)
                     .foregroundColor(Color("MainColor"))
                 TextField("Username", text: $username)
+                .modifier(PlaceholderStyle(showPlaceHolder: username.isEmpty, placeHolder: "Username..."))
                 .padding()
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(lineWidth: 1)
-                        .foregroundColor(Color("AccentColor"))
+                .background(
+                    RoundedRectangle(cornerRadius: 10).fill(gradient)
                 )
                 .padding()
                 .textInputAutocapitalization(.never)
@@ -36,11 +36,10 @@ struct LogIn: View {
                 }
                 
                 SecureField("Password", text: $password)
+                .modifier(PlaceholderStyle(showPlaceHolder: password.isEmpty, placeHolder: "Password..."))
                 .padding()
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                    .stroke(lineWidth: 1)
-                    .foregroundColor(Color("AccentColor"))
+                .background(
+                    RoundedRectangle(cornerRadius: 10).fill(gradient)
                 )
                 .padding()
                 .alert(isPresented: $badPw) {
