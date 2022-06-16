@@ -23,7 +23,7 @@ struct LogIn: View {
                 Text("RoseGold Marketplace")
                     .fontWeight(.heavy)
                     .foregroundColor(Color("MainColor"))
-                TextField("Username", text: $username)
+                TextField("", text: $username)
                 .modifier(PlaceholderStyle(showPlaceHolder: username.isEmpty, placeHolder: "Username..."))
                 .padding()
                 .background(
@@ -35,7 +35,7 @@ struct LogIn: View {
                     Alert(title: Text("Username"), message: Text("Your username contains invalid characters"), dismissButton: .default(Text("OK")))
                 }
                 
-                SecureField("Password", text: $password)
+                SecureField("", text: $password)
                 .modifier(PlaceholderStyle(showPlaceHolder: password.isEmpty, placeHolder: "Password..."))
                 .padding()
                 .background(

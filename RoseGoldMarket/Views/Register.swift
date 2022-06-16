@@ -150,7 +150,7 @@ struct Register: View {
                 
                 HStack {
                     Image(systemName: "signpost.right.fill").foregroundColor(accent)
-                    TextField("Address", text: $viewModel.address)
+                    TextField("", text: $viewModel.address)
                         .modifier(PlaceholderStyle(showPlaceHolder: viewModel.address.isEmpty, placeHolder: "Address..."))
                         .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
@@ -164,7 +164,7 @@ struct Register: View {
                 
                 HStack {
                     Image(systemName: "building.2.fill").foregroundColor(accent)
-                    TextField("City", text: $viewModel.city)
+                    TextField("", text: $viewModel.city)
                         .modifier(PlaceholderStyle(showPlaceHolder: viewModel.city.isEmpty, placeHolder: "City..."))
                         .focused($focusedField, equals: .city)
                 }
