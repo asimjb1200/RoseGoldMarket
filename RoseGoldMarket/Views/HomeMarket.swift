@@ -79,10 +79,11 @@ struct HomeMarket: View {
                     }
                     .padding(.horizontal)
                     .onAppear() {
-                        if firstAppear {
-                            firstAppear = false
-                            determineUserLocation()
-                        }
+                        determineUserLocation()
+//                        if firstAppear {
+//                            firstAppear = false
+//                            determineUserLocation()
+//                        }
                     }
                     
                     Divider().shadow(radius: 5)
