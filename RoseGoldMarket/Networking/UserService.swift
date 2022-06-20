@@ -52,6 +52,41 @@ final class UserNetworking {
         }.resume()
     }
     
+    func sendUsernameAndEmailForPasswordRecovery(username:String, email:String, completion: @escaping (Result<ResponseFromServer<String>, UserErrors>) -> ()) {
+        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/forgot-password-step-one", post: true)
+        let session = URLSession.shared
+        let body = ["emailAddress": email, "username": username]
+        
+        let request = networker.buildReqBody(req: reqWithoutBody, body: body)
+        session.dataTask(with: request) {(data, response, error) in
+            if error != nil {
+                print("there was an error with the request")
+                completion(.failure(.serverError))
+            }
+            
+            guard let response = response as? HTTPURLResponse else {
+                completion(.failure(.responseConversionError))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(.dataConversionError))
+                return
+            }
+            
+            let isOK = self.networker.checkOkStatus(res: response)
+            if isOK {
+                do {
+                    let securityCode = try JSONDecoder().decode(ResponseFromServer<String>.self, from: data)
+                    completion(.success(securityCode))
+                } catch let secCodeError {
+                    print(secCodeError.localizedDescription)
+                    completion(.failure(.dataConversionError))
+                }
+            }
+        }.resume()
+    }
+    
     func emailSupport(subject: String, message: String, token: String, completion: @escaping (Result<ResponseFromServer<Bool>, SupportErrors>) -> ()) {
         let reqWithoutBody: URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/email-support", token: token, post: true)
         let session = URLSession.shared
@@ -562,7 +597,6 @@ final class UserNetworking {
         }
     }
 }
-
 
 enum SupportErrors: String, Error {
     case tokenExpired = "The access token has expired. Time to issue a new one"
