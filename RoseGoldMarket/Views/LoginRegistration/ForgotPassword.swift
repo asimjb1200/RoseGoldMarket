@@ -69,7 +69,7 @@ struct ForgotPassword: View {
                     codesMatch = true
                 }
                 
-                NavigationLink(destination: ResetPassword(username: username, email: email), isActive:
+                NavigationLink(destination: ResetPassword(username: username, email: email, securityCode: self.securityCodeFromServer), isActive:
                                 $codesMatch) {EmptyView()}
             }
         }

@@ -389,7 +389,7 @@ final class UserNetworking {
     
     func login(username:String, pw: String, completion: @escaping (Result<ResponseFromServer<ServiceUser>, UserErrors>) -> ()) {
 
-        let reqWithoutBody: URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/login", post: true)
+        let reqWithoutBody: URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/login", post: true)
         
         let session = URLSession.shared
         let body = ["username": username, "password": pw]
@@ -401,16 +401,15 @@ final class UserNetworking {
                 print("there was a big error: \(String(describing: err))")
                 completion(.failure(.failure))
             }
-            
+
             guard let response = response as? HTTPURLResponse else {
                 return
             }
-            
+
             guard response.statusCode == 200 else {
                 completion(.failure(.badPassword))
                 return
             }
-
             
             guard let data = data else {
                 completion(.failure(.failure))
@@ -422,6 +421,31 @@ final class UserNetworking {
                 completion(.success(usrResponse))
             } catch let decodeError {
                 print(decodeError)
+            }
+        }.resume()
+    }
+    
+    func postNewPassword(securityCode:String, newPassword:String, completion: @escaping(Result<String, UserErrors>) -> ()) {
+        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/forgot-password-reset", post: true)
+        
+        let session = URLSession.shared
+        let body = ["securityCode": securityCode, "newPassword": newPassword]
+        
+        let request = networker.buildReqBody(req: reqWithoutBody, body: body)
+        session.dataTask(with: request) {(data, response, error) in
+            if error != nil {
+                completion(.failure(.serverError))
+            }
+            
+            guard let response = response as? HTTPURLResponse else {
+                completion(.failure(.responseConversionError))
+                return
+            }
+            
+            if response.statusCode == 200 {
+                completion(.success("OK"))
+            } else {
+                completion(.success("Failed"))
             }
         }.resume()
     }
