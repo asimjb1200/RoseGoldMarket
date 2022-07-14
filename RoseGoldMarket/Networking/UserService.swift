@@ -53,7 +53,7 @@ final class UserNetworking {
     }
     
     func sendUsernameAndEmailForPasswordRecovery(username:String, email:String, completion: @escaping (Result<ResponseFromServer<String>, UserErrors>) -> ()) {
-        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/forgot-password-step-one", post: true)
+        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://rosegoldgardens.com/api/users/forgot-password-step-one", post: true)
         let session = URLSession.shared
         let body = ["emailAddress": email, "username": username]
         
@@ -389,7 +389,7 @@ final class UserNetworking {
     
     func login(username:String, pw: String, completion: @escaping (Result<ResponseFromServer<ServiceUser>, UserErrors>) -> ()) {
 
-        let reqWithoutBody: URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/login", post: true)
+        let reqWithoutBody: URLRequest = networker.constructRequest(uri: "http://rosegoldgardens.com/api/users/login", post: true)
         
         let session = URLSession.shared
         let body = ["username": username, "password": pw]
@@ -426,7 +426,7 @@ final class UserNetworking {
     }
     
     func postNewPassword(securityCode:String, newPassword:String, completion: @escaping(Result<String, UserErrors>) -> ()) {
-        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/forgot-password-reset", post: true)
+        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://rosegoldgardens.com/api/users/forgot-password-reset", post: true)
         
         let session = URLSession.shared
         let body = ["securityCode": securityCode, "newPassword": newPassword]

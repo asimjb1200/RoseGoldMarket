@@ -113,7 +113,7 @@ struct MessageThread: View {
                             }
                         Group {
                             Divider()
-                            TextField("New Message..", text: $newMessage)
+                            TextEditor(text: $newMessage)
                                 .padding()
                                 .focused($messageIsFocus)
                                 .toolbar {
@@ -156,6 +156,7 @@ struct MessageThread: View {
                                 .alert(isPresented: $tooManyChars) {
                                     Alert(title: Text("Over Character Limit"), message: Text("200 Characters Or Less"), dismissButton: .default(Text("OK")))
                                 }
+                                .frame(maxHeight: 70)
                             
                             Text("Character Limit: \(charCount - newMessage.count)")
                                 .fontWeight(.light)
