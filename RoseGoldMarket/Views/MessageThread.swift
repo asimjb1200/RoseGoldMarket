@@ -113,7 +113,7 @@ struct MessageThread: View {
                             }
                         Group {
                             Divider()
-                            TextEditor(text: $newMessage)
+                            TextField("Enter your message...", text: $newMessage)
                                 .padding()
                                 .focused($messageIsFocus)
                                 .toolbar {
