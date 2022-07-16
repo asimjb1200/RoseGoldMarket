@@ -68,6 +68,7 @@ struct ContentView: View {
 //            }
         }
         .environmentObject(messenger)
+        .environmentObject(context)
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
                 if !firstAppear && user.accountId != 0 {
