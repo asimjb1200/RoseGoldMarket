@@ -8,36 +8,41 @@
 import SwiftUI
 
 struct MessageThread: View {
-    @State var newMessage = ""
     @EnvironmentObject var viewModel: MessagingViewModel
-    var profanityChecker:InputChecker = .shared
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var viewingUser:UserModel
+    @FocusState var messageIsFocus:Bool
     @State var tooManyChars = false
     @State var profanityFound = false
-    @FocusState var messageIsFocus:Bool
-    
+    @State var otherUsersName:String = ""
+    @State var newMessage = ""
+    var charCount = 200
+
     var receiverId:UInt
     var receiverUsername:String
-    @State var otherUsersName:String = ""
+
+    var mainColor = Color("MainColor")
+    var accent = Color("AccentColor")
+    var profanityChecker:InputChecker = .shared
     
     var body: some View {
         NavigationView {
             VStack{
                 HStack(alignment: .center) {
                     Image(systemName: "arrow.backward")
-                        .foregroundColor(Color("AccentColor"))
+                        .foregroundColor(accent)
                         .imageScale(.large)
                         .padding()
                         .shadow(radius: 5.0)
                         .onTapGesture {
-                            self.presentationMode.wrappedValue.dismiss()
+                            dismiss()
                         }
                     Spacer()
                     if !otherUsersName.isEmpty {
                         // present the other user's avi so that the user can tap it and go to their profile
                         NavigationLink(destination: AccountDetailsView(username: receiverUsername, accountid: receiverId)) {
+                            Text(otherUsersName).foregroundColor(mainColor).fontWeight(.bold)
                             AsyncImage(url: URL(string: "https://rosegoldgardens.com/api/images/avatars/\(otherUsersName).jpg")) { phase in
                                 if let image = phase.image {
                                     image
@@ -77,7 +82,7 @@ struct MessageThread: View {
                                         Text(x.message)
                                         .padding()
                                         .frame(width: 200)
-                                        .background(RoundedRectangle(cornerRadius: 25).fill(Color("MainColor")))
+                                        .background(RoundedRectangle(cornerRadius: 25).fill(mainColor))
                                         .foregroundColor(.white)
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                         .padding().listRowSeparator(.hidden)
@@ -108,9 +113,7 @@ struct MessageThread: View {
                             }
                         Group {
                             Divider()
-                            TextField("New Message..", text: $newMessage)
-                                .padding()
-                                .textFieldStyle(OvalTextFieldStyle())
+                            TextField("Enter your message...", text: $newMessage)
                                 .padding()
                                 .focused($messageIsFocus)
                                 .toolbar {
@@ -145,9 +148,22 @@ struct MessageThread: View {
                                         }
                                     }
                                 }
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(.gray.opacity(0.5))
+                                )
+                                .padding([.leading, .trailing])
                                 .alert(isPresented: $tooManyChars) {
                                     Alert(title: Text("Over Character Limit"), message: Text("200 Characters Or Less"), dismissButton: .default(Text("OK")))
                                 }
+                                .frame(maxHeight: 70)
+                            
+                            Text("Character Limit: \(charCount - newMessage.count)")
+                                .fontWeight(.light)
+                                .font(.caption)
+                                .frame(maxWidth: .infinity,alignment:.leading)
+                                .padding([.leading, .bottom])
+                                .foregroundColor(accent)
                         }
                         
                     }.onChange(of: viewModel.allChats[String(receiverId)]!){ _ in
@@ -165,9 +181,9 @@ struct MessageThread: View {
                 .onDisappear() {
                     viewModel.listOfChats = viewModel.buildUniqueChatList()
                 }
-                .alert(isPresented: $profanityFound) {
-                    Alert(title: Text("Remove your profanity"))
-                }
+//                .alert(isPresented: $profanityFound) {
+//                    Alert(title: Text("Remove your profanity"))
+//                }
             }.navigationBarHidden(true)
             Spacer()
         }.navigationViewStyle(.stack)

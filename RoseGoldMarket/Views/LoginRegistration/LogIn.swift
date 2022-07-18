@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import LocalAuthentication
 
 struct LogIn: View {
     @State var username = ""
@@ -15,30 +16,30 @@ struct LogIn: View {
     @State var badCreds = false
     @EnvironmentObject var globalUser:UserModel
     var service:UserNetworking = .shared
+    var gradient = LinearGradient(gradient: Gradient(colors: [.white,  Color("MainColor")]), startPoint: .leading, endPoint: .trailing)
     var body: some View {
         NavigationView {
             VStack {
                 Text("RoseGold Marketplace")
                     .fontWeight(.heavy)
                     .foregroundColor(Color("MainColor"))
-                TextField("Username", text: $username)
+                TextField("", text: $username)
+                .modifier(PlaceholderStyle(showPlaceHolder: username.isEmpty, placeHolder: "Username..."))
                 .padding()
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(lineWidth: 1)
-                        .foregroundColor(Color("AccentColor"))
+                .background(
+                    RoundedRectangle(cornerRadius: 10).fill(gradient)
                 )
                 .padding()
+                .textInputAutocapitalization(.never)
                 .alert(isPresented: $badUsername) {
                     Alert(title: Text("Username"), message: Text("Your username contains invalid characters"), dismissButton: .default(Text("OK")))
                 }
                 
-                SecureField("Password", text: $password)
+                SecureField("", text: $password)
+                .modifier(PlaceholderStyle(showPlaceHolder: password.isEmpty, placeHolder: "Password..."))
                 .padding()
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                    .stroke(lineWidth: 1)
-                    .foregroundColor(Color("AccentColor"))
+                .background(
+                    RoundedRectangle(cornerRadius: 10).fill(gradient)
                 )
                 .padding()
                 .alert(isPresented: $badPw) {
@@ -64,18 +65,39 @@ struct LogIn: View {
                 }
                 
                 NavigationLink("Register", destination: Register())
-            }.navigationBarTitle("Welcome").navigationBarHidden(true)
+                
+                NavigationLink("Forgot Password", destination: ForgotPassword()).padding()
+            }
+            .navigationBarTitle("Welcome")
+            .navigationBarHidden(true)
             .padding()
+            .onAppear() {
+                self.username = service.loadUsernameFromDevice()
+                self.password = service.loadUserPassword()
+                
+                // if these fields aren't empty, I know that they've logged in before
+                if !self.username.isEmpty, !self.password.isEmpty {
+                    self.scanFaceID()
+                }
+            }
         }
     }
     
     func login() {
-        service.login(username: username.filter { !$0.isWhitespace }, pw: password.filter{ !$0.isWhitespace }) { userData in
+        service.login(username: username.lowercased().filter { !$0.isWhitespace }, pw: password.filter{ !$0.isWhitespace }) { userData in
             switch (userData) {
                 case .success(let userRes):
                     DispatchQueue.main.async {
                         service.saveUserToDevice(user: userRes.data)
                         service.saveAccessToken(accessToken: userRes.data.accessToken)
+                        let savedPassword = service.loadUserPassword()
+
+                        if savedPassword.isEmpty {// in the case that we've never saved their pw due to first login attempt
+                            service.saveUserPassword(password: password, username: username)
+                        } else if savedPassword != password { // maybe they've changed their pw
+                            service.updateUserPassword(newPassword: password)
+                        }
+                        
                         globalUser.login(serviceUsr: userRes.data)
                     }
                 
@@ -87,6 +109,29 @@ struct LogIn: View {
                     print(err.localizedDescription)
                 }
             }
+        }
+    }
+    
+    func scanFaceID() {
+        let context = LAContext()
+        var error: NSError?
+        
+        // check whether biometric authentication is possible
+        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+            // it's possible, so go ahead and use it
+            let reason = "We need to unlock your data."
+            
+            context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, authError in
+                // authentication has now completed
+                if success {
+                    // authenticated successfully
+                    self.login()
+                } else {
+                    // there was a problem
+                }
+            }
+        } else {
+            // no biometrics so make them manually press login
         }
     }
 }
