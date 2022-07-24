@@ -15,6 +15,7 @@ struct HomeMarket: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel = HomeMarketViewModel()
     @StateObject var locationManager = LocationManager()
+    @FocusState var searchBarIsFocus:Bool
 
     var categoryMapper = CategoryMapper()
     let columns = [ // I want two columns of equal width on this view
@@ -68,7 +69,18 @@ struct HomeMarket: View {
                     
                     HStack {
                         Image(systemName: "magnifyingglass").foregroundColor(Color("MainColor")).padding(.leading)
-                        TextField("", text: $viewModel.searchTerm).padding([.top, .bottom], 2.0).textFieldStyle(OvalTextFieldStyle())
+                        TextField("", text: $viewModel.searchTerm)
+                            .padding([.top, .bottom], 2.0)
+                            .textFieldStyle(OvalTextFieldStyle())
+                            .focused($searchBarIsFocus)
+                            .toolbar {
+                                ToolbarItem(placement: .keyboard) {
+                                    Button("Cancel") {
+                                        searchBarIsFocus = false
+                                    }
+                                    .frame(maxWidth:.infinity, alignment:.leading)
+                                }
+                            }
                     }
                     .padding(5.0)
                     

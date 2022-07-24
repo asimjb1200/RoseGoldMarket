@@ -75,6 +75,7 @@
 		6823B7D8279913A4008F2CB7 /* PhotoPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPicker.swift; sourceTree = "<group>"; };
 		6823D74627C72BD8001876A8 /* IdentifiableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentifiableView.swift; sourceTree = "<group>"; };
 		6825899E27A7179C003E52D9 /* ResponseFromServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseFromServer.swift; sourceTree = "<group>"; };
+		682BFD51288CEB9500818820 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		682DE034285F8D7900B0EC69 /* ResetPassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPassword.swift; sourceTree = "<group>"; };
 		682E193E27DD2F4700C304DA /* Register.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Register.swift; sourceTree = "<group>"; };
 		682E194027DD2F5E00C304DA /* LogIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogIn.swift; sourceTree = "<group>"; };
@@ -210,6 +211,7 @@
 		684867812798BAC70033969D /* RoseGoldMarket */ = {
 			isa = PBXGroup;
 			children = (
+				682BFD51288CEB9500818820 /* Info.plist */,
 				6878BCC927F2707300CD071A /* BannedWords */,
 				6823B7D727991394008F2CB7 /* Utils */,
 				6848679C2798D5960033969D /* Networking */,
@@ -629,13 +631,13 @@
 				DEVELOPMENT_TEAM = P2B946HD8M;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RoseGoldMarket/Info.plist;
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "We want to make it easier to log you into your account.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "To locate other plant dealers in your area.";
 				INFOPLIST_KEY_NSLocationUsageDescription = "To locate other plant dealers in your area.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "To locate other plant dealers in your area.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -663,13 +665,13 @@
 				DEVELOPMENT_TEAM = P2B946HD8M;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RoseGoldMarket/Info.plist;
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "We want to make it easier to log you into your account.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "To locate other plant dealers in your area.";
 				INFOPLIST_KEY_NSLocationUsageDescription = "To locate other plant dealers in your area.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "To locate other plant dealers in your area.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";

@@ -1,14 +1,17 @@
 {
   "images" : [
     {
+      "filename" : "RoseGold_SplashPage.jpg",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "RoseGold_SplashPage-1.jpg",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "RoseGold_SplashPage-2.jpg",
       "idiom" : "universal",
       "scale" : "3x"
     }
