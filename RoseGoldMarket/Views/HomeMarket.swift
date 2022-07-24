@@ -16,6 +16,7 @@ struct HomeMarket: View {
     @StateObject var viewModel = HomeMarketViewModel()
     @StateObject var locationManager = LocationManager()
     @FocusState var searchBarIsFocus:Bool
+    var banner:UIImage? = UIImage(named: "AppBanner")
 
     var categoryMapper = CategoryMapper()
     let columns = [ // I want two columns of equal width on this view
@@ -133,6 +134,7 @@ struct HomeMarket: View {
                     }
                 }
             }.navigationBarTitle(Text("Market"), displayMode: .inline).navigationBarHidden(true)
+//            .toolbar { ToolbarItem(placement: .principal) {Image(uiImage: banner!).resizable().scaledToFit()}}
         }
         }
     }

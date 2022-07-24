@@ -15,6 +15,7 @@ struct ForgotPassword: View {
     @State var codesMatch = false
     @State var codeReceived = false
     @State var errorOccurred = false
+    @State var userNotFound = false
     var userService:UserNetworking = .shared
     
     var gradient = LinearGradient(gradient: Gradient(colors: [.white,  Color("MainColor")]), startPoint: .leading, endPoint: .trailing)
@@ -32,6 +33,9 @@ struct ForgotPassword: View {
                 )
                 .padding()
                 .textInputAutocapitalization(.never)
+                .alert(isPresented: $userNotFound) {
+                    Alert(title: Text("User Not Found"), message: Text("We don't have that user and email combination in our records. Please check your spelling and try again."), dismissButton: .default(Text("OK")))
+                }
             
             TextField("", text: $email).padding().modifier(PlaceholderStyle(showPlaceHolder: email.isEmpty, placeHolder: "Email..."))
                 .background(
@@ -41,16 +45,21 @@ struct ForgotPassword: View {
                 .textInputAutocapitalization(.never)
             
             Button("Send Code") {
-                userService.sendUsernameAndEmailForPasswordRecovery(username: username, email: email) {(secCodeResponse) in
+                userService.sendUsernameAndEmailForPasswordRecovery(username: username.trimmingCharacters(in: .whitespacesAndNewlines), email: email.trimmingCharacters(in: .whitespacesAndNewlines)) {(secCodeResponse) in
                     switch(secCodeResponse) {
                         case .success(let securityResponse):
                             DispatchQueue.main.async {
                                 self.securityCodeFromServer = securityResponse.data
                                 self.codeReceived = true
                             }
-                        case .failure( _):
+                        case .failure(let err):
                             DispatchQueue.main.async {
-                                errorOccurred = true
+                                if err == .userNotFound {
+                                    userNotFound = true
+                                } else {
+                                    errorOccurred = true
+                                }
+                                
                             }
                     }
                 }

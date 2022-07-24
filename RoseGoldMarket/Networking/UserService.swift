@@ -83,6 +83,12 @@ final class UserNetworking {
                     print(secCodeError.localizedDescription)
                     completion(.failure(.dataConversionError))
                 }
+            } else {
+                if response.statusCode == 404 {
+                    completion(.failure(.userNotFound))
+                } else {
+                    completion(.failure(.serverError))
+                }
             }
         }.resume()
     }
