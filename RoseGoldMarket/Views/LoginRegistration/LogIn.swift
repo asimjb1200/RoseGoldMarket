@@ -15,14 +15,26 @@ struct LogIn: View {
     @State var badUsername = false
     @State var badCreds = false
     @EnvironmentObject var globalUser:UserModel
+    var appBanner:UIImage? = UIImage(named: "AppBanner")
     var service:UserNetworking = .shared
     var gradient = LinearGradient(gradient: Gradient(colors: [.white,  Color("MainColor")]), startPoint: .leading, endPoint: .trailing)
     var body: some View {
         NavigationView {
             VStack {
-                Text("RoseGold Marketplace")
-                    .fontWeight(.heavy)
-                    .foregroundColor(Color("MainColor"))
+//                Text("RoseGold Marketplace")
+//                    .fontWeight(.heavy)
+//                    .foregroundColor(Color("MainColor"))
+                if appBanner != nil {
+                    Image(uiImage: appBanner!)
+                        .resizable()
+                        .scaledToFit()
+                        .padding(.bottom)
+                } else {
+                    Text("RoseGold Marketplace")
+                        .fontWeight(.heavy)
+                        .foregroundColor(Color("MainColor"))
+                }
+                
                 TextField("", text: $username)
                 .modifier(PlaceholderStyle(showPlaceHolder: username.isEmpty, placeHolder: "Username..."))
                 .padding()
