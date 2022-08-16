@@ -522,9 +522,7 @@ final class UserNetworking {
         ] as CFDictionary
         
         let changesQuery = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrLabel as String: self.keyChainPwLabel,
-            kSecValueData as String: passwordData,
+            kSecValueData as String: passwordData
         ] as CFDictionary
         
         // execute the update

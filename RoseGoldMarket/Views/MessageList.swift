@@ -12,6 +12,7 @@ struct MessageList: View {
     @State var firstAppear = true
     @State var selection: UUID? = nil
     @State private var nextView: IdentifiableView? = nil
+    @StateObject var messenger: MessagingViewModel = .shared
     @EnvironmentObject var viewModel: MessagingViewModel
     @EnvironmentObject var currentUser:UserModel
     
@@ -73,6 +74,9 @@ struct MessageList: View {
         .padding()
         .onDisappear() {
             viewModel.newMsgCount = 0
+        }
+        .onAppear() {
+            messenger.getAllMessages(user: currentUser)
         }
     }
     

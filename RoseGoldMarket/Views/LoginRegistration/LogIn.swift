@@ -85,10 +85,10 @@ struct LogIn: View {
             .padding()
             .onAppear() {
                 self.username = service.loadUsernameFromDevice()
-                self.password = service.loadUserPassword()
+                //self.password = service.loadUserPassword()
                 
                 // if these fields aren't empty, I know that they've logged in before
-                if !self.username.isEmpty, !self.password.isEmpty {
+                if !self.username.isEmpty {
                     self.scanFaceID()
                 }
             }
@@ -103,10 +103,11 @@ struct LogIn: View {
                         service.saveUserToDevice(user: userRes.data)
                         service.saveAccessToken(accessToken: userRes.data.accessToken)
                         let savedPassword = service.loadUserPassword()
-
+                        //print("\(savedPassword)")
                         if savedPassword.isEmpty {// in the case that we've never saved their pw due to first login attempt
                             service.saveUserPassword(password: password, username: username)
                         } else if savedPassword != password { // maybe they've changed their pw
+                            print("updating their password")
                             service.updateUserPassword(newPassword: password)
                         }
                         
@@ -137,6 +138,7 @@ struct LogIn: View {
                 // authentication has now completed
                 if success {
                     // authenticated successfully
+                    self.password = service.loadUserPassword()
                     self.login()
                 } else {
                     // there was a problem

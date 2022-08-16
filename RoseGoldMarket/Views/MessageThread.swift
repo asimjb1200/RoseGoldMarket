@@ -26,6 +26,12 @@ struct MessageThread: View {
     var accent = Color("AccentColor")
     var profanityChecker:InputChecker = .shared
     
+    init(receiverId: UInt, receiverUsername:String) {
+        UITextView.appearance().backgroundColor = .clear
+        self.receiverId = receiverId
+        self.receiverUsername = receiverUsername
+    }
+    
     var body: some View {
         NavigationView {
             VStack{
@@ -73,10 +79,10 @@ struct MessageThread: View {
                 
                 Divider()
                 
-                ScrollViewReader { scroller in
+                ScrollViewReader { threadScroller in
                     VStack {
                             ScrollView {
-                                ForEach(viewModel.allChats[String(receiverId)]!, id: \.id) { x in
+                                ForEach(viewModel.allChats[String(receiverId)] ?? [], id: \.id) { x in
                                     if x.senderUsername != viewingUser.username {
                                         // messages coming from the other user will have the gold bg color
                                         Text(x.message)
@@ -107,56 +113,167 @@ struct MessageThread: View {
                                         let lastChatId = lastChat.id
 
                                         // scroll to the last chat
-                                        scroller.scrollTo(lastChatId)
+                                        threadScroller.scrollTo(lastChatId)
                                     }
                                 }
                             }
+                        //Spacer()
                         Group {
                             Divider()
-                            TextField("Enter your message...", text: $newMessage)
-                                .padding()
-                                .focused($messageIsFocus)
-                                .toolbar {
-                                    ToolbarItem(placement: .keyboard) {
-                                        Button("Done") {
-                                            messageIsFocus = false
+                            
+                            //List {
+                                HStack {
+                                    ScrollViewReader { textEntryScroller in
+                                        ScrollView {
+                                            TextEditor(text: $newMessage)
+                                                .focused($messageIsFocus)
+                                                .toolbar {
+                                                    ToolbarItem(placement: .keyboard) {
+                                                        Button("Done") {
+                                                            messageIsFocus = false
+                                                        }
+                                                        .frame(maxWidth:.infinity, alignment:.leading)
+                                                    }
+                                                }.frame(height: 75)
+                                        }.onChange(of: newMessage) { newChar in
+                                            if newMessage.count <= 200 {
+                                                return
+                                            }
+                                            textEntryScroller.scrollTo(newMessage.endIndex)
+                                        }.frame(height: 75)
+                                    }.background(RoundedRectangle(cornerRadius: 15.0).fill(.gray.opacity(0.5))).padding([.leading, .trailing]).frame(height: 75)
+
+                                    // sits next to the text entry bubble
+                                    Button("Send") {
+                                        if newMessage.count > 200 {
+                                            tooManyChars.toggle()
+                                            return
                                         }
-                                        .frame(maxWidth:.infinity, alignment:.leading)
+
+                                        if let chatHistory = viewModel.allChats[String(receiverId)] {
+                                            if let lastChat = chatHistory.last {
+                                                if lastChat.senderUsername == viewingUser.username {
+                                                    let recUsername = lastChat.receiverUsername
+                                                    let newChatId = viewModel.sendMessageToUser(newMessage: newMessage, receiverId: receiverId, receiverUsername: recUsername, senderUsername: viewingUser.username, senderId: viewingUser.accountId)
+                                                    newMessage = ""
+                                                    // scroll to the last chat
+                                                    threadScroller.scrollTo(newChatId, anchor: .top)
+                                                } else {
+                                                    let recUsername = lastChat.senderUsername
+                                                    let newChatId = viewModel.sendMessageToUser(newMessage: newMessage, receiverId: receiverId, receiverUsername: recUsername, senderUsername: viewingUser.username, senderId: viewingUser.accountId)
+                                                    newMessage = ""
+                                                    // scroll to the last chat
+                                                    threadScroller.scrollTo(newChatId, anchor: .top)
+                                                }
+                                            }
+                                        }
+                                    }
+                                    .padding([.leading, .trailing])
+                                    .accentColor(accent)
+                                    .alert(isPresented: $tooManyChars) {
+                                        Alert(title: Text("Over Character Limit"), message: Text("200 Characters Or Less"), dismissButton: .default(Text("OK")))
                                     }
                                 }
-                                .onSubmit {
-                                    if newMessage.count > 200 {
-                                        tooManyChars.toggle()
-                                        return
-                                    }
-                                    
-                                    // check for profanity
-//                                    guard profanityChecker.containsProfanity(message: newMessage) == false else {
-//                                        profanityFound.toggle()
+                            //}.listStyle(PlainListStyle()).frame(height:80)
+                            
+                            
+//                            ScrollViewReader { textEntryScroller in
+//                                List {
+//                                    HStack {
+//                                        ScrollView {
+//                                            TextEditor(text: $newMessage)
+//                                                .background(
+//                                                    RoundedRectangle(cornerRadius: 15.0)
+//                                                    .fill(.gray.opacity(0.5))
+//                                                )
+//                                                .focused($messageIsFocus)
+//                                                .toolbar {
+//                                                    ToolbarItem(placement: .keyboard) {
+//                                                        Button("Done") {
+//                                                            messageIsFocus = false
+//                                                        }
+//                                                        .frame(maxWidth:.infinity, alignment:.leading)
+//                                                    }
+//                                                }
+//                                        }.onChange(of: newMessage) { newChar in
+//                                            textEntryScroller.scrollTo(newMessage.endIndex)
+//                                        }.frame(height: 90)
+//
+//                                        Button("Send") {
+//                                            if newMessage.count > 200 {
+//                                                tooManyChars.toggle()
+//                                                return
+//                                            }
+//
+//                                            if let chatHistory = viewModel.allChats[String(receiverId)] {
+//                                                if let lastChat = chatHistory.last {
+//                                                    if lastChat.senderUsername == viewingUser.username {
+//                                                        let recUsername = lastChat.receiverUsername
+//                                                        let newChatId = viewModel.sendMessageToUser(newMessage: newMessage, receiverId: receiverId, receiverUsername: recUsername, senderUsername: viewingUser.username, senderId: viewingUser.accountId)
+//                                                        newMessage = ""
+//                                                        // scroll to the last chat
+//                                                        threadScroller.scrollTo(newChatId, anchor: .top)
+//                                                    } else {
+//                                                        let recUsername = lastChat.senderUsername
+//                                                        let newChatId = viewModel.sendMessageToUser(newMessage: newMessage, receiverId: receiverId, receiverUsername: recUsername, senderUsername: viewingUser.username, senderId: viewingUser.accountId)
+//                                                        newMessage = ""
+//                                                        // scroll to the last chat
+//                                                        threadScroller.scrollTo(newChatId, anchor: .top)
+//                                                    }
+//                                                }
+//                                            }
+//                                        }
+//                                    }
+//                                }.listStyle(PlainListStyle())
+//                                .alert(isPresented: $tooManyChars) {
+//                                    Alert(title: Text("Over Character Limit"), message: Text("200 Characters Or Less"), dismissButton: .default(Text("OK")))
+//                                }
+//                            }.frame(height: 70)
+                            
+//                            TextField("Enter your message...", text: $newMessage)
+//                                .padding()
+//                                .focused($messageIsFocus)
+//                                .toolbar {
+//                                    ToolbarItem(placement: .keyboard) {
+//                                        Button("Done") {
+//                                            messageIsFocus = false
+//                                        }
+//                                        .frame(maxWidth:.infinity, alignment:.leading)
+//                                    }
+//                                }
+//                                .onSubmit {
+//                                    if newMessage.count > 200 {
+//                                        tooManyChars.toggle()
 //                                        return
 //                                    }
-                                    
-                                    if let chatHistory = viewModel.allChats[String(receiverId)] {
-                                        if let lastChat = chatHistory.last {
-                                            let recUsername = lastChat.senderUsername == viewingUser.username ? lastChat.receiverUsername : lastChat.senderUsername
-                                            
-                                            let newChatId = viewModel.sendMessageToUser(newMessage: newMessage, receiverId: receiverId, receiverUsername: recUsername, senderUsername: viewingUser.username, senderId: viewingUser.accountId)
-                                            newMessage = ""
-
-                                            // scroll to the last chat
-                                            scroller.scrollTo(newChatId, anchor: .top)
-                                        }
-                                    }
-                                }
-                                .background(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .fill(.gray.opacity(0.5))
-                                )
-                                .padding([.leading, .trailing])
-                                .alert(isPresented: $tooManyChars) {
-                                    Alert(title: Text("Over Character Limit"), message: Text("200 Characters Or Less"), dismissButton: .default(Text("OK")))
-                                }
-                                .frame(maxHeight: 70)
+//
+//                                    // check for profanity
+////                                    guard profanityChecker.containsProfanity(message: newMessage) == false else {
+////                                        profanityFound.toggle()
+////                                        return
+////                                    }
+//
+//                                    if let chatHistory = viewModel.allChats[String(receiverId)] {
+//                                        if let lastChat = chatHistory.last {
+//                                            let recUsername = lastChat.senderUsername == viewingUser.username ? lastChat.receiverUsername : lastChat.senderUsername
+//
+//                                            let newChatId = viewModel.sendMessageToUser(newMessage: newMessage, receiverId: receiverId, receiverUsername: recUsername, senderUsername: viewingUser.username, senderId: viewingUser.accountId)
+//                                            newMessage = ""
+//
+//                                            // scroll to the last chat
+//                                            scroller.scrollTo(newChatId, anchor: .top)
+//                                        }
+//                                    }
+//                                }
+//                                .background(
+//                                    RoundedRectangle(cornerRadius: 10)
+//                                        .fill(.gray.opacity(0.5))
+//                                )
+//                                .padding([.leading, .trailing])
+//                                .alert(isPresented: $tooManyChars) {
+//                                    Alert(title: Text("Over Character Limit"), message: Text("200 Characters Or Less"), dismissButton: .default(Text("OK")))
+//                                }
+//                                .frame(maxHeight: 70)
                             
                             Text("Character Limit: \(charCount - newMessage.count)")
                                 .fontWeight(.light)
@@ -166,13 +283,13 @@ struct MessageThread: View {
                                 .foregroundColor(accent)
                         }
                         
-                    }.onChange(of: viewModel.allChats[String(receiverId)]!){ _ in
+                    }.onChange(of: viewModel.allChats[String(receiverId)] ?? []){ _ in
                         if let chatHistory = viewModel.allChats[String(receiverId)] {
                             if let lastChat = chatHistory.last {
                                 let lastChatId = lastChat.id
 
                                 // scroll to the last chat
-                                scroller.scrollTo(lastChatId)
+                                threadScroller.scrollTo(lastChatId)
                             }
                         }
                     }
