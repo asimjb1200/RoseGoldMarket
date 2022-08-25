@@ -130,23 +130,38 @@ struct MessageThread: View {
                                         return
                                     }
                                     
-                                    // check for profanity
-//                                    guard profanityChecker.containsProfanity(message: newMessage) == false else {
-//                                        profanityFound.toggle()
-//                                        return
-//                                    }
-                                    
+
                                     if let chatHistory = viewModel.allChats[String(receiverId)] {
                                         if let lastChat = chatHistory.last {
-                                            let recUsername = lastChat.senderUsername == viewingUser.username ? lastChat.receiverUsername : lastChat.senderUsername
-                                            
-                                            let newChatId = viewModel.sendMessageToUser(newMessage: newMessage, receiverId: receiverId, receiverUsername: recUsername, senderUsername: viewingUser.username, senderId: viewingUser.accountId)
-                                            newMessage = ""
-
-                                            // scroll to the last chat
-                                            scroller.scrollTo(newChatId, anchor: .top)
+                                            if lastChat.senderUsername == viewingUser.username {
+                                                let recUsername = lastChat.receiverUsername
+                                                let newChatId = viewModel.sendMessageToUser(newMessage: newMessage, receiverId: receiverId, receiverUsername: recUsername, senderUsername: viewingUser.username, senderId: viewingUser.accountId)
+                                                newMessage = ""
+                                                // scroll to the last chat
+                                                scroller.scrollTo(newChatId, anchor: .top)
+                                            } else {
+                                                let recUsername = lastChat.senderUsername
+                                                let newChatId = viewModel.sendMessageToUser(newMessage: newMessage, receiverId: receiverId, receiverUsername: recUsername, senderUsername: viewingUser.username, senderId: viewingUser.accountId)
+                                                newMessage = ""
+                                                // scroll to the last chat
+                                                scroller.scrollTo(newChatId, anchor: .top)
+                                            }
                                         }
                                     }
+                                    
+                                    
+                                    
+//                                    if let chatHistory = viewModel.allChats[String(receiverId)] {
+//                                        if let lastChat = chatHistory.last {
+//                                            let recUsername = lastChat.senderUsername == viewingUser.username ? lastChat.receiverUsername : lastChat.senderUsername
+//
+//                                            let newChatId = viewModel.sendMessageToUser(newMessage: newMessage, receiverId: receiverId, receiverUsername: recUsername, senderUsername: viewingUser.username, senderId: viewingUser.accountId)
+//                                            newMessage = ""
+//
+//                                            // scroll to the last chat
+//                                            scroller.scrollTo(newChatId, anchor: .top)
+//                                        }
+//                                    }
                                 }
                                 .background(
                                     RoundedRectangle(cornerRadius: 10)
