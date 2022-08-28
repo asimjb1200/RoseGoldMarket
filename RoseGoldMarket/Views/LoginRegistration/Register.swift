@@ -79,6 +79,7 @@ struct Register: View {
                         .modifier(PlaceholderStyle(showPlaceHolder: viewModel.firstName.isEmpty, placeHolder: "First Name..."))
                         .padding()
                         .background(gradientBG)
+                        .overlay(focusedField == FormFields.firstName ? RoundedRectangle(cornerRadius: 30).stroke(Color("MainColor"), lineWidth:3) : nil)
                         .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
                         .focused($focusedField, equals: .firstName)
@@ -92,6 +93,7 @@ struct Register: View {
                         .modifier(PlaceholderStyle(showPlaceHolder: viewModel.lastName.isEmpty, placeHolder: "Last Name..."))
                         .padding()
                         .background(gradientBG)
+                        .overlay(focusedField == FormFields.lastName ? RoundedRectangle(cornerRadius: 30).stroke(Color("MainColor"), lineWidth:3) : nil)
                         .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
                         .focused($focusedField, equals: .lastName)
@@ -125,6 +127,7 @@ struct Register: View {
                     }
                     .padding()
                     .background(gradientBG)
+                    .overlay(focusedField == FormFields.username ? RoundedRectangle(cornerRadius: 30).stroke(Color("MainColor"), lineWidth:3) : nil)
                     .padding([.leading, .trailing])
                     .alert(isPresented: $viewModel.fieldsEmpty) {
                         Alert(title: Text("Check Your Info"), message: Text("Fill out every field in the form to sign up."), dismissButton: .default(Text("Got It")))
@@ -174,6 +177,7 @@ struct Register: View {
                         }
                         .padding()
                         .background(gradientBG)
+                        .overlay(focusedField == FormFields.password ? RoundedRectangle(cornerRadius: 30).stroke(Color("MainColor"), lineWidth:3) : nil)
                         .padding([.leading, .trailing, .top])
                     } else {
                         HStack {
@@ -205,6 +209,7 @@ struct Register: View {
                         }
                         .padding()
                         .background(gradientBG)
+                        .overlay(focusedField == FormFields.password ? RoundedRectangle(cornerRadius: 30).stroke(Color("MainColor"), lineWidth:3) : nil)
                         .padding([.leading, .trailing, .top])
                     }
 
@@ -246,6 +251,7 @@ struct Register: View {
                 }
                 .padding()
                 .background(gradientBG)
+                .overlay(focusedField == FormFields.email ? RoundedRectangle(cornerRadius: 30).stroke(Color("MainColor"), lineWidth:3) : nil)
                 .padding()
                 
                 // address
@@ -263,6 +269,7 @@ struct Register: View {
                     }
                     .padding()
                     .background(gradientBG)
+                    .overlay(focusedField == FormFields.address ? RoundedRectangle(cornerRadius: 30).stroke(Color("MainColor"), lineWidth:3) : nil)
                     .padding()
                     
                     // city
@@ -277,6 +284,7 @@ struct Register: View {
                     }
                     .padding()
                     .background(gradientBG)
+                    .overlay(focusedField == FormFields.city ? RoundedRectangle(cornerRadius: 30).stroke(Color("MainColor"), lineWidth:3) : nil)
                     .padding()
                     
                     // state
@@ -295,6 +303,7 @@ struct Register: View {
                     .frame(maxWidth:.infinity)
                     .padding()
                     .background(gradientBG)
+                    .overlay(focusedField == FormFields.state ? RoundedRectangle(cornerRadius: 30).stroke(Color("MainColor"), lineWidth:3) : nil)
                     .padding()
                     .alert(isPresented: $viewModel.addressIsFake) {
                         Alert(title: Text("Your address could not be verified."))
@@ -312,6 +321,7 @@ struct Register: View {
                     }
                     .padding()
                     .background(gradientBG)
+                    .overlay(focusedField == FormFields.zipcode ? RoundedRectangle(cornerRadius: 30).stroke(Color("MainColor"), lineWidth:3) : nil)
                     .padding().keyboardType(.decimalPad)
                 }
                 
