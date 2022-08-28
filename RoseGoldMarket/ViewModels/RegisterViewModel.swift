@@ -19,7 +19,7 @@ final class RegisterUserViewModel: ObservableObject {
     @Published var zipCode = ""
     @Published var state = ""
     @Published var city = ""
-    @Published var avatar:UIImage? = UIImage(named: "default")!
+    @Published var avatar:UIImage? = UIImage(systemName: "plus.circle.fill")!.withTintColor(.white, renderingMode: .alwaysTemplate)
     @Published var dataPosted = false
     @Published var imageEnum: PlantOptions = .imageOne
     @Published var isShowingPhotoPicker = false
@@ -32,7 +32,9 @@ final class RegisterUserViewModel: ObservableObject {
     @Published var passwordNotComplex = false
     @Published var nameNotAvailable = false
     @Published var avatarNotUploaded = false
+    @Published var showPW = false
     @Published var statePicker: [String] = ["Select A State","AL","AK","AZ","AR","AS","CA","CO","CT","DE","DC","FL","GA","GU","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","CM","OH","OK","OR","PA","PR","RI","SC","SD","TN","TX","TT","UT","VT","VI","WA","WV","WI","WY"]
+    
     
     func getAndSaveUserLocation() {
         let geocoder = CLGeocoder()
