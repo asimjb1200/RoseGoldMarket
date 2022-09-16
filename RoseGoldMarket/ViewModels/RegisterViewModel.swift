@@ -19,7 +19,7 @@ final class RegisterUserViewModel: ObservableObject {
     @Published var zipCode = ""
     @Published var state = ""
     @Published var city = ""
-    @Published var avatar:UIImage? = UIImage(systemName: "plus.circle.fill")!.withTintColor(.white, renderingMode: .alwaysTemplate)
+    @Published var avatar:UIImage? = UIImage(named: "AddPhoto")!
     @Published var dataPosted = false
     @Published var imageEnum: PlantOptions = .imageOne
     @Published var isShowingPhotoPicker = false
@@ -85,9 +85,36 @@ final class RegisterUserViewModel: ObservableObject {
         }
     }
     
+    func registerUserV2(address:String, city:String, state:String, zipCode:String, geolocation:String) -> () {
+        guard
+            let avatar = avatar,
+            let avatarImgCompressed = avatar.jpegData(compressionQuality: 0.5)
+        else {
+            return
+        }
+        
+        guard let zipCodeInt = UInt(zipCode) else { return }
+        UserNetworking.shared.registerUser(firstName: self.firstName, lastName: self.lastName, username: self.username.lowercased(), email: self.email, pw: self.password, addy: address, zip: zipCodeInt, state: state, city: city, geolocation: geolocation, avi: avatarImgCompressed) { [weak self] registerResponse in
+            switch registerResponse {
+                case .success(let res):
+                    DispatchQueue.main.async {
+                        print("dataa posted")
+                        self?.dataPosted = res
+                    }
+                case .failure(let err):
+                    DispatchQueue.main.async {
+                        if err == .usernameTaken {
+                            self?.nameNotAvailable = true
+                        }
+                        print(err)
+                    }
+            }
+        }
+    }
+    
     func textFieldsEmpty() -> Bool {
         var fieldIsEmpty = false
-        for field in [self.firstName, self.lastName, self.username, self.email, self.password, self.address, self.zipCode, self.state, self.city] {
+        for field in [self.firstName, self.lastName, self.username, self.email, self.password] {
             if field.isEmpty {
                 fieldIsEmpty = true
                 break
