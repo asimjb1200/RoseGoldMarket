@@ -107,8 +107,7 @@ struct Register: View {
                 Group {
                     HStack {
                         Image(systemName: "pencil").foregroundColor(accent)
-                        TextField("", text: $viewModel.username)
-                            .modifier(PlaceholderStyle(showPlaceHolder: viewModel.username.isEmpty, placeHolder: "Display Name"))
+                        TextField("Display Name", text: $viewModel.username)
                             .textInputAutocapitalization(.never)
                             .disableAutocorrection(true)
                             .focused($focusedField, equals: .username)
@@ -146,7 +145,7 @@ struct Register: View {
                     if viewModel.showPW == false {
                         HStack {
                             Image(systemName: "key.fill").foregroundColor(accent)
-                            SecureField("", text: $viewModel.password)
+                            SecureField("Password", text: $viewModel.password)
                                 .onChange(of: viewModel.password) {
                                     self.capLetterFound = false
                                     self.numberFound = false
@@ -161,7 +160,6 @@ struct Register: View {
                                     
                                     viewModel.password = String($0.prefix(16)) // this limits the char field to 16 chars
                                 }
-                                .modifier(PlaceholderStyle(showPlaceHolder: viewModel.password.isEmpty, placeHolder: "Password"))
                                 .textInputAutocapitalization(.never)
                                 .disableAutocorrection(true)
                                 .focused($focusedField, equals: .password)
@@ -177,7 +175,7 @@ struct Register: View {
                     } else {
                         HStack {
                             Image(systemName: "key.fill").foregroundColor(accent)
-                            TextField("", text: $viewModel.password)
+                            TextField("Password", text: $viewModel.password)
                                 .onChange(of: viewModel.password) {
                                     self.capLetterFound = false
                                     self.numberFound = false
@@ -198,7 +196,6 @@ struct Register: View {
                                     
                                     viewModel.password = String($0.prefix(16)) // this limits the char field to 16 chars
                                 }
-                                .modifier(PlaceholderStyle(showPlaceHolder: viewModel.password.isEmpty, placeHolder: "Password..."))
                                 .textInputAutocapitalization(.never)
                                 .disableAutocorrection(true)
                                 .focused($focusedField, equals: .password)
@@ -233,8 +230,7 @@ struct Register: View {
                 // MARK: email
                 HStack {
                     Text("@").foregroundColor(accent)
-                    TextField("", text: $viewModel.email)
-                        .modifier(PlaceholderStyle(showPlaceHolder: viewModel.email.isEmpty, placeHolder: "Email"))
+                    TextField("Email", text: $viewModel.email)
                         .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
                         .focused($focusedField, equals: .email)
