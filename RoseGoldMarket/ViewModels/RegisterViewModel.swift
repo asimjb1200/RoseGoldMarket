@@ -16,6 +16,7 @@ final class RegisterUserViewModel: ObservableObject {
     @Published var email = ""
     @Published var password = ""
     @Published var address = ""
+    @Published var phone = ""
     @Published var zipCode = ""
     @Published var state = ""
     @Published var city = ""
@@ -33,6 +34,9 @@ final class RegisterUserViewModel: ObservableObject {
     @Published var nameNotAvailable = false
     @Published var avatarNotUploaded = false
     @Published var showPW = false
+    @Published var showConfPW = false
+    @Published var addyNotFound = false
+    @Published var addressInfo: AddressInformation?
     @Published var statePicker: [String] = ["Select A State","AL","AK","AZ","AR","AS","CA","CO","CT","DE","DC","FL","GA","GU","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","CM","OH","OK","OR","PA","PR","RI","SC","SD","TN","TX","TT","UT","VT","VI","WA","WV","WI","WY"]
     
     

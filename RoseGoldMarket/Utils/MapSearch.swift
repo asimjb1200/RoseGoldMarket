@@ -55,6 +55,7 @@ class MapSearch : NSObject, ObservableObject {
                 error == nil,
                 let coordinate = response?.mapItems.first?.placemark.coordinate,
                 let address = response?.mapItems.first?.placemark.thoroughfare,
+                let numIdentifier = response?.mapItems.first?.placemark.subThoroughfare, // this will be the bldg # usually
                 let city = response?.mapItems.first?.placemark.locality,
                 let state = response?.mapItems.first?.placemark.administrativeArea,
                 let zipCode = response?.mapItems.first?.placemark.postalCode
@@ -63,7 +64,7 @@ class MapSearch : NSObject, ObservableObject {
                 return
             }
             
-            self.addressInfo = AddressInformation(geolocation: "\(coordinate.longitude), \(coordinate.latitude)", address: address, city: city, state: state, zipCode: zipCode)
+            self.addressInfo = AddressInformation(geolocation: "\(coordinate.longitude), \(coordinate.latitude)", address: "\(numIdentifier) \(address)", city: city, state: state, zipCode: zipCode)
         }
     }
     
@@ -79,14 +80,17 @@ class MapSearch : NSObject, ObservableObject {
                 error == nil,
                 let coordinate = response?.mapItems.first?.placemark.coordinate,
                 let address = response?.mapItems.first?.placemark.thoroughfare,
+                let numIdentifier = response?.mapItems.first?.placemark.subThoroughfare, // this will be the bldg # usually
                 let city = response?.mapItems.first?.placemark.locality,
                 let state = response?.mapItems.first?.placemark.administrativeArea,
                 let zipCode = response?.mapItems.first?.placemark.postalCode
             else {
-                print("an error occurred")
+                print("an error occurred \(String(describing: error))")
+                completion((addressFound: false, addyInfo: nil))
                 return
             }
-            self.addressInfo = AddressInformation(geolocation: "\(coordinate.longitude), \(coordinate.latitude)", address: address, city: city, state: state, zipCode: zipCode)
+
+            self.addressInfo = AddressInformation(geolocation: "\(coordinate.longitude), \(coordinate.latitude)", address: "\(numIdentifier) \(address)", city: city, state: state, zipCode: zipCode)
             completion((addressFound: true, addyInfo: self.addressInfo))
         }
     }
