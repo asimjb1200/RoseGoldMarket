@@ -26,8 +26,6 @@ struct Register: View {
     @State private var confirmPassword = ""
     @State private var activateLink = false
     @State private var pwDontMatch = false
-    
-    @State private var keyboardHeight: CGFloat = 0
 
     private let nonActiveField: some View = RoundedRectangle(cornerRadius: 30).fill(Color.white)
     private let activeField: some View = RoundedRectangle(cornerRadius: 30).stroke(Color.blue, lineWidth:3)
@@ -388,9 +386,7 @@ struct Register: View {
                     }.foregroundColor(Color.blue)
                 }.padding(.top, 15.0)
             }.shadow(radius: 5)
-        }.padding(.bottom, keyboardHeight)
-        // 3.
-        .onReceive(Publishers.keyboardHeight) { self.keyboardHeight = $0 }
+        }.adaptiveKeyboard()
         .sheet(isPresented: $viewModel.isShowingPhotoPicker, content: {
             PhotoPicker(plantImage: $viewModel.avatar, plantImage2: Binding.constant(nil), plantImage3: Binding.constant(nil), plantEnum: $viewModel.imageEnum)
         })
