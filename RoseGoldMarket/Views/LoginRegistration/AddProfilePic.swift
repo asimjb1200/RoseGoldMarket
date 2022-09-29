@@ -125,7 +125,7 @@ struct AddProfilePic: View {
                     return
                 }
                 
-                registerViewModel.registerUserV2(address: addyInfo.address, city: addyInfo.city, state: addyInfo.state, zipCode: addyInfo.zipCode, geolocation: addyInfo.geolocation)
+                registerViewModel.registerUserV2(address: addyInfo.address, phone: registerViewModel.phone, city: addyInfo.city, state: addyInfo.state, zipCode: addyInfo.zipCode, geolocation: addyInfo.geolocation)
             }
             .foregroundColor(Color.white)
             .font(.system(size: 16, weight: Font.Weight.bold))

@@ -26,8 +26,10 @@ struct Register: View {
     @State private var confirmPassword = ""
     @State private var activateLink = false
     @State private var pwDontMatch = false
+    @State private var pwPadding:CGFloat = 0
+    @State private var keyboardWillShow = false
 
-    private let nonActiveField: some View = RoundedRectangle(cornerRadius: 30).fill(Color.white)
+    private let nonActiveField: some View = RoundedRectangle(cornerRadius: 30).stroke(.gray, lineWidth: 1)
     private let activeField: some View = RoundedRectangle(cornerRadius: 30).stroke(Color.blue, lineWidth:3)
     private let suggestionsListOutline: some View = RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 1)
 
@@ -43,19 +45,21 @@ struct Register: View {
     var body: some View {
         VStack(spacing: 0.0) {
             ScrollView {
-                // profile picture
-                Group {
-                    Text("Let's Get Started!")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                    Text("Create a Rose Gold account to access the market.")
-                        .font(.caption)
+                if self.pwPadding == 0 {
+                    Group {
+                        Text("Let's Get Started!")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            
+                        Text("Create a Rose Gold account to access the market.")
+                            .font(.caption)
+                    }
                 }
                 
                 // MARK: first and last name
                 HStack(spacing: 0.0) {
                     Image(systemName: "person.circle.fill").foregroundColor((focusedField == FormFields.firstName || focusedField == FormFields.lastName) ? accent : Color.gray)
-                    TextField("First Name", text: $viewModel.firstName)
+                    TextField(" First Name", text: $viewModel.firstName)
                         .foregroundColor(Color.blue)
                         .focused($focusedField, equals: FormFields.firstName)
                         .toolbar {
@@ -77,16 +81,17 @@ struct Register: View {
                             focusedField = FormFields.email
                         }
                 }
-                    .padding()
-                    .background((focusedField == FormFields.firstName || focusedField == FormFields.lastName) ? AnyView(activeField) : AnyView(nonActiveField))
-                    .padding([.leading, .trailing, .top])
-                    .alert(isPresented: $namesTooShort) {
-                        Alert(title: Text("Names Too Short"), message: Text("Your first and last names must be at least 2 characters each."))
-                    }
+                .padding()
+                .background((focusedField == FormFields.firstName || focusedField == FormFields.lastName) ? AnyView(activeField) : AnyView(nonActiveField))
+                .padding([.leading, .trailing, .top])
+                .offset(y: self.pwPadding * -1)
+                .alert(isPresented: $namesTooShort) {
+                    Alert(title: Text("Names Too Short"), message: Text("Your first and last names must be at least 2 characters each."))
+                }
                 
                 // MARK: email
                 HStack(spacing: 0.0) {
-                    Text("@").foregroundColor(focusedField == FormFields.email ? accent : Color.gray)
+                    Text("@ ").foregroundColor(focusedField == FormFields.email ? accent : Color.gray)
                     TextField("Email", text: $viewModel.email)
                         .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
@@ -96,14 +101,15 @@ struct Register: View {
                             focusedField = .phone
                         }
                 }
-                    .padding()
-                    .background(focusedField == FormFields.email ? AnyView(activeField) : AnyView(nonActiveField))
-                    .padding([.leading, .trailing, .top])
+                .padding()
+                .background(focusedField == FormFields.email ? AnyView(activeField) : AnyView(nonActiveField))
+                .padding([.leading, .trailing, .top])
+                .offset(y: self.pwPadding * -1)
                 
                 // MARK: Phone
                 HStack(spacing: 0.0) {
                     Image(systemName: "phone.fill").foregroundColor(focusedField == FormFields.phone ? accent : Color.gray)
-                    TextField("Phone", text: $viewModel.phone)
+                    TextField(" Phone", text: $viewModel.phone)
                         .foregroundColor(Color.blue)
                         .focused($focusedField, equals: .phone)
                         .keyboardType(.numberPad)
@@ -111,14 +117,15 @@ struct Register: View {
                             focusedField = .address
                         }
                 }
-                    .padding()
-                    .background(focusedField == FormFields.phone ? AnyView(activeField) : AnyView(nonActiveField))
-                    .padding([.leading, .trailing, .top])
+                .padding()
+                .background(focusedField == FormFields.phone ? AnyView(activeField) : AnyView(nonActiveField))
+                .padding([.leading, .trailing, .top])
+                .offset(y: self.pwPadding * -1)
                 
                 // MARK: Address
                 HStack(spacing: 0.0) {
                    Image(systemName: "signpost.right.fill").foregroundColor(focusedField == FormFields.address ? accent : Color.gray)
-                   TextField("Address", text: $mapSearch.searchTerm)
+                   TextField(" Address", text: $mapSearch.searchTerm)
                     .foregroundColor(Color.blue)
                     .onChange(of: mapSearch.searchTerm) { [oldAddyString = mapSearch.searchTerm] newStr in
                        // if the password is empty, reset the found flag
@@ -132,14 +139,19 @@ struct Register: View {
                             mapSearch.addressFound = false
                         }
                    }
+                    .onSubmit {
+                        mapSearch.locationResults = []
+                        focusedField = .password
+                    }
                }
-                   .focused($focusedField, equals: .address)
-                   .padding()
-                   .background(focusedField == FormFields.address ? AnyView(activeField) : AnyView(nonActiveField))
-                   .padding([.leading, .trailing, .top])
-                   .alert(isPresented: $viewModel.addyNotFound) {
-                       Alert(title: Text("Address Not Found"), message: Text("Please try again."))
-                   }
+               .focused($focusedField, equals: .address)
+               .padding()
+               .background(focusedField == FormFields.address ? AnyView(activeField) : AnyView(nonActiveField))
+               .padding([.leading, .trailing, .top])
+               .offset(y: self.pwPadding * -1)
+               .alert(isPresented: $viewModel.addyNotFound) {
+                   Alert(title: Text("Address Not Found"), message: Text("Please try again."))
+               }
                 
                 if !mapSearch.locationResults.isEmpty {
                    Section {
@@ -160,6 +172,7 @@ struct Register: View {
                                        //viewModel.address = "\(location.title) \(location.subtitle)"
                                        
                                        mapSearch.validateAddress(location: location)
+                                       focusedField = .password
                                    }
                                Divider()
                            }
@@ -175,7 +188,7 @@ struct Register: View {
                     if viewModel.showPW == false {
                         HStack(spacing: 0.0) {
                             Image(systemName: "key.fill").foregroundColor(focusedField == FormFields.password ? accent : Color.gray)
-                            SecureField("Password", text: $viewModel.password)
+                            SecureField(" Password", text: $viewModel.password)
                                 .onChange(of: viewModel.password) {
                                     self.capLetterFound = false
                                     self.numberFound = false
@@ -207,12 +220,12 @@ struct Register: View {
                         }
                         .padding()
                         .background(focusedField == FormFields.password ? AnyView(activeField) : AnyView(nonActiveField))
-                        .padding([.leading, .trailing, .top])
+                        .padding([.leading, .trailing, .top], 15.0)
                         
                     } else {
                         HStack(spacing: 0.0) {
                             Image(systemName: "key.fill").foregroundColor(focusedField == FormFields.password ? accent : Color.gray)
-                            TextField("Password", text: $viewModel.password)
+                            TextField(" Password", text: $viewModel.password)
                                 .onChange(of: viewModel.password) {
                                     self.capLetterFound = false
                                     self.numberFound = false
@@ -265,7 +278,36 @@ struct Register: View {
                         }.frame(maxWidth: .infinity, alignment: .leading).padding(.leading)
                     }
                 }
-                
+                .offset(y: self.pwPadding * -1)
+                .onReceive(Publishers.keyboardHeight) { keyboardHeight in
+                    if keyboardHeight > 0 && keyboardWillShow == false {
+                        keyboardWillShow = true
+                    } else {
+                        keyboardWillShow = false
+                    }
+                    
+                    var focusedTextInputBottom = UIResponder.currentFirstResponder?.globalFrame?.maxY ?? 0
+                    
+                    if focusedTextInputBottom > 0 {
+                        focusedTextInputBottom += 15 // have to add in the padding so it scrolls outside of the text bubble styling
+                    }
+                    
+                    let screen = UIScreen.main.bounds
+                    let topOfKeyboard = screen.size.height - keyboardHeight
+                    let moveUpThisMuch = focusedTextInputBottom - topOfKeyboard
+                    if moveUpThisMuch > 0 && keyboardWillShow == true {
+                        withAnimation(.linear) {
+                            self.pwPadding = moveUpThisMuch
+                        }
+                        
+                    }
+                    
+                    if keyboardHeight == 0 {
+                        withAnimation(.linear) {
+                            self.pwPadding = 0
+                        }
+                    }
+                }
                 // MARK: confirm password
                 Group {
                     if viewModel.showConfPW == false {
@@ -313,6 +355,7 @@ struct Register: View {
                         }
                     }
                 }
+                .offset(y: self.pwPadding * -1)
                 
                 // MARK: Register Button
                 NavigationLink(destination: AddProfilePic(registerViewModel: viewModel), isActive: $activateLink) {
@@ -349,6 +392,13 @@ struct Register: View {
                             focusedField = .address
                             return
                         }
+                        
+                        guard
+                            viewModel.password.count > 0
+                        else {
+                            focusedField = .phone
+                            return
+                        }
 
                         if mapSearch.addressInfo == nil { // we know that they didn't select an option from the list of suggestions
                             mapSearch.validateAddress(locationString: mapSearch.searchTerm) { (addressFound, addyInfo) in
@@ -380,20 +430,18 @@ struct Register: View {
                 }
 
                 HStack(spacing: 0.0) {
-                    Text("Already have an account?")
+                    Text("Already have an account? ")
                     Button("Login Here") {
                         dismiss() // navigate back to the login screen
                     }.foregroundColor(Color.blue)
                 }.padding(.top, 15.0)
-            }.shadow(radius: 5)
-        }.adaptiveKeyboard()
+            }
+        }
         .sheet(isPresented: $viewModel.isShowingPhotoPicker, content: {
             PhotoPicker(plantImage: $viewModel.avatar, plantImage2: Binding.constant(nil), plantImage3: Binding.constant(nil), plantEnum: $viewModel.imageEnum)
         })
         .navigationBarTitle(Text(""), displayMode: .inline)
         .accentColor(Color.blue)
-        
-        
     }
 }
 

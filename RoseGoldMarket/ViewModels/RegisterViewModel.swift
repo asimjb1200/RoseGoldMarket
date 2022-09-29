@@ -40,56 +40,56 @@ final class RegisterUserViewModel: ObservableObject {
     @Published var statePicker: [String] = ["Select A State","AL","AK","AZ","AR","AS","CA","CO","CT","DE","DC","FL","GA","GU","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","CM","OH","OK","OR","PA","PR","RI","SC","SD","TN","TX","TT","UT","VT","VI","WA","WV","WI","WY"]
     
     
-    func getAndSaveUserLocation() {
-        let geocoder = CLGeocoder()
-        let checkAddressForGeoLo = "\(self.address), \(self.city), \(self.state) \(self.zipCode)"
-        geocoder.geocodeAddressString(checkAddressForGeoLo) { placemarks, error in
-            guard error == nil else {
-                self.addressIsFake = true
-                return
-            }
-            let placemark = placemarks?.first
-            let lat = placemark?.location?.coordinate.latitude
-            let lon = placemark?.location?.coordinate.longitude
-            
-            if let lon = lon, let lat = lat { // unwrap the optionals
-                // (long, lat) for database now send new addy and long/lat to the database
-                let geoLocation = "(\(lon),\(lat))"
-                
-                // register the new user
-                self.registerUser(geolocation: geoLocation)
-            }
-        }
-    }
+//    func getAndSaveUserLocation() {
+//        let geocoder = CLGeocoder()
+//        let checkAddressForGeoLo = "\(self.address), \(self.city), \(self.state) \(self.zipCode)"
+//        geocoder.geocodeAddressString(checkAddressForGeoLo) { placemarks, error in
+//            guard error == nil else {
+//                self.addressIsFake = true
+//                return
+//            }
+//            let placemark = placemarks?.first
+//            let lat = placemark?.location?.coordinate.latitude
+//            let lon = placemark?.location?.coordinate.longitude
+//
+//            if let lon = lon, let lat = lat { // unwrap the optionals
+//                // (long, lat) for database now send new addy and long/lat to the database
+//                let geoLocation = "(\(lon),\(lat))"
+//
+//                // register the new user
+//                self.registerUser(geolocation: geoLocation)
+//            }
+//        }
+//    }
     
-    func registerUser(geolocation:String) -> () {
-        guard
-            let avatar = avatar,
-            let avatarImgCompressed = avatar.jpegData(compressionQuality: 0.5)
-        else {
-            return
-        }
-        
-        guard let zipCodeInt = UInt(self.zipCode) else { return }
-
-        UserNetworking.shared.registerUser(firstName: self.firstName, lastName: self.lastName, username: self.username.lowercased(), email: self.email, pw: self.password, addy: self.address, zip: zipCodeInt, state: self.state, city: self.city, geolocation: geolocation, avi: avatarImgCompressed) {[weak self] registerResponse in
-            switch registerResponse {
-                case .success(let res):
-                    DispatchQueue.main.async {
-                        self?.dataPosted = res
-                    }
-                case .failure(let err):
-                    DispatchQueue.main.async {
-                        if err == .usernameTaken {
-                            self?.nameNotAvailable = true
-                        }
-                        print(err)
-                    }
-            }
-        }
-    }
+//    func registerUser(geolocation:String) -> () {
+//        guard
+//            let avatar = avatar,
+//            let avatarImgCompressed = avatar.jpegData(compressionQuality: 0.5)
+//        else {
+//            return
+//        }
+//
+//        guard let zipCodeInt = UInt(self.zipCode) else { return }
+//
+//        UserNetworking.shared.registerUser(firstName: self.firstName, lastName: self.lastName, username: self.username.lowercased(), email: self.email, pw: self.password, addy: self.address, zip: zipCodeInt, state: self.state, city: self.city, geolocation: geolocation, avi: avatarImgCompressed) {[weak self] registerResponse in
+//            switch registerResponse {
+//                case .success(let res):
+//                    DispatchQueue.main.async {
+//                        self?.dataPosted = res
+//                    }
+//                case .failure(let err):
+//                    DispatchQueue.main.async {
+//                        if err == .usernameTaken {
+//                            self?.nameNotAvailable = true
+//                        }
+//                        print(err)
+//                    }
+//            }
+//        }
+//    }
     
-    func registerUserV2(address:String, city:String, state:String, zipCode:String, geolocation:String) -> () {
+    func registerUserV2(address:String, phone:String, city:String, state:String, zipCode:String, geolocation:String) -> () {
         guard
             let avatar = avatar,
             let avatarImgCompressed = avatar.jpegData(compressionQuality: 0.5)
@@ -98,11 +98,11 @@ final class RegisterUserViewModel: ObservableObject {
         }
         
         guard let zipCodeInt = UInt(zipCode) else { return }
-        UserNetworking.shared.registerUser(firstName: self.firstName, lastName: self.lastName, username: self.username.lowercased(), email: self.email, pw: self.password, addy: address, zip: zipCodeInt, state: state, city: city, geolocation: geolocation, avi: avatarImgCompressed) { [weak self] registerResponse in
+        UserNetworking.shared.registerUser(firstName: self.firstName, lastName: self.lastName, username: self.username.lowercased(), email: self.email, phone: phone, pw: self.password, addy: address, zip: zipCodeInt, state: state, city: city, geolocation: geolocation, avi: avatarImgCompressed) { [weak self] registerResponse in
             switch registerResponse {
                 case .success(let res):
                     DispatchQueue.main.async {
-                        print("dataa posted")
+                        print("data posted")
                         self?.dataPosted = res
                     }
                 case .failure(let err):
