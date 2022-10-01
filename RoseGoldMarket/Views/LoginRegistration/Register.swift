@@ -266,13 +266,13 @@ struct Register: View {
                         .padding([.leading, .trailing, .top])
                     }
 
-                    if pwNotValid {
+                    if viewModel.pwNeedsCaps {
                         HStack(spacing: 0.0) {
                             Text("1 Uppercase X").font(.caption2).foregroundColor(.red)
                         }.frame(maxWidth: .infinity, alignment: .leading).padding(.leading)
                     }
 
-                    if pwNotValid {
+                    if viewModel.pwNeedsNumbers {
                         HStack(spacing: 0.0) {
                             Text("1 Number X").font(.caption2).foregroundColor(.red)
                         }.frame(maxWidth: .infinity, alignment: .leading).padding(.leading)
@@ -308,6 +308,10 @@ struct Register: View {
                         }
                     }
                 }
+                .alert(isPresented: $viewModel.passwordLengthIsInvalid) {
+                    Alert(title: Text("Password must be between 8 & 16 characters"))
+                }
+                
                 // MARK: confirm password
                 Group {
                     if viewModel.showConfPW == false {
@@ -378,6 +382,28 @@ struct Register: View {
                             return
                         }
                         
+                        
+                        let containsNums = viewModel.pwContainsNumber()
+                        let containsUppers = viewModel.pwContainsUppercase()
+                        
+                        guard
+                            containsNums == true,
+                            containsUppers == true
+                        else {
+                            if !containsUppers {
+                                viewModel.pwNeedsCaps = true
+                            } else {
+                                viewModel.pwNeedsCaps = false
+                            }
+                            if !containsNums {
+                                viewModel.pwNeedsNumbers = true
+                            } else {
+                                viewModel.pwNeedsNumbers = false
+                            }
+                            //focusedField = .password
+                            return
+                        }
+                        
                         guard
                             viewModel.password == confirmPassword
                         else {
@@ -442,6 +468,12 @@ struct Register: View {
         })
         .navigationBarTitle(Text(""), displayMode: .inline)
         .accentColor(Color.blue)
+        .onAppear() {
+            print("view model data posted prop: \(viewModel.canLoginNow)")
+            if viewModel.canLoginNow {
+                dismiss() // send them to the login screen because they've already signed up
+            }
+        }
     }
 }
 

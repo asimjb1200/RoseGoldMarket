@@ -13,6 +13,7 @@ struct AddProfilePic: View {
     @FocusState var focusedField:FormFields?
     @State var charCount = 16
     @State var errorOccurred = false
+    @Environment(\.dismiss) private var dismiss
 
     let accent = Color.blue
     private let defaultImage = UIImage(named: "AddPhoto")!
@@ -91,6 +92,9 @@ struct AddProfilePic: View {
             .background(focusedField == FormFields.username ? AnyView(activeField) : AnyView(nonActiveField))
             .padding([.leading, .trailing])
             .padding(.top, 50)
+            .alert(isPresented: $registerViewModel.nameNotAvailable) {
+                Alert(title: Text("That display name isn't available."))
+            }
 
             Text("Character Limit: \(charCount)")
                 .fontWeight(.light)
@@ -99,7 +103,7 @@ struct AddProfilePic: View {
                 .padding(.leading)
                 .foregroundColor(focusedField == FormFields.username ? accent : Color.gray)
                 .alert(isPresented: $registerViewModel.usernameLengthIsInvalid) {
-                    Alert(title: Text("Display name must be between 8 and 16 characters."))
+                    Alert(title: Text("Display name must be between 5 and 16 characters."))
                 }
             
             Button("Confirm Account") {
@@ -110,7 +114,7 @@ struct AddProfilePic: View {
                 
                 guard
                     registerViewModel.username.count <= 16,
-                    registerViewModel.username.count > 7
+                    registerViewModel.username.count > 5
                 else {
                     registerViewModel.usernameLengthIsInvalid = true
                     focusedField = .username
@@ -132,6 +136,12 @@ struct AddProfilePic: View {
             .padding()
             .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue))
             .padding(.top, 100.0)
+            .alert(isPresented: $registerViewModel.dataPosted) {
+                Alert(title: Text("Success"), message: Text("Account Created"), dismissButton: .default(Text("Log In")) {
+                    registerViewModel.canLoginNow = true
+                    dismiss()
+                })
+            }
             
             Spacer()
         }.shadow(radius: 5)

@@ -22,6 +22,7 @@ final class RegisterUserViewModel: ObservableObject {
     @Published var city = ""
     @Published var avatar:UIImage? = UIImage(named: "AddPhoto")!
     @Published var dataPosted = false
+    @Published var canLoginNow = false
     @Published var imageEnum: PlantOptions = .imageOne
     @Published var isShowingPhotoPicker = false
     @Published var spacesFoundInField = false
@@ -29,6 +30,8 @@ final class RegisterUserViewModel: ObservableObject {
     @Published var addressIsFake = false
     @Published var specialCharFound = false
     @Published var passwordLengthIsInvalid = false
+    @Published var pwNeedsNumbers = false
+    @Published var pwNeedsCaps = false
     @Published var usernameLengthIsInvalid = false
     @Published var passwordNotComplex = false
     @Published var nameNotAvailable = false

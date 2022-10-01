@@ -302,6 +302,7 @@ final class UserNetworking {
     
     func registerUser(firstName: String, lastName: String, username:String, email:String, phone:String, pw:String, addy:String, zip:UInt, state:String, city:String, geolocation:String, avi:Data, defaultAvi:Bool = false, completion: @escaping (Result<Bool, RegistrationErrors>) -> ()) {
         let serverUrl = URL(string: "https://rosegoldgardens.com/api/users/register-user")
+        //let serverUrl = URL(string: "http://localhost:4000/api/users/register-user")
         var urlRequest = URLRequest(url: serverUrl!)
         // construct the multipart request with the image data
         let boundary = UUID().uuidString
