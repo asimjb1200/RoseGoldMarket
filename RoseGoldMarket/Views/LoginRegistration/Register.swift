@@ -466,6 +466,7 @@ struct Register: View {
         .sheet(isPresented: $viewModel.isShowingPhotoPicker, content: {
             PhotoPicker(plantImage: $viewModel.avatar, plantImage2: Binding.constant(nil), plantImage3: Binding.constant(nil), plantEnum: $viewModel.imageEnum)
         })
+        .shadow(radius: 10)
         .navigationBarTitle(Text(""), displayMode: .inline)
         .accentColor(Color.blue)
         .onAppear() {

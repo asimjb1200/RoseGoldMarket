@@ -17,7 +17,7 @@ struct AddProfilePic: View {
 
     let accent = Color.blue
     private let defaultImage = UIImage(named: "AddPhoto")!
-    private let nonActiveField: some View = RoundedRectangle(cornerRadius: 30).fill(Color.white)
+    private let nonActiveField: some View = RoundedRectangle(cornerRadius: 30).stroke(.gray, lineWidth: 1)
     private let activeField: some View = RoundedRectangle(cornerRadius: 30).stroke(Color.blue, lineWidth:3)
     
     var body: some View {
@@ -29,45 +29,34 @@ struct AddProfilePic: View {
                 }
             
             // MARK: Avatar
-            Group {
-                ZStack {
-                    // now let's perform checks to only pulsate if the default image is up
-                    if registerViewModel.avatar == defaultImage {
+            ZStack {
+                // now let's perform checks to only pulsate if the default image is up
+                if registerViewModel.avatar == defaultImage {
+                    Circle()
+                        .fill(accent.opacity(0.25)).frame(width: 200, height: 200).scaleEffect(self.wave ? 1 : 0)
+                        
+
                         Circle()
-                            .stroke(lineWidth: 40)
-                            .frame(width: 100, height: 100)
+                            .frame(width: 160, height: 160)
                             .foregroundColor(accent)
-                            .scaleEffect(wave ? 1 : 0.5)
-                            .opacity(wave ? 0.1 : 1)
-                            .animation(Animation.easeInOut(duration: 1).repeatForever(autoreverses: true).speed(0.5), value: wave)
-                            .onAppear() {
-                                self.wave.toggle()
-                            }
-
-//                            Circle()
-//                                .frame(width: 100, height: 100)
-//                                .foregroundColor(accent)
-//                                .shadow(radius: 25)
-                    }
-
-                    Image(uiImage: registerViewModel.avatar!)
-                        .resizable()
-                        .scaledToFit()
-                        .clipShape(Circle())
-                        .foregroundColor(.white)
-                        .frame(width: 100, height: 100)
-                        .shadow(radius: 25)
-                        .onTapGesture {
-                            registerViewModel.imageEnum = .imageOne
-                            registerViewModel.isShowingPhotoPicker = true
-                        }
-                        .alert(isPresented: $registerViewModel.avatarNotUploaded) {
-                            Alert(title: Text("Please upload an avatar"))
-                        }
+                            .shadow(radius: 25)
                 }
-            }
-            .padding()
-            
+
+                Image(uiImage: registerViewModel.avatar!)
+                    .resizable()
+                    .scaledToFit()
+                    .clipShape(Circle())
+                    .foregroundColor(.white)
+                    .frame(width: 150, height: 150)
+                    .shadow(radius: 25)
+                    .onTapGesture {
+                        registerViewModel.imageEnum = .imageOne
+                        registerViewModel.isShowingPhotoPicker = true
+                    }
+                    .alert(isPresented: $registerViewModel.avatarNotUploaded) {
+                        Alert(title: Text("Please upload an avatar"))
+                    }
+            }.frame(maxHeight: 250)
             
             // MARK: Display Name
             HStack {
@@ -91,7 +80,6 @@ struct AddProfilePic: View {
             .padding()
             .background(focusedField == FormFields.username ? AnyView(activeField) : AnyView(nonActiveField))
             .padding([.leading, .trailing])
-            .padding(.top, 50)
             .alert(isPresented: $registerViewModel.nameNotAvailable) {
                 Alert(title: Text("That display name isn't available."))
             }
