@@ -14,6 +14,7 @@ import UIKit
 
 struct Register: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) var colorScheme
     @StateObject var viewModel:RegisterUserViewModel = RegisterUserViewModel()
     @State var specialCharFound = false
     @FocusState private var focusedField:FormFields?
@@ -28,6 +29,8 @@ struct Register: View {
     @State private var pwDontMatch = false
     @State private var pwPadding:CGFloat = 0
     @State private var keyboardWillShow = false
+    @State private var showLoginHere = true
+    @State var addyChosen = false
 
     private let nonActiveField: some View = RoundedRectangle(cornerRadius: 30).stroke(.gray, lineWidth: 1)
     private let activeField: some View = RoundedRectangle(cornerRadius: 30).stroke(Color.blue, lineWidth:3)
@@ -48,11 +51,14 @@ struct Register: View {
                 if self.pwPadding == 0 {
                     Group {
                         Text("Let's Get Started!")
-                            .font(.title2)
+                            .font(.title)
                             .fontWeight(.bold)
+                            .padding(.top, 20)
                             
                         Text("Create a Rose Gold account to access the market.")
-                            .font(.caption)
+                            .font(.callout)
+                            .foregroundColor(.gray)
+                            .offset(y: 10)
                     }
                 }
                 
@@ -60,8 +66,9 @@ struct Register: View {
                 HStack(spacing: 0.0) {
                     Image(systemName: "person.circle.fill").foregroundColor((focusedField == FormFields.firstName || focusedField == FormFields.lastName) ? accent : Color.gray)
                     TextField(" First Name", text: $viewModel.firstName)
-                        .foregroundColor(Color.blue)
+                        .foregroundColor((focusedField == FormFields.firstName || focusedField == FormFields.lastName) ? accent : Color.gray)
                         .focused($focusedField, equals: FormFields.firstName)
+                        .textContentType(UITextContentType.name)
                         .toolbar {
                             ToolbarItemGroup(placement: .keyboard) {
                                 Button("Done") {
@@ -75,7 +82,8 @@ struct Register: View {
                         }
                     
                     TextField("Last Name", text: $viewModel.lastName)
-                        .foregroundColor(Color.blue)
+                        .foregroundColor((focusedField == FormFields.firstName || focusedField == FormFields.lastName) ? accent : Color.gray)
+                        .textContentType(UITextContentType.familyName)
                         .focused($focusedField, equals: FormFields.lastName)
                         .onSubmit {
                             focusedField = FormFields.email
@@ -84,6 +92,7 @@ struct Register: View {
                 .padding()
                 .background((focusedField == FormFields.firstName || focusedField == FormFields.lastName) ? AnyView(activeField) : AnyView(nonActiveField))
                 .padding([.leading, .trailing, .top])
+                .padding(.top)
                 .offset(y: self.pwPadding * -1)
                 .alert(isPresented: $namesTooShort) {
                     Alert(title: Text("Names Too Short"), message: Text("Your first and last names must be at least 2 characters each."))
@@ -91,13 +100,22 @@ struct Register: View {
                 
                 // MARK: email
                 HStack(spacing: 0.0) {
-                    Text("@ ").foregroundColor(focusedField == FormFields.email ? accent : Color.gray)
-                    TextField("Email", text: $viewModel.email)
+                    Image(systemName: "envelope.fill").foregroundColor(focusedField == FormFields.email ? accent : Color.gray)
+                    TextField(" Email", text: $viewModel.email)
                         .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
+                        .keyboardType(.emailAddress)
+                        .textContentType(UITextContentType.emailAddress)
                         .focused($focusedField, equals: .email)
-                        .foregroundColor(Color.blue)
+                        .foregroundColor(focusedField == FormFields.email ? accent : Color.gray)
                         .onSubmit {
+                            guard
+                                viewModel.isValidEmail(email: viewModel.email)
+                            else {
+                                focusedField = .email
+                                viewModel.invalidEmail = true
+                                return
+                            }
                             focusedField = .phone
                         }
                 }
@@ -105,16 +123,32 @@ struct Register: View {
                 .background(focusedField == FormFields.email ? AnyView(activeField) : AnyView(nonActiveField))
                 .padding([.leading, .trailing, .top])
                 .offset(y: self.pwPadding * -1)
+                .alert(isPresented: $viewModel.invalidEmail) {
+                    Alert(title: Text("Please input a valid email address"))
+                }
                 
                 // MARK: Phone
                 HStack(spacing: 0.0) {
                     Image(systemName: "phone.fill").foregroundColor(focusedField == FormFields.phone ? accent : Color.gray)
                     TextField(" Phone", text: $viewModel.phone)
-                        .foregroundColor(Color.blue)
+                        .foregroundColor(focusedField == FormFields.phone ? accent : Color.gray)
                         .focused($focusedField, equals: .phone)
                         .keyboardType(.numberPad)
+                        .textContentType(UITextContentType.telephoneNumber)
                         .onSubmit {
                             focusedField = .address
+                        }
+                        .onReceive(Just(viewModel.phone)) { newValue in // doing this so that I can sanitize the phone's input
+                            var filtered = String(newValue.prefix(12)).filter { "0123456789-".contains($0) } // only allow these chars
+                            // add a dash after first 3 numbers
+                            if filtered.count == 3 {
+                                filtered += "-"
+                            } else if filtered.count == 7 {
+                                filtered += "-"
+                            }
+                            if filtered != newValue {
+                                viewModel.phone = filtered
+                            }
                         }
                 }
                 .padding()
@@ -126,7 +160,8 @@ struct Register: View {
                 HStack(spacing: 0.0) {
                    Image(systemName: "signpost.right.fill").foregroundColor(focusedField == FormFields.address ? accent : Color.gray)
                    TextField(" Address", text: $mapSearch.searchTerm)
-                    .foregroundColor(Color.blue)
+                    .foregroundColor(focusedField == FormFields.address ? accent : Color.gray)
+                    .textContentType(UITextContentType.fullStreetAddress)
                     .onChange(of: mapSearch.searchTerm) { [oldAddyString = mapSearch.searchTerm] newStr in
                        // if the password is empty, reset the found flag
                        //if newStr.count < 1 {
@@ -140,10 +175,16 @@ struct Register: View {
                         }
                    }
                     .onSubmit {
-                        mapSearch.locationResults = []
+                        withAnimation(.linear) {
+                            mapSearch.locationResults = []
+                        }
+                        //self.addyChosen = false
                         focusedField = .password
                     }
                }
+                .onTapGesture {
+                    self.addyChosen = true
+                }
                .focused($focusedField, equals: .address)
                .padding()
                .background(focusedField == FormFields.address ? AnyView(activeField) : AnyView(nonActiveField))
@@ -167,8 +208,11 @@ struct Register: View {
                                    }.onTapGesture {
                                        // when they select a location clear out the search results and then...
                                        mapSearch.addressFound = true
-                                       mapSearch.locationResults = []
+                                       withAnimation(.linear) {
+                                           mapSearch.locationResults = []
+                                       }
                                        mapSearch.searchTerm = "\(location.title) \(location.subtitle)"
+                                       self.addyChosen = false
                                        //viewModel.address = "\(location.title) \(location.subtitle)"
                                        
                                        mapSearch.validateAddress(location: location)
@@ -181,6 +225,7 @@ struct Register: View {
                    }
                    .overlay(suggestionsListOutline)
                    .padding(.horizontal, 3.0)
+                   .offset(y: self.pwPadding * -1)
                 }
                 
                 // MARK: password
@@ -204,8 +249,9 @@ struct Register: View {
                                     viewModel.password = String($0.prefix(16)) // this limits the char field to 16 chars
                                 }
                                 .textInputAutocapitalization(.never)
-                                .foregroundColor(Color.blue)
+                                .foregroundColor(focusedField == FormFields.password ? accent : Color.gray)
                                 .disableAutocorrection(true)
+                                .textContentType(UITextContentType.password)
                                 .focused($focusedField, equals: .password)
                                 .onSubmit {
                                     focusedField = .confirmPassword
@@ -215,6 +261,7 @@ struct Register: View {
                                 .foregroundColor(focusedField == FormFields.password ? accent : Color.gray)
                                 .onTapGesture {
                                     viewModel.showPW.toggle()
+                                    // self.addyChosen = false
                                     focusedField = FormFields.password
                                 }
                         }
@@ -247,8 +294,9 @@ struct Register: View {
                                     viewModel.password = String($0.prefix(16)) // this limits the char field to 16 chars
                                 }
                                 .textInputAutocapitalization(.never)
-                                .foregroundColor(Color.blue)
+                                .foregroundColor(focusedField == FormFields.password ? accent : Color.gray)
                                 .disableAutocorrection(true)
+                                .textContentType(UITextContentType.newPassword)
                                 .focused($focusedField, equals: .password)
                                 .onSubmit {
                                     focusedField = .confirmPassword
@@ -280,6 +328,16 @@ struct Register: View {
                 }
                 .offset(y: self.pwPadding * -1)
                 .onReceive(Publishers.keyboardHeight) { keyboardHeight in
+                    
+                    if keyboardHeight > 0 {
+                        withAnimation(.easeOut) {
+                            showLoginHere = false
+                        }
+                    } else {
+                        withAnimation(.easeIn) {
+                            showLoginHere = true
+                        }
+                    }
                     if keyboardHeight > 0 && keyboardWillShow == false {
                         keyboardWillShow = true
                     } else {
@@ -302,6 +360,13 @@ struct Register: View {
                         
                     }
                     
+                    if addyChosen {
+                        withAnimation(.linear) {
+                            self.pwPadding += 25
+                        }
+                        self.addyChosen = false
+                    }
+
                     if keyboardHeight == 0 {
                         withAnimation(.linear) {
                             self.pwPadding = 0
@@ -318,8 +383,9 @@ struct Register: View {
                         HStack(spacing: 0.0) {
                             SecureField("Confirm Password", text: $confirmPassword)
                                 .textInputAutocapitalization(.never)
-                                .foregroundColor(Color.blue)
+                                .foregroundColor(focusedField == FormFields.confirmPassword ? accent : Color.gray)
                                 .disableAutocorrection(true)
+                                .textContentType(UITextContentType.newPassword)
                                 .focused($focusedField, equals: .confirmPassword)
 
                             Image(systemName: "eye")
@@ -335,17 +401,17 @@ struct Register: View {
                         .alert(isPresented: $pwDontMatch) {
                             Alert(title: Text("Passwords Don't Match"))
                         }
-                        .id(5)
                     } else {
                         HStack(spacing: 0.0) {
                             TextField("Confirm Password", text: $confirmPassword)
                                 .textInputAutocapitalization(.never)
-                                .foregroundColor(Color.blue)
+                                .foregroundColor(focusedField == FormFields.confirmPassword ? accent : Color.gray)
                                 .disableAutocorrection(true)
+                                .textContentType(UITextContentType.newPassword)
                                 .focused($focusedField, equals: .confirmPassword)
 
                             Image(systemName: "eye.fill")
-                                .foregroundColor(focusedField == FormFields.password ? accent : Color.gray)
+                                .foregroundColor(focusedField == FormFields.confirmPassword ? accent : Color.gray)
                                 .onTapGesture {
                                     viewModel.showConfPW.toggle()
                                     focusedField = FormFields.confirmPassword
@@ -374,6 +440,21 @@ struct Register: View {
                         }
                         
                         guard
+                            viewModel.isValidEmail(email: viewModel.email)
+                        else {
+                            focusedField = FormFields.email
+                            viewModel.invalidEmail = true
+                            return
+                        }
+                        
+                        guard
+                            viewModel.phone.count > 0
+                        else {
+                            focusedField = .phone
+                            return
+                        }
+                        
+                        guard
                             viewModel.password.count >= 8,
                             viewModel.password.count <= 16
                         else {
@@ -391,16 +472,24 @@ struct Register: View {
                             containsUppers == true
                         else {
                             if !containsUppers {
-                                viewModel.pwNeedsCaps = true
+                                withAnimation(.easeIn) {
+                                    viewModel.pwNeedsCaps = true
+                                }
                             } else {
-                                viewModel.pwNeedsCaps = false
+                                withAnimation(.easeOut) {
+                                    viewModel.pwNeedsCaps = false
+                                }
                             }
                             if !containsNums {
-                                viewModel.pwNeedsNumbers = true
+                                withAnimation(.easeIn) {
+                                    viewModel.pwNeedsNumbers = true
+                                }
                             } else {
-                                viewModel.pwNeedsNumbers = false
+                                withAnimation(.easeOut) {
+                                    viewModel.pwNeedsNumbers = false
+                                }
                             }
-                            //focusedField = .password
+                            focusedField = .password
                             return
                         }
                         
@@ -408,7 +497,7 @@ struct Register: View {
                             viewModel.password == confirmPassword
                         else {
                             self.pwDontMatch = true
-                            focusedField = .password
+                            focusedField = .confirmPassword
                             return
                         }
 
@@ -416,13 +505,6 @@ struct Register: View {
                             mapSearch.searchTerm.count > 0
                         else {
                             focusedField = .address
-                            return
-                        }
-                        
-                        guard
-                            viewModel.password.count > 0
-                        else {
-                            focusedField = .phone
                             return
                         }
 
@@ -448,29 +530,36 @@ struct Register: View {
                     .foregroundColor(Color.white)
                     .font(.system(size: 16, weight: Font.Weight.bold))
                     .padding()
-                    .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue))
-                    .padding(.top)
+                    .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue).frame(width: 190))
+                    .padding(.top, 40)
                     .alert(isPresented: $viewModel.dataPosted) {
                         Alert(title: Text("Success"), message: Text("You've now been signed up, go back and log in."), dismissButton: .default(Text("OK"), action: { dismiss() }))
                     }
                 }
-
+            }
+            if showLoginHere {
                 HStack(spacing: 0.0) {
                     Text("Already have an account? ")
                     Button("Login Here") {
                         dismiss() // navigate back to the login screen
                     }.foregroundColor(Color.blue)
-                }.padding(.top, 15.0)
+                }.frame(alignment: .bottom)
             }
         }
         .sheet(isPresented: $viewModel.isShowingPhotoPicker, content: {
-            PhotoPicker(plantImage: $viewModel.avatar, plantImage2: Binding.constant(nil), plantImage3: Binding.constant(nil), plantEnum: $viewModel.imageEnum)
+            switch(colorScheme) {
+                case .dark:
+                    PhotoPicker(plantImage: $viewModel.avatar, plantImage2: Binding.constant(nil), plantImage3: Binding.constant(nil), plantEnum: $viewModel.imageEnum)
+                case .light:
+                    PhotoPicker(plantImage: $viewModel.avatarLight, plantImage2: Binding.constant(nil), plantImage3: Binding.constant(nil), plantEnum: $viewModel.imageEnum)
+                default:
+                    PhotoPicker(plantImage: $viewModel.avatarLight, plantImage2: Binding.constant(nil), plantImage3: Binding.constant(nil), plantEnum: $viewModel.imageEnum)
+            }
         })
         .shadow(radius: 10)
         .navigationBarTitle(Text(""), displayMode: .inline)
-        .accentColor(Color.blue)
+        .tint(Color.blue)
         .onAppear() {
-            print("view model data posted prop: \(viewModel.canLoginNow)")
             if viewModel.canLoginNow {
                 dismiss() // send them to the login screen because they've already signed up
             }

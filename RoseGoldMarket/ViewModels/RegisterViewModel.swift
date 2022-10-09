@@ -21,6 +21,7 @@ final class RegisterUserViewModel: ObservableObject {
     @Published var state = ""
     @Published var city = ""
     @Published var avatar:UIImage? = UIImage(named: "AddPhoto")!
+    @Published var avatarLight:UIImage? = UIImage(named: "AddPhotoLight")!
     @Published var dataPosted = false
     @Published var canLoginNow = false
     @Published var imageEnum: PlantOptions = .imageOne
@@ -31,6 +32,7 @@ final class RegisterUserViewModel: ObservableObject {
     @Published var specialCharFound = false
     @Published var passwordLengthIsInvalid = false
     @Published var pwNeedsNumbers = false
+    @Published var invalidEmail = false
     @Published var pwNeedsCaps = false
     @Published var usernameLengthIsInvalid = false
     @Published var passwordNotComplex = false
@@ -92,13 +94,15 @@ final class RegisterUserViewModel: ObservableObject {
 //        }
 //    }
     
-    func registerUserV2(address:String, phone:String, city:String, state:String, zipCode:String, geolocation:String) -> () {
+    func registerUserV2(address:String, phone:String, city:String, state:String, zipCode:String, geolocation:String, colorScheme:ColorScheme = .light) -> () {
         guard
-            let avatar = avatar,
+            let avatar = (colorScheme == .light ? avatarLight : avatar), // pick the right avi image based off the app's color scheme
             let avatarImgCompressed = avatar.jpegData(compressionQuality: 0.5)
         else {
             return
         }
+        
+        // remove dashes from phone
         
         guard let zipCodeInt = UInt(zipCode) else { return }
         UserNetworking.shared.registerUser(firstName: self.firstName, lastName: self.lastName, username: self.username.lowercased(), email: self.email, phone: phone, pw: self.password, addy: address, zip: zipCodeInt, state: state, city: city, geolocation: geolocation, avi: avatarImgCompressed) { [weak self] registerResponse in
@@ -182,5 +186,11 @@ final class RegisterUserViewModel: ObservableObject {
             }
         }
         return containsEnoughChars
+    }
+    
+    func isValidEmail(email: String) -> Bool {
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+        return emailPred.evaluate(with: email)
     }
 }

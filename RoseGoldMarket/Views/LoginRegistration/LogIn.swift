@@ -80,7 +80,7 @@ struct LogIn: View {
                 
                 NavigationLink("Forgot Password", destination: ForgotPassword()).padding()
             }
-            .navigationBarTitle("Welcome")
+            .navigationBarTitle("")
             .navigationBarHidden(true)
             .padding()
             .onAppear() {
