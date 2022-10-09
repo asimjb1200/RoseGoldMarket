@@ -210,12 +210,11 @@ struct AddProfilePic: View {
                 }
                 
                 let sanitizedPhone = registerViewModel.phone.replacingOccurrences(of: "-", with: "")
-                print(sanitizedPhone)
                 
                 if colorScheme == .light {
-                    registerViewModel.registerUserV2(address: addyInfo.address, phone: registerViewModel.phone, city: addyInfo.city, state: addyInfo.state, zipCode: addyInfo.zipCode, geolocation: addyInfo.geolocation)
+                    registerViewModel.registerUserV2(address: addyInfo.address, phone: sanitizedPhone, city: addyInfo.city, state: addyInfo.state, zipCode: addyInfo.zipCode, geolocation: addyInfo.geolocation)
                 } else {
-                    registerViewModel.registerUserV2(address: addyInfo.address, phone: registerViewModel.phone, city: addyInfo.city, state: addyInfo.state, zipCode: addyInfo.zipCode, geolocation: addyInfo.geolocation, colorScheme: ColorScheme.dark)
+                    registerViewModel.registerUserV2(address: addyInfo.address, phone: sanitizedPhone, city: addyInfo.city, state: addyInfo.state, zipCode: addyInfo.zipCode, geolocation: addyInfo.geolocation, colorScheme: ColorScheme.dark)
                 }
             }
             .foregroundColor(Color.white)
