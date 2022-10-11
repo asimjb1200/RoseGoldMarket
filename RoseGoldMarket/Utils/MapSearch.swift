@@ -36,9 +36,9 @@ class MapSearch : NSObject, ObservableObject {
             .sink(receiveCompletion: { (completion) in // we subscribe to the values from the publisher here
                 //handle error
             }, receiveValue: { (results) in // this receives the values from the publisher that flat map creates, the published stream "sinks" into this method
-                withAnimation(.linear) {
-                    self.locationResults = results
-                }
+                //withAnimation(.linear) {
+                self.locationResults = results.filter { $0.subtitle.contains("United States") }
+                //}
             })
             .store(in: &cancellables)
     }
@@ -92,7 +92,7 @@ class MapSearch : NSObject, ObservableObject {
                 completion((addressFound: false, addyInfo: nil))
                 return
             }
-
+            print("bldg #: \(numIdentifier)")
             self.addressInfo = AddressInformation(geolocation: "\(coordinate.longitude), \(coordinate.latitude)", address: "\(numIdentifier) \(address)", city: city, state: state, zipCode: zipCode)
             completion((addressFound: true, addyInfo: self.addressInfo))
         }

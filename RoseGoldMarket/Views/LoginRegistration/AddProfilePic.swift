@@ -28,7 +28,7 @@ struct AddProfilePic: View {
     var body: some View {
         VStack {
             Text("Choose Your Name and Profile Picture")
-                .font(.headline)
+                .font(.title3)
                 .padding([.leading, .trailing])
                 .alert(isPresented: $errorOccurred) {
                     Alert(title: Text("An error occurred, try again later."))
@@ -122,6 +122,7 @@ struct AddProfilePic: View {
                     .disableAutocorrection(true)
                     .focused($focusedField, equals: .username)
                     .foregroundColor(focusedField == FormFields.username ? accent : Color.gray)
+                    .textContentType(.username)
                     .toolbar {
                         ToolbarItem(placement: .keyboard) {
                             Button("Done") {
@@ -136,6 +137,7 @@ struct AddProfilePic: View {
             .padding()
             .background(focusedField == FormFields.username ? AnyView(activeField) : AnyView(nonActiveField))
             .padding([.leading, .trailing])
+            .padding(.top)
             .alert(isPresented: $registerViewModel.nameNotAvailable) {
                 Alert(title: Text("That display name isn't available."))
             }
@@ -159,11 +161,11 @@ struct AddProfilePic: View {
                         acceptedTerms.toggle()
                     }
                 
-                Text("Tap here to review and accept our [Terms and Conditions](https://www.rosegoldgardens.com/privacy.html) of app usage. You will not be able to create an account without doing so.")
+                Text("Tap here to accept our [Terms and Conditions](https://www.rosegoldgardens.com/privacy.html) of app usage.")
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.leading)
             }
-            .padding([.leading, .trailing, .top])
+            .padding([.top, .leading])
             .alert(isPresented: $mustAcceptTerms) {
                 Alert(title: Text("To use this Service you must accept the Terms and Conditions of usage"), message: Text("We've made this mandatory to ensure a safe and subject matter focused marketplace for all users. This is also to try and make an effort to keep the application free of content that is obscene and/or offensive."))
             }

@@ -109,6 +109,7 @@
 		684B922F27D27DD800CF25D9 /* ItemNameAndId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemNameAndId.swift; sourceTree = "<group>"; };
 		684B923127D2BA7B00CF25D9 /* EditItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditItem.swift; sourceTree = "<group>"; };
 		6866FA2327B345880052B8A5 /* SocketStuff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketStuff.swift; sourceTree = "<group>"; };
+		68722E2A28F3C41600E214A0 /* RoseGoldMarket.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RoseGoldMarket.entitlements; sourceTree = "<group>"; };
 		6878BCC727F26C7F00CD071A /* InputChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputChecker.swift; sourceTree = "<group>"; };
 		6878BCCA27F270C700CD071A /* badwords.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = badwords.txt; sourceTree = "<group>"; };
 		687A0BCA28602E23003B76D1 /* UnderlineTextFieldModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnderlineTextFieldModifier.swift; sourceTree = "<group>"; };
@@ -228,6 +229,7 @@
 		684867812798BAC70033969D /* RoseGoldMarket */ = {
 			isa = PBXGroup;
 			children = (
+				68722E2A28F3C41600E214A0 /* RoseGoldMarket.entitlements */,
 				682BFD51288CEB9500818820 /* Info.plist */,
 				6878BCC927F2707300CD071A /* BannedWords */,
 				6823B7D727991394008F2CB7 /* Utils */,
@@ -649,8 +651,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = RoseGoldMarket/RoseGoldMarket.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_ASSET_PATHS = "\"RoseGoldMarket/Preview Content\"";
 				DEVELOPMENT_TEAM = P2B946HD8M;
 				ENABLE_PREVIEWS = YES;
@@ -683,8 +686,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = RoseGoldMarket/RoseGoldMarket.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_ASSET_PATHS = "\"RoseGoldMarket/Preview Content\"";
 				DEVELOPMENT_TEAM = P2B946HD8M;
 				ENABLE_PREVIEWS = YES;
