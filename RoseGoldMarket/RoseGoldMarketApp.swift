@@ -27,6 +27,13 @@ struct RoseGoldMarketApp: App {
                     }
                 } else {
                     LogIn()
+                        .onOpenURL { url in
+                            print("URL OPENED")
+                            print(url) // parse the url to get someAction to determine what the app needs do
+//                            if url.relativeString == "example://success" {
+//
+//                            }
+                        }
                         .environmentObject(user)
                 }
             }
