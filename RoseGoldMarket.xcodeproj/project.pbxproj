@@ -231,7 +231,6 @@
 			children = (
 				68722E2A28F3C41600E214A0 /* RoseGoldMarket.entitlements */,
 				682BFD51288CEB9500818820 /* Info.plist */,
-				6878BCC927F2707300CD071A /* BannedWords */,
 				6823B7D727991394008F2CB7 /* Utils */,
 				6848679C2798D5960033969D /* Networking */,
 				684867942798C9440033969D /* Models */,
@@ -321,13 +320,6 @@
 				68F6188E27F1F5F3001BEF70 /* LocationManager.swift */,
 			);
 			path = Networking;
-			sourceTree = "<group>";
-		};
-		6878BCC927F2707300CD071A /* BannedWords */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = BannedWords;
 			sourceTree = "<group>";
 		};
 		68A90D7627A255C200CD3768 /* Enums */ = {
