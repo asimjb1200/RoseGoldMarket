@@ -68,6 +68,7 @@
 		68E9193127D027AD00154DBB /* MyListings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E9193027D027AD00154DBB /* MyListings.swift */; };
 		68E9193327D02AD800154DBB /* EmailSupportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E9193227D02AD800154DBB /* EmailSupportViewModel.swift */; };
 		68E9193527D02BD400154DBB /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E9193427D02BD400154DBB /* UserService.swift */; };
+		68F5B5E328FB8FCE00E571A7 /* CustomTextBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68F5B5E228FB8FCE00E571A7 /* CustomTextBubble.swift */; };
 		68F6188F27F1F5F3001BEF70 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68F6188E27F1F5F3001BEF70 /* LocationManager.swift */; };
 /* End PBXBuildFile section */
 
@@ -135,6 +136,7 @@
 		68E9193027D027AD00154DBB /* MyListings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyListings.swift; sourceTree = "<group>"; };
 		68E9193227D02AD800154DBB /* EmailSupportViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSupportViewModel.swift; sourceTree = "<group>"; };
 		68E9193427D02BD400154DBB /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
+		68F5B5E228FB8FCE00E571A7 /* CustomTextBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextBubble.swift; sourceTree = "<group>"; };
 		68F6188E27F1F5F3001BEF70 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -192,6 +194,7 @@
 		684452D028406A7C0019DF7F /* ViewModifier */ = {
 			isa = PBXGroup;
 			children = (
+				68F5B5E228FB8FCE00E571A7 /* CustomTextBubble.swift */,
 				684452D128406AAD0019DF7F /* PlaceholderStyling.swift */,
 				687A0BCA28602E23003B76D1 /* UnderlineTextFieldModifier.swift */,
 			);
@@ -231,7 +234,6 @@
 			children = (
 				68722E2A28F3C41600E214A0 /* RoseGoldMarket.entitlements */,
 				682BFD51288CEB9500818820 /* Info.plist */,
-				6878BCC927F2707300CD071A /* BannedWords */,
 				6823B7D727991394008F2CB7 /* Utils */,
 				6848679C2798D5960033969D /* Networking */,
 				684867942798C9440033969D /* Models */,
@@ -321,13 +323,6 @@
 				68F6188E27F1F5F3001BEF70 /* LocationManager.swift */,
 			);
 			path = Networking;
-			sourceTree = "<group>";
-		};
-		6878BCC927F2707300CD071A /* BannedWords */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = BannedWords;
 			sourceTree = "<group>";
 		};
 		68A90D7627A255C200CD3768 /* Enums */ = {
@@ -505,6 +500,7 @@
 				684452D228406AAD0019DF7F /* PlaceholderStyling.swift in Sources */,
 				6800EDD627B06B0100461643 /* MessageErrors.swift in Sources */,
 				6825899F27A7179C003E52D9 /* ResponseFromServer.swift in Sources */,
+				68F5B5E328FB8FCE00E571A7 /* CustomTextBubble.swift in Sources */,
 				68BDD46E28DE65F700FCE429 /* KeyboardNotificationPublisher.swift in Sources */,
 				68E9192927D025CD00154DBB /* EmailSupport.swift in Sources */,
 				6866FA2427B345880052B8A5 /* SocketStuff.swift in Sources */,
