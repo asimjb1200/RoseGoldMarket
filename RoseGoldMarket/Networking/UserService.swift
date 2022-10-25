@@ -303,6 +303,7 @@ final class UserNetworking {
     func registerUser(firstName: String, lastName: String, username:String, email:String, phone:String, pw:String, addy:String, zip:UInt, state:String, city:String, geolocation:String, avi:Data, defaultAvi:Bool = false, completion: @escaping (Result<Bool, RegistrationErrors>) -> ()) {
         let serverUrl = URL(string: "https://rosegoldgardens.com/api/users/register-user")
         //let serverUrl = URL(string: "http://localhost:4000/api/users/register-user")
+        //let serverUrl = URL(string: "http://192.168.1.65:4000/api/users/register-user")
         var urlRequest = URLRequest(url: serverUrl!)
         // construct the multipart request with the image data
         let boundary = UUID().uuidString
@@ -390,12 +391,62 @@ final class UserNetworking {
                 return
             }
             
+            guard res.statusCode != 410 else {
+                completion(.failure(.emailTaken))
+                return
+            }
+            
             if res.statusCode == 200 {
                 completion(.success(true))
             } else {
                 completion(.success(false))
             }
             
+        }.resume()
+    }
+    
+    func verifyAccount(userEmailAddress:String, userInformationHash:String, completion: @escaping (Result<Bool, AccountVerificationErrors>) -> ()) {
+        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/confirm-account", post: true)
+        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/confirm-account", post: true)
+        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://192.168.1.65:4000/api/users/confirm-account", post: true)
+        
+        // put the email address and the information hash into a request body
+        let session = URLSession.shared
+        let body = ["usersEmail": userEmailAddress, "userInformationHash": userInformationHash]
+        
+        let request = networker.buildReqBody(req: reqWithoutBody, body: body)
+        session.dataTask(with: request) { (data, response, error) in
+            if error != nil {
+                completion(.failure(.failure))
+            }
+            
+            guard let response = response as? HTTPURLResponse else {
+                completion(.failure(.responseConversionError))
+                return
+            }
+            
+            switch(response.statusCode) {
+                case 201:
+                    print("account verified")
+                    completion(.success(true))
+                    break
+                case 401:
+                    print("attempted code was invalid")
+                    completion(.failure(.wrongCode))
+                    break
+                case 404:
+                    print("that user wasn't in the unverified table")
+                    completion(.failure(.userNotFound))
+                    break
+                case 500:
+                    print("the server had a problem")
+                    completion(.failure(.serverSideError))
+                    break
+                default:
+                    print("an unknown error occurred")
+                    completion(.failure(.unknownError))
+                    break
+            }
         }.resume()
     }
     
@@ -646,6 +697,7 @@ enum RegistrationErrors: String, Error {
     case requestError = "There was a problem making the request."
     case serverError = "There was an error with the request on the server."
     case usernameTaken = "That username isn't available"
+    case emailTaken = "That email address isn't available"
     case responseConversionError = "Unable to decode http response."
 }
 

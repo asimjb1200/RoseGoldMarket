@@ -224,9 +224,13 @@ struct Register: View {
                                        //}
                                        mapSearch.searchTerm = "\(location.title) \(location.subtitle)"
                                        //viewModel.address = "\(location.title) \(location.subtitle)"
-                                       
-                                       mapSearch.validateAddress(location: location)
-                                       focusedField = .password
+
+                                       mapSearch.validateAddress(location: location) {(addressFound, addyInfo) in
+                                           if addressFound && addyInfo != nil {
+                                               viewModel.addressInfo = addyInfo
+                                           }
+                                           focusedField = .password
+                                       }
                                    }
                                Divider()
                            }
@@ -501,7 +505,8 @@ struct Register: View {
                             return
                         }
 
-                        if mapSearch.addressInfo == nil { // we know that they didn't select an option from the list of suggestions
+                        if viewModel.addressInfo == nil { // we know that they didn't select an option from the list of suggestions
+                            print("they didnt choose a preset address")
                             mapSearch.validateAddress(locationString: mapSearch.searchTerm) { (addressFound, addyInfo) in
                                 guard
                                     addressFound == true,
@@ -516,7 +521,8 @@ struct Register: View {
                                 activateLink = true
                             }
                         } else { // I can force unwrap here because I know it doesn't equal nil
-                            viewModel.addressInfo = mapSearch.addressInfo
+                            // viewModel.addressInfo = mapSearch.addressInfo
+                            print("they selected a preset address")
                             activateLink = true
                         }
                     }
@@ -525,9 +531,6 @@ struct Register: View {
                     .padding()
                     .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue).frame(width: 190))
                     .padding(.top, 40)
-                    .alert(isPresented: $viewModel.dataPosted) {
-                        Alert(title: Text("Success"), message: Text("You've now been signed up, go back and log in."), dismissButton: .default(Text("OK"), action: { dismiss() }))
-                    }
                 }
                 
                 HStack(spacing: 0.0) {

@@ -45,6 +45,7 @@
 		6878BCC827F26C7F00CD071A /* InputChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6878BCC727F26C7F00CD071A /* InputChecker.swift */; };
 		6878BCCB27F270C700CD071A /* badwords.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6878BCCA27F270C700CD071A /* badwords.txt */; };
 		687A0BCB28602E23003B76D1 /* UnderlineTextFieldModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687A0BCA28602E23003B76D1 /* UnderlineTextFieldModifier.swift */; };
+		688591BB29077FF1006CE699 /* AccountVerificationErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688591BA29077FF1006CE699 /* AccountVerificationErrors.swift */; };
 		688F476827C86C1800B81715 /* AccountDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688F476727C86C1800B81715 /* AccountDetailsView.swift */; };
 		68A4296427D1C15600CC8DF2 /* AddressInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A4296327D1C15600CC8DF2 /* AddressInfo.swift */; };
 		68A73B0127D6874900DC2C04 /* EditItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A73B0027D6874900DC2C04 /* EditItemViewModel.swift */; };
@@ -113,6 +114,7 @@
 		6878BCC727F26C7F00CD071A /* InputChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputChecker.swift; sourceTree = "<group>"; };
 		6878BCCA27F270C700CD071A /* badwords.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = badwords.txt; sourceTree = "<group>"; };
 		687A0BCA28602E23003B76D1 /* UnderlineTextFieldModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnderlineTextFieldModifier.swift; sourceTree = "<group>"; };
+		688591BA29077FF1006CE699 /* AccountVerificationErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountVerificationErrors.swift; sourceTree = "<group>"; };
 		688F476727C86C1800B81715 /* AccountDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDetailsView.swift; sourceTree = "<group>"; };
 		68A4296327D1C15600CC8DF2 /* AddressInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressInfo.swift; sourceTree = "<group>"; };
 		68A73B0027D6874900DC2C04 /* EditItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditItemViewModel.swift; sourceTree = "<group>"; };
@@ -185,6 +187,7 @@
 			isa = PBXGroup;
 			children = (
 				683854BB27E2CE19008E4F88 /* UserErrors.swift */,
+				688591BA29077FF1006CE699 /* AccountVerificationErrors.swift */,
 			);
 			path = Errors;
 			sourceTree = "<group>";
@@ -503,6 +506,7 @@
 				682DE035285F8D7900B0EC69 /* ResetPassword.swift in Sources */,
 				682E194727DD426C00C304DA /* User.swift in Sources */,
 				684867962798C9710033969D /* Item.swift in Sources */,
+				688591BB29077FF1006CE699 /* AccountVerificationErrors.swift in Sources */,
 				684867852798BAC70033969D /* ContentView.swift in Sources */,
 				684867922798BB060033969D /* HomeMarket.swift in Sources */,
 				684867832798BAC70033969D /* RoseGoldMarketApp.swift in Sources */,

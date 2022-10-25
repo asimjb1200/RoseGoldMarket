@@ -50,7 +50,7 @@ class MapSearch : NSObject, ObservableObject {
         }
     }
     
-    func validateAddress(location: MKLocalSearchCompletion) { // use this function to get the coordinates of the selected address
+    func validateAddress(location: MKLocalSearchCompletion, completion: @escaping ((addressFound:Bool, addyInfo:AddressInformation?)) -> ()) { // use this function to get the coordinates of the selected address
         let searchRequest = MKLocalSearch.Request(completion: location)
         let search = MKLocalSearch(request: searchRequest) // look up the location
         search.start { (response, error) in // process the results
@@ -64,10 +64,12 @@ class MapSearch : NSObject, ObservableObject {
                 let zipCode = response?.mapItems.first?.placemark.postalCode
             else {
                 print("an error occurred")
+                completion((addressFound: false, addyInfo: nil))
                 return
             }
+            let addressInfo = AddressInformation(geolocation: "\(coordinate.longitude), \(coordinate.latitude)", address: "\(numIdentifier) \(address)", city: city, state: state, zipCode: zipCode)
+            completion((addressFound: true, addyInfo: addressInfo))
             
-            self.addressInfo = AddressInformation(geolocation: "\(coordinate.longitude), \(coordinate.latitude)", address: "\(numIdentifier) \(address)", city: city, state: state, zipCode: zipCode)
         }
     }
     
@@ -93,9 +95,14 @@ class MapSearch : NSObject, ObservableObject {
                 return
             }
             print("bldg #: \(numIdentifier)")
-            self.addressInfo = AddressInformation(geolocation: "\(coordinate.longitude), \(coordinate.latitude)", address: "\(numIdentifier) \(address)", city: city, state: state, zipCode: zipCode)
-            completion((addressFound: true, addyInfo: self.addressInfo))
+            //self.addressInfo = AddressInformation(geolocation: "\(coordinate.longitude), \(coordinate.latitude)", address: "\(numIdentifier) \(address)", city: city, state: state, zipCode: zipCode)
+            let addressInfo = AddressInformation(geolocation: "\(coordinate.longitude), \(coordinate.latitude)", address: "\(numIdentifier) \(address)", city: city, state: state, zipCode: zipCode)
+            completion((addressFound: true, addyInfo: addressInfo))
         }
+    }
+    
+    deinit {
+        print("map search being destroyed")
     }
 }
 

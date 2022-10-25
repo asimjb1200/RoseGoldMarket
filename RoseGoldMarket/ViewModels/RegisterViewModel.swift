@@ -41,7 +41,9 @@ final class RegisterUserViewModel: ObservableObject {
     @Published var showPW = false
     @Published var showConfPW = false
     @Published var addyNotFound = false
+    @Published var emailTaken = false
     @Published var addressInfo: AddressInformation?
+    @Published var loading = false
     @Published var statePicker: [String] = ["Select A State","AL","AK","AZ","AR","AS","CA","CO","CT","DE","DC","FL","GA","GU","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","CM","OH","OK","OR","PA","PR","RI","SC","SD","TN","TX","TT","UT","VT","VI","WA","WV","WI","WY"]
     
     
@@ -110,12 +112,17 @@ final class RegisterUserViewModel: ObservableObject {
                 case .success(let res):
                     DispatchQueue.main.async {
                         print("data posted")
+                        self?.loading = false
                         self?.dataPosted = res
                     }
                 case .failure(let err):
                     DispatchQueue.main.async {
+                        self?.loading = false
                         if err == .usernameTaken {
                             self?.nameNotAvailable = true
+                        }
+                        if err == .emailTaken {
+                            self?.emailTaken = true
                         }
                         print(err)
                     }
