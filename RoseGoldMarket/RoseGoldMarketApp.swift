@@ -21,7 +21,7 @@ struct RoseGoldMarketApp: App {
                     .environmentObject(user)
             } else {
                 if self.isLoading {
-                    Text("Loading...")
+                    ProgressView().tint(Color.blue)
 //                    .onAppear(){
 //                        if user.isLoggedIn == false {
 //                            self.startUpStuff()
