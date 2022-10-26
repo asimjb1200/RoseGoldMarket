@@ -61,7 +61,7 @@ struct Register: View {
                             .offset(y: 10)
                     }
                 }
-                
+
                 // MARK: first and last name
                 HStack(spacing: 0.0) {
                     Image(systemName: "person.circle.fill").foregroundColor((focusedField == FormFields.firstName || focusedField == FormFields.lastName) ? accent : Color.gray)

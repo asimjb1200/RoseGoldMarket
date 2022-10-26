@@ -488,6 +488,45 @@ final class UserNetworking {
         }.resume()
     }
     
+    func loginWithEmail(email:String, pw:String, completion: @escaping (Result<ResponseFromServer<ServiceUser>, UserErrors>) -> ()) {
+        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/login", post: true)
+        
+        let session = URLSession.shared
+        let body = ["email": email, "password": pw]
+        
+        let request = networker.buildReqBody(req: reqWithoutBody, body: body)
+        
+        session.dataTask(with: request) { (data, response, err) in
+            if err != nil {
+                print("there was a big error: \(String(describing: err))")
+                completion(.failure(.failure))
+            }
+            
+            guard let response = response as? HTTPURLResponse else {
+                return
+            }
+            
+            guard response.statusCode == 200 else {
+                completion(.failure(.badCreds))
+                return
+            }
+            
+            guard let data = data else {
+                print("was not able to safely unwrap the data response object: \(String(describing: data))")
+                completion(.failure(.dataConversionError))
+                return
+            }
+            
+            do {
+                let usrResponse = try JSONDecoder().decode(ResponseFromServer<ServiceUser>.self, from: data)
+                completion(.success(usrResponse))
+            } catch let decodeError {
+                print(decodeError)
+                completion(.failure(.dataConversionError))
+            }
+        }.resume()
+    }
+    
     func postNewPassword(securityCode:String, newPassword:String, completion: @escaping(Result<String, UserErrors>) -> ()) {
         let reqWithoutBody:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/forgot-password-reset", post: true)
         
@@ -631,6 +670,8 @@ final class UserNetworking {
         
         return username
     }
+    
+    func loadUserFromWebStore() {}
     
     func loadAccountId() -> UInt {
         let defaults: UserDefaults = .standard

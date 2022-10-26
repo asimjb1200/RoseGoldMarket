@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import SwiftUI
+
 enum FormFields: Int, CaseIterable {
     case fullName, firstName, lastName, username, phone, address, password, passwordPlain, confirmPassword, confirmPasswordPlain, email, city, zipcode, state
 }
