@@ -113,7 +113,7 @@ final class RegisterUserViewModel: ObservableObject {
                     DispatchQueue.main.async {
                         print("data posted")
                         self?.loading = false
-                        self?.dataPosted = res
+                        self?.dataPosted = true
                     }
                 case .failure(let err):
                     DispatchQueue.main.async {

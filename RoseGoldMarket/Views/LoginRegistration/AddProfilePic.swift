@@ -164,8 +164,11 @@ struct AddProfilePic: View {
                     }
                 
                 
-                if registerViewModel.dataPosted == false {
                     Button("Confirm Account") {
+                        guard registerViewModel.dataPosted == false else {
+                            return
+                        }
+                        
                         if colorScheme == .dark {
                             guard registerViewModel.avatar != UIImage(named: "AddPhoto") else {
                                 registerViewModel.avatarNotUploaded = true
@@ -222,7 +225,7 @@ struct AddProfilePic: View {
                             dismiss()
                         })
                     }.shadow(radius: 5)
-                }
+
                 Spacer()
             }.tint(accent)
         }
