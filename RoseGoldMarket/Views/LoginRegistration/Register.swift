@@ -30,6 +30,7 @@ struct Register: View {
     @State private var pwPadding:CGFloat = 0
     @State private var keyboardWillShow = false
     @State private var showLoginHere = true
+    @State private var noAddyChosen = false
     //var addyChosen = false
 
     private let nonActiveField: some View = RoundedRectangle(cornerRadius: 30).stroke(.gray, lineWidth: 1)
@@ -90,7 +91,7 @@ struct Register: View {
                         }
                 }
                 .padding()
-                .background((focusedField == FormFields.firstName || focusedField == FormFields.lastName) ? AnyView(activeField) : AnyView(nonActiveField))
+                .modifier(CustomTextBubble(isActive: focusedField == FormFields.firstName || focusedField == FormFields.lastName, accentColor: .blue))
                 .padding([.leading, .trailing, .top])
                 .padding(.top)
                 .offset(y: self.pwPadding * -1)
@@ -120,7 +121,7 @@ struct Register: View {
                         }
                 }
                 .padding()
-                .background(focusedField == FormFields.email ? AnyView(activeField) : AnyView(nonActiveField))
+                .modifier(CustomTextBubble(isActive: focusedField == FormFields.email, accentColor: .blue))
                 .padding([.leading, .trailing, .top])
                 .offset(y: self.pwPadding * -1)
                 .alert(isPresented: $viewModel.invalidEmail) {
@@ -173,39 +174,57 @@ struct Register: View {
                         }
                 }
                 .padding()
-                .background(focusedField == FormFields.phone ? AnyView(activeField) : AnyView(nonActiveField))
+                .modifier(CustomTextBubble(isActive: focusedField == FormFields.phone, accentColor: .blue))
                 .padding([.leading, .trailing, .top])
                 .offset(y: self.pwPadding * -1)
                 
                 // MARK: Address
                 HStack(spacing: 0.0) {
-                   Image(systemName: "signpost.right.fill").foregroundColor(focusedField == FormFields.address ? accent : Color.gray)
+                   Image(systemName: "signpost.right.fill").foregroundColor((focusedField == FormFields.address || focusedField == .addressLineTwo) ? accent : Color.gray)
                    TextField(" Address", text: $mapSearch.searchTerm)
                     .foregroundColor(focusedField == FormFields.address ? accent : Color.gray)
-                    .textContentType(UITextContentType.fullStreetAddress)
+                    .textContentType(UITextContentType.streetAddressLine1)
                     .onChange(of: mapSearch.searchTerm) { [oldAddyString = mapSearch.searchTerm] newStr in
                         // if the new string is shorter than the old one, we know they are deleting and therefore suggestions should show up
+                        
+                        guard viewModel.addressInfo == nil else { // to prevent an edge case that happens when a user auto fills the address
+                            return
+                        }
                         if newStr.count < oldAddyString.count {
                             mapSearch.addressFound = false
                         }
                    }
                     .onSubmit {
                         //withAnimation(.linear) {
+                        guard viewModel.addressInfo != nil else {
+                            noAddyChosen = true
+                            return
+                        }
+                        
                         mapSearch.locationResults = []
                         //}
-                        focusedField = .password
+                        focusedField = .addressLineTwo
                     }
+                    
+                    TextField("Apt", text: $viewModel.addressLineTwo)
+                        .frame(width: 60, alignment: .trailing)
+                        .foregroundColor(focusedField == FormFields.addressLineTwo ? accent : Color.gray)
+                        .textContentType(UITextContentType.streetAddressLine2)
+                        .focused($focusedField, equals: .addressLineTwo)
+                        .onSubmit {
+                            focusedField = .password
+                        }
                }
                .focused($focusedField, equals: .address)
                .padding()
-               .background(focusedField == FormFields.address ? AnyView(activeField) : AnyView(nonActiveField))
+               .modifier(CustomTextBubble(isActive: focusedField == FormFields.address || focusedField == FormFields.addressLineTwo, accentColor: .blue))
                .padding([.leading, .trailing, .top])
                .offset(y: self.pwPadding * -1)
-               .alert(isPresented: $viewModel.addyNotFound) {
-                   Alert(title: Text("Address Not Found"), message: Text("Please try again."))
+               .alert(isPresented: $noAddyChosen) {
+                   Alert(title: Text("Wait!"), message: Text("Please choose an address from the list of options"), dismissButton: .default(Text("OK")) { focusedField = .address })
                }
                 
-                if !mapSearch.locationResults.isEmpty {
+                if !mapSearch.locationResults.isEmpty{
                    Section {
                        ScrollView {
                            ForEach(mapSearch.locationResults, id: \.self) { location in
@@ -217,19 +236,20 @@ struct Register: View {
                                            .font(.system(.caption))
                                            .frame(maxWidth: .infinity, alignment: .center)
                                    }.onTapGesture {
-                                       // when they select a location clear out the search results and then...
-                                       mapSearch.addressFound = true
-                                       //withAnimation(.linear) {
-                                        mapSearch.locationResults = []
-                                       //}
-                                       mapSearch.searchTerm = "\(location.title) \(location.subtitle)"
-                                       //viewModel.address = "\(location.title) \(location.subtitle)"
-
                                        mapSearch.validateAddress(location: location) {(addressFound, addyInfo) in
-                                           if addressFound && addyInfo != nil {
-                                               viewModel.addressInfo = addyInfo
-                                           }
-                                           focusedField = .password
+                                               if addressFound && addyInfo != nil {
+                                                   viewModel.addressInfo = addyInfo
+                                                   // when they select a location clear out the search results and then...
+                                                   mapSearch.addressFound = true
+                                                   //withAnimation(.linear) {
+                                                    
+                                                   //}
+                                                   
+                                                   //viewModel.address = "\(location.title) \(location.subtitle)"
+                                                   mapSearch.locationResults = []
+                                                   focusedField = .addressLineTwo
+                                                   mapSearch.searchTerm = "\(location.title)"
+                                               }
                                        }
                                    }
                                Divider()
@@ -260,7 +280,7 @@ struct Register: View {
                                         }
                                     }
                                     
-                                    viewModel.password = String($0.prefix(16)) // this limits the char field to 16 chars
+                                    viewModel.password = String($0.prefix(20)) // this limits the char field to 20 chars
                                 }
                                 .textInputAutocapitalization(.never)
                                 .foregroundColor(focusedField == FormFields.password ? accent : Color.gray)
@@ -279,7 +299,7 @@ struct Register: View {
                                 }
                         }
                         .padding()
-                        .background(focusedField == FormFields.password ? AnyView(activeField) : AnyView(nonActiveField))
+                        .modifier(CustomTextBubble(isActive: focusedField == FormFields.password, accentColor: .blue))
                         .padding([.leading, .trailing, .top], 15.0)
                         
                     } else {
@@ -304,7 +324,7 @@ struct Register: View {
                                         }
                                     }
 
-                                    viewModel.password = String($0.prefix(16)) // this limits the char field to 16 chars
+                                    viewModel.password = String($0.prefix(20)) // this limits the char field to 16 chars
                                 }
                                 .textInputAutocapitalization(.never)
                                 .foregroundColor(focusedField == FormFields.passwordPlain ? accent : Color.gray)
@@ -323,7 +343,7 @@ struct Register: View {
                                 }
                         }
                         .padding()
-                        .background(focusedField == FormFields.passwordPlain ? AnyView(activeField) : AnyView(nonActiveField))
+                        .modifier(CustomTextBubble(isActive: focusedField == FormFields.password, accentColor: .blue))
                         .padding([.leading, .trailing, .top])
                     }
 
@@ -383,6 +403,7 @@ struct Register: View {
                                 .disableAutocorrection(true)
                                 .textContentType(UITextContentType.password)
                                 .focused($focusedField, equals: .confirmPassword)
+                                
 
                             Image(systemName: "eye")
                                 .foregroundColor(focusedField == FormFields.confirmPassword ? accent : Color.gray)
@@ -392,7 +413,7 @@ struct Register: View {
                                 }
                         }
                         .padding()
-                        .background(focusedField == FormFields.confirmPassword ? AnyView(activeField) : AnyView(nonActiveField))
+                        .modifier(CustomTextBubble(isActive: focusedField == FormFields.confirmPassword, accentColor: .blue))
                         .padding([.leading, .trailing, .top])
                         .alert(isPresented: $pwDontMatch) {
                             Alert(title: Text("Passwords Don't Match"))
@@ -414,7 +435,7 @@ struct Register: View {
                                 }
                         }
                         .padding()
-                        .background(focusedField == FormFields.confirmPasswordPlain ? AnyView(activeField) : AnyView(nonActiveField))
+                        .modifier(CustomTextBubble(isActive: focusedField == FormFields.confirmPasswordPlain, accentColor: .blue))
                         .padding([.leading, .trailing, .top])
                         .alert(isPresented: $pwDontMatch) {
                             Alert(title: Text("Passwords Don't Match"))
@@ -445,7 +466,7 @@ struct Register: View {
                         }
                         
                         guard
-                            viewModel.phone.count > 0
+                            viewModel.phone.count > 0, viewModel.phone.count == 12
                         else {
                             focusedField = .phone
                             return
@@ -453,7 +474,7 @@ struct Register: View {
                         
                         guard
                             viewModel.password.count >= 8,
-                            viewModel.password.count <= 16
+                            viewModel.password.count <= 20
                         else {
                             viewModel.passwordLengthIsInvalid = true
                             focusedField = .password
@@ -504,27 +525,18 @@ struct Register: View {
                             focusedField = .address
                             return
                         }
-
-                        if viewModel.addressInfo == nil { // we know that they didn't select an option from the list of suggestions
-                            print("they didnt choose a preset address")
-                            mapSearch.validateAddress(locationString: mapSearch.searchTerm) { (addressFound, addyInfo) in
-                                guard
-                                    addressFound == true,
-                                    let addressInfo = addyInfo else {
-                                    viewModel.addyNotFound = true
-                                    focusedField = .address
-                                    return
-                                }
-
-                                viewModel.addressInfo = addressInfo
-
-                                activateLink = true
-                            }
-                        } else { // I can force unwrap here because I know it doesn't equal nil
-                            // viewModel.addressInfo = mapSearch.addressInfo
-                            print("they selected a preset address")
-                            activateLink = true
+                        
+                        guard viewModel.addressInfo != nil else {
+                            noAddyChosen = true
+                            return
                         }
+                        
+                        // let's add on the address line 2 if they added one
+                        if !viewModel.addressLineTwo.isEmpty {
+                            viewModel.addressInfo!.address += " #\(viewModel.addressLineTwo)"
+                        }
+                        
+                        activateLink = true
                     }
                     .foregroundColor(Color.white)
                     .font(.system(size: 16, weight: Font.Weight.bold))

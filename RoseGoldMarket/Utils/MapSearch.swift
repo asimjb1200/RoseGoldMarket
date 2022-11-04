@@ -15,7 +15,6 @@ class MapSearch : NSObject, ObservableObject {
     @Published var searchTerm = ""
     @Published var addressFound = false
     @Published private var coordinates:CLLocationCoordinate2D? //long and lat of a location
-    @Published var addressInfo:AddressInformation? // this will hold all of the address info for the backend
 
     
     private var cancellables : Set<AnyCancellable> = []
@@ -37,7 +36,13 @@ class MapSearch : NSObject, ObservableObject {
                 //handle error
             }, receiveValue: { (results) in // this receives the values from the publisher that flat map creates, the published stream "sinks" into this method
                 //withAnimation(.linear) {
+                guard self.addressFound == false else {
+                    self.locationResults = []
+                    return
+                }
+
                 self.locationResults = results.filter { $0.subtitle.contains("United States") }
+                
                 //}
             })
             .store(in: &cancellables)
@@ -94,8 +99,6 @@ class MapSearch : NSObject, ObservableObject {
                 completion((addressFound: false, addyInfo: nil))
                 return
             }
-            print("bldg #: \(numIdentifier)")
-            //self.addressInfo = AddressInformation(geolocation: "\(coordinate.longitude), \(coordinate.latitude)", address: "\(numIdentifier) \(address)", city: city, state: state, zipCode: zipCode)
             let addressInfo = AddressInformation(geolocation: "\(coordinate.longitude), \(coordinate.latitude)", address: "\(numIdentifier) \(address)", city: city, state: state, zipCode: zipCode)
             completion((addressFound: true, addyInfo: addressInfo))
         }

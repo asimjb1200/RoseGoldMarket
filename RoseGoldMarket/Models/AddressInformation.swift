@@ -9,7 +9,7 @@ import Foundation
 
 struct AddressInformation: Codable {
     let geolocation:String
-    let address:String
+    var address:String
     let city:String
     let state:String
     let zipCode:String

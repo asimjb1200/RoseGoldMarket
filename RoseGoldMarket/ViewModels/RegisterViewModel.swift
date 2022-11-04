@@ -16,6 +16,7 @@ final class RegisterUserViewModel: ObservableObject {
     @Published var email = ""
     @Published var password = ""
     @Published var address = ""
+    @Published var addressLineTwo = ""
     @Published var phone = ""
     @Published var zipCode = ""
     @Published var state = ""
@@ -109,7 +110,7 @@ final class RegisterUserViewModel: ObservableObject {
         guard let zipCodeInt = UInt(zipCode) else { return }
         UserNetworking.shared.registerUser(firstName: self.firstName, lastName: self.lastName, username: self.username.lowercased(), email: self.email, phone: phone, pw: self.password, addy: address, zip: zipCodeInt, state: state, city: city, geolocation: geolocation, avi: avatarImgCompressed) { [weak self] registerResponse in
             switch registerResponse {
-                case .success(let res):
+                case .success( _):
                     DispatchQueue.main.async {
                         print("data posted")
                         self?.loading = false

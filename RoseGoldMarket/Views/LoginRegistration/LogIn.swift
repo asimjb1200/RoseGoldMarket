@@ -32,7 +32,7 @@ struct LogIn: View {
                         .scaledToFit()
                         .padding([.bottom, .top])
                 } else {
-                    Text("RoseGold Marketplace")
+                    Text("Rose Gold Gardens")
                         .fontWeight(.heavy)
                         .foregroundColor(Color("MainColor"))
                 }
@@ -43,7 +43,7 @@ struct LogIn: View {
                         .fontWeight(.bold)
                         .padding(.top, 10)
                         
-                    Text("Log in to your RoseGold Markets account")
+                    Text("Log in to your Rose Gold Markets account")
                         .font(.callout)
                         .foregroundColor(.gray)
                         .offset(y: 10)
