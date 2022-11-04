@@ -200,8 +200,8 @@ struct Register: View {
                             noAddyChosen = true
                             return
                         }
+                        mapSearch.addressFound = true
                         
-                        mapSearch.locationResults = []
                         //}
                         focusedField = .addressLineTwo
                     }
