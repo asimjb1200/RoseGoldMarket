@@ -57,7 +57,7 @@ struct LogIn: View {
                     .focused($focusedField, equals: .email)
                 }
                 .padding()
-                .modifier(CustomTextBubble(isActive: (focusedField == .email ? true : false), accentColor: .blue))
+                .modifier(CustomTextBubble(isActive: focusedField == .email, accentColor: .blue))
                 .padding()
                 .alert(isPresented: $badEmail) {
                     Alert(title: Text("Email Address"), message: Text("Your email address is invalid"), dismissButton: .default(Text("OK")))
@@ -71,7 +71,7 @@ struct LogIn: View {
                     .focused($focusedField, equals: .password)
                 }
                 .padding()
-                .modifier(CustomTextBubble(isActive: (focusedField == .password), accentColor: .blue))
+                .modifier(CustomTextBubble(isActive: focusedField == .password, accentColor: .blue))
                 .padding()
                 .alert(isPresented: $badPw) {
                     Alert(title: Text("Incorrect Password"), message: Text("Your password contains invalid characters"), dismissButton: .default(Text("OK")))
