@@ -7,5 +7,7 @@
 		<string>webcredentials:www.rosegoldgardens.com</string>
 		<string>applinks:www.rosegoldgardens.com</string>
 	</array>
+	<key>keychain-access-groups</key>
+	<array/>
 </dict>
 </plist>

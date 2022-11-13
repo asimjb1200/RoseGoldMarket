@@ -14,6 +14,12 @@
 				<string>rosegoldmarkets</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb436637955105906</string>
+			</array>
+		</dict>
 	</array>
 	<key>UILaunchScreen</key>
 	<dict>
@@ -24,5 +30,18 @@
 		<key>UIImageRespectsSafeAreaInsets</key>
 		<false/>
 	</dict>
+	<key>FacebookAppID</key>
+	<string>436637955105906</string>
+	<key>FacebookClientToken</key>
+	<string>323a8da363ffe77823e3eea2ed2fca48</string>
+	<key>FacebookDisplayName</key>
+	<string>Rose Gold Markets</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>instagram</string>
+		<string>fbapi</string>
+		<string>fb-messenger-share-api</string>
+		<string>instagram-stories</string>
+	</array>
 </dict>
 </plist>

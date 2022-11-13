@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FacebookCore
 
 @main
 struct RoseGoldMarketApp: App {
@@ -14,6 +15,10 @@ struct RoseGoldMarketApp: App {
     @State var verificationCodeError = false
     var service:UserNetworking = .shared
     @StateObject var user:UserModel = .shared
+    //@StateObject var twitterAPI = TwitterAPI()
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
+    
     var body: some Scene {
         WindowGroup {
             if user.isLoggedIn {
@@ -22,52 +27,98 @@ struct RoseGoldMarketApp: App {
             } else {
                 if self.isLoading {
                     ProgressView().tint(Color.blue)
-//                    .onAppear(){
-//                        if user.isLoggedIn == false {
-//                            self.startUpStuff()
-//                        }
-//                    }
                 } else {
                     LogIn()
                         .alert(isPresented: $verificationCodeError) {
                             Alert(title: Text("There was a problem"), message: Text("Try again or contact us."))
                         }
                         .onOpenURL { url in
-                            print("URL OPENED. let's give them a loading screen while we verify the code")
+                            print("URL OPENED. let's give them a loading screen while we verify the code: \(url)")
+                            // this is going to open for every link the login page receives, so I'll have to do some addtl checks
                             self.isLoading = true
-                            if let urlComponents = URLComponents(string: url.absoluteString) {
-                                let queryItems = urlComponents.queryItems
-                                guard let userInfoHash = queryItems?.first(where: {$0.name == "userInformation"})?.value else {return}
-                                guard let userEmail = queryItems?.first(where: {$0.name == "emailAddress"})?.value else {return}
-                                
-                                // now build a request and post this data back to the server to see if the codes are correct
-                                service.verifyAccount(userEmailAddress: userEmail, userInformationHash: userInfoHash, completion: { verificationResponse in
-                                    switch(verificationResponse) {
-                                        case .success( _):
-                                            DispatchQueue.main.async {
-                                                print("they can login now")
-                                                self.isLoading = false
-                                            }
-                                        case .failure(let verificationError):
-                                            print(verificationError)
-                                            if verificationError == .wrongCode {
-                                                print("the code they attempted was invalid")
-                                            } else if verificationError == .userNotFound {
-                                                print("that user couldn't be found")
-                                            } else {
-                                                print("a server side error occurred")
-                                            }
-                                            self.isLoading = false
-                                            self.verificationCodeError = true
-                                    }
-                                })
-                            }
+                            //check for the twitter url callback form first
+//                            guard
+//                                let urlScheme = url.scheme,
+//                                let callbackURL = URL(string: "\(TwitterAPI.ClientCreds.CallbackURLScheme)"),
+//                                let callbackURLScheme = callbackURL.scheme
+//                            else { return }
+//                            // check if the URL that triggered onOpenURL matches the callback url
+//                            guard urlScheme.caseInsensitiveCompare(callbackURLScheme) == .orderedSame else { return }
+                            
+                            //twitterAPI.onOAuthRedirect.send(url) // send the url to the publisher
+                            
+                            
+                            
+                            
+//                            if let urlComponents = URLComponents(string: url.absoluteString) {
+//                                let queryItems = urlComponents.queryItems
+//                                guard let userInfoHash = queryItems?.first(where: {$0.name == "userInformation"})?.value else {
+//                                    print("not from our server")
+//                                    self.isLoading = false
+//                                    return
+//                                }
+//                                guard let userEmail = queryItems?.first(where: {$0.name == "emailAddress"})?.value else {
+//                                    return
+//                                }
+//
+//                                // now build a request and post this data back to the server to see if the codes are correct
+//                                service.verifyAccount(userEmailAddress: userEmail, userInformationHash: userInfoHash, completion: { verificationResponse in
+//                                    switch(verificationResponse) {
+//                                        case .success( _):
+//                                            DispatchQueue.main.async {
+//                                                print("they can login now")
+//                                                self.isLoading = false
+//                                            }
+//                                        case .failure(let verificationError):
+//                                            print(verificationError)
+//                                            if verificationError == .wrongCode {
+//                                                print("the code they attempted was invalid")
+//                                            } else if verificationError == .userNotFound {
+//                                                print("that user couldn't be found")
+//                                            } else {
+//                                                print("a server side error occurred")
+//                                            }
+//                                            self.isLoading = false
+//                                            self.verificationCodeError = true
+//                                    }
+//                                })
+//                            } else {
+//                                print("one of the social media share links was clicked")
+//                                self.isLoading = false
+//                            }
                             
                         }
                         .environmentObject(user)
                 }
             }
         }
+    }
+}
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        ApplicationDelegate.shared.application(
+            application,
+            didFinishLaunchingWithOptions: launchOptions
+        )
+
+        return true
+    }
+          
+    func application(
+        _ app: UIApplication,
+        open url: URL,
+        options: [UIApplication.OpenURLOptionsKey : Any] = [:]
+    ) -> Bool {
+        ApplicationDelegate.shared.application(
+            app,
+            open: url,
+            sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
+            annotation: options[UIApplication.OpenURLOptionsKey.annotation]
+        )
     }
 }
 

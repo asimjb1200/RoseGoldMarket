@@ -16,6 +16,7 @@ struct ForgotPassword: View {
     @State var codeReceived = false
     @State var errorOccurred = false
     @State var userNotFound = false
+    @FocusState var formField:FormFields?
     var userService:UserNetworking = .shared
     
     var gradient = LinearGradient(gradient: Gradient(colors: [.white,  Color("MainColor")]), startPoint: .leading, endPoint: .trailing)
@@ -27,21 +28,21 @@ struct ForgotPassword: View {
                     Alert(title: Text("An Error Occurred"), message: Text("We ran into a problem on our end. Try again later."), dismissButton: .default(Text("OK")))
                 }
             
-            TextField("", text: $username).padding().modifier(PlaceholderStyle(showPlaceHolder: username.isEmpty, placeHolder: "Username..."))
-                .background(
-                    RoundedRectangle(cornerRadius: 10).fill(gradient)
-                )
+            TextField("Username", text: $username)
                 .padding()
+                .modifier(CustomTextBubble(isActive: formField == .username, accentColor: .blue))
+                .padding()
+                .focused($formField, equals: .username)
                 .textInputAutocapitalization(.never)
                 .alert(isPresented: $userNotFound) {
                     Alert(title: Text("User Not Found"), message: Text("We don't have that user and email combination in our records. Please check your spelling and try again."), dismissButton: .default(Text("OK")))
                 }
             
-            TextField("", text: $email).padding().modifier(PlaceholderStyle(showPlaceHolder: email.isEmpty, placeHolder: "Email..."))
-                .background(
-                    RoundedRectangle(cornerRadius: 10).fill(gradient)
-                )
+            TextField("Email", text: $email)
                 .padding()
+                .modifier(CustomTextBubble(isActive: formField == .email, accentColor: .blue))
+                .padding()
+                .focused($formField, equals: .email)
                 .textInputAutocapitalization(.never)
             
             Button("Send Code") {

@@ -55,6 +55,7 @@
 		68C489FF27A4ADBC00AEF0F5 /* HomeMarketViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68C489FE27A4ADBC00AEF0F5 /* HomeMarketViewModel.swift */; };
 		68C48A0127A4AE8A00AEF0F5 /* ItemTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68C48A0027A4AE8A00AEF0F5 /* ItemTile.swift */; };
 		68C48A0427A4AFA200AEF0F5 /* ItemPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68C48A0327A4AFA200AEF0F5 /* ItemPreview.swift */; };
+		68D1FC0E291B7CF9000EC54D /* FacebookShare in Frameworks */ = {isa = PBXBuildFile; productRef = 68D1FC0D291B7CF9000EC54D /* FacebookShare */; };
 		68D7FC4E279923DD00F9CFBB /* PlantPictureOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D7FC4D279923DD00F9CFBB /* PlantPictureOptions.swift */; };
 		68DFE8A327B4230F00190CD7 /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 68DFE8A227B4230F00190CD7 /* SocketIO */; };
 		68E083D627ACAFA600DA0110 /* MessageList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E083D527ACAFA600DA0110 /* MessageList.swift */; };
@@ -147,6 +148,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				68D1FC0E291B7CF9000EC54D /* FacebookShare in Frameworks */,
 				68DFE8A327B4230F00190CD7 /* SocketIO in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -404,6 +406,7 @@
 			name = RoseGoldMarket;
 			packageProductDependencies = (
 				68DFE8A227B4230F00190CD7 /* SocketIO */,
+				68D1FC0D291B7CF9000EC54D /* FacebookShare */,
 			);
 			productName = RoseGoldMarket;
 			productReference = 6848677F2798BAC70033969D /* RoseGoldMarket.app */;
@@ -435,6 +438,7 @@
 			mainGroup = 684867762798BAC70033969D;
 			packageReferences = (
 				68DFE8A127B4230F00190CD7 /* XCRemoteSwiftPackageReference "socket" */,
+				68D1FC0C291B7CF9000EC54D /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */,
 			);
 			productRefGroup = 684867802798BAC70033969D /* Products */;
 			projectDirPath = "";
@@ -740,6 +744,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		68D1FC0C291B7CF9000EC54D /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/facebook/facebook-ios-sdk";
+			requirement = {
+				kind = exactVersion;
+				version = 15.1.0;
+			};
+		};
 		68DFE8A127B4230F00190CD7 /* XCRemoteSwiftPackageReference "socket" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/socketio/socket.io-client-swift";
@@ -751,6 +763,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		68D1FC0D291B7CF9000EC54D /* FacebookShare */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 68D1FC0C291B7CF9000EC54D /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
+			productName = FacebookShare;
+		};
 		68DFE8A227B4230F00190CD7 /* SocketIO */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 68DFE8A127B4230F00190CD7 /* XCRemoteSwiftPackageReference "socket" */;

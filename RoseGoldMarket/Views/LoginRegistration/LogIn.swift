@@ -7,6 +7,8 @@
 
 import SwiftUI
 import LocalAuthentication
+import FacebookShare
+import Social
 
 struct LogIn: View {
     // @State var username = ""
@@ -39,12 +41,12 @@ struct LogIn: View {
                 
                 Group {
                     Text("Welcome Back!")
-                        .font(.title)
+                        .font(.title2)
                         .fontWeight(.bold)
                         .padding(.top, 10)
                         
                     Text("Log in to your Rose Gold Markets account")
-                        .font(.callout)
+                        .font(.footnote)
                         .foregroundColor(.gray)
                         .offset(y: 10)
                         .padding(.bottom)
@@ -78,9 +80,8 @@ struct LogIn: View {
                 }
                 
                 NavigationLink(destination: ForgotPassword()) {
-                    Text("Forgot Password?").font(.subheadline).frame(maxWidth: .infinity, alignment: .trailing).foregroundColor(.black)
+                    Text("Forgot Password?").font(.subheadline).frame(maxWidth: .infinity, alignment: .trailing).foregroundColor(.blue)
                 }
-                
                 
                 Button("Log In") {
                     guard !self.email.isEmpty else {
@@ -110,23 +111,93 @@ struct LogIn: View {
                 .alert(isPresented: $badCreds) {
                     Alert(title: Text("Incorrect Credentials"), message: Text("Your username and password combination couldn't be found in our records"), dismissButton: .default(Text("OK")))
                 }
+                
+                Group {
+                    Text("Share Us!").font(.footnote).foregroundColor(Color.gray).padding(.top, 40)
+                    HStack {
+                        Image("Instagram")
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                            .padding([.leading, .trailing], 30)
+                            .onTapGesture {
+                                let text = "instagram://sharesheet?text=For endless floral discoveries, check out the Rose Gold Garden marketplace on the Apple Store: https://google.com"
+                                guard
+                                    let urlQuery = text.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed),
+                                    let url = URL(string: urlQuery)
+                                else {
+                                    print("couldnt encode query and build url")
+                                    return
+                                }
+                                
+                                // check for the instagram app
+                                if UIApplication.shared.canOpenURL(url) {
+                                    UIApplication.shared.open(url)
+                                } else {
+                                    print("App not installed")
+                                }
+                            }
+                        
+                        Image("TwitterLogo")
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                            .padding([.leading, .trailing], 30)
+                            .onTapGesture {
+                                let tweetText = "For endless floral discoveries, check out the Rose Gold Garden marketplace on the Apple Store: "
+                                let urlForTweet = "www.rosegoldgardens.com"
+                                let shareString = "https://twitter.com/intent/tweet?text=\(tweetText)&url=\(urlForTweet)"
+                                
+                                // encode a space to %20 for example
+                                guard let escapedShareString = shareString.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) else {
+                                    print("couldnt encode url")
+                                    return
+                                }
+
+                                // cast to an url
+                                guard let url = URL(string: escapedShareString) else {
+                                    print("couldnt build url for twitter")
+                                    return
+                                }
+                                
+                                // open in safari
+                                UIApplication.shared.open(url)
+                            }
+                        
+                        Image("Facebook")
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                            .padding([.leading, .trailing], 30)
+                            .onTapGesture {
+                                // update this with my app's app store link
+                                guard let url = URL(string: "https://developers.facebook.com") else {
+                                    return
+                                }
+                                
+                                // Developer Policies, including section 2.3 which states that apps may not pre-fill in the context of the share sheet. This means apps may not pre-fill the share sheet's initialText field with content that wasn't entered by the user of the app.
+                                let content = ShareLinkContent()
+                                content.contentURL = url
+                                content.hashtag = Hashtag("#RoseGoldGardens")
+                                
+                                
+                                let dialog = ShareDialog(
+                                    viewController: UIApplication.shared.windows.first(where: {$0.isKeyWindow})?.rootViewController,
+                                    content: content,
+                                    delegate: nil
+                                )
+                                //dialog.mode = .shareSheet
+                                dialog.show()
+                            }
+                    }
+                }
+
                 Spacer()
                 NavigationLink(destination: Register()) {
-                    Text("Don't have an account? \(Text("Sign Up").foregroundColor(.blue))").foregroundColor(.black)
+                    Text("Don't have an account? \(Text("Sign Up").foregroundColor(.blue))")
                 }
+                
             }
             .navigationBarTitle("")
             .navigationBarHidden(true)
             .padding()
-            .onAppear() {
-                //self.username = service.loadUsernameFromDevice()
-                //self.password = service.loadUserPassword()
-                
-                // if these fields aren't empty, I know that they've logged in before
-                //if !self.username.isEmpty, !self.password.isEmpty {
-                //    self.scanFaceID()
-                //}
-            }
         }
     }
     
@@ -168,11 +239,11 @@ struct LogIn: View {
                         service.saveAccessToken(accessToken: userRes.data.accessToken)
                         let savedPassword = service.loadUserPassword()
 
-                        if savedPassword.isEmpty {// in the case that we've never saved their pw due to first login attempt
-                            service.saveUserPassword(password: password, username: userRes.data.username)
-                        } else if savedPassword != password { // maybe they've changed their pw
-                            service.updateUserPassword(newPassword: password)
-                        }
+//                        if savedPassword.isEmpty {// in the case that we've never saved their pw due to first login attempt
+//                            service.saveUserPassword(password: password, username: userRes.data.username)
+//                        } else if savedPassword != password { // maybe they've changed their pw
+//                            service.updateUserPassword(newPassword: password)
+//                        }
                         
                         globalUser.login(serviceUsr: userRes.data)
                     }
