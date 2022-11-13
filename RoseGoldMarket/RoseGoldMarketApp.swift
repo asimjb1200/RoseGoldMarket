@@ -15,7 +15,6 @@ struct RoseGoldMarketApp: App {
     @State var verificationCodeError = false
     var service:UserNetworking = .shared
     @StateObject var user:UserModel = .shared
-    //@StateObject var twitterAPI = TwitterAPI()
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     
@@ -36,56 +35,44 @@ struct RoseGoldMarketApp: App {
                             print("URL OPENED. let's give them a loading screen while we verify the code: \(url)")
                             // this is going to open for every link the login page receives, so I'll have to do some addtl checks
                             self.isLoading = true
-                            //check for the twitter url callback form first
-//                            guard
-//                                let urlScheme = url.scheme,
-//                                let callbackURL = URL(string: "\(TwitterAPI.ClientCreds.CallbackURLScheme)"),
-//                                let callbackURLScheme = callbackURL.scheme
-//                            else { return }
-//                            // check if the URL that triggered onOpenURL matches the callback url
-//                            guard urlScheme.caseInsensitiveCompare(callbackURLScheme) == .orderedSame else { return }
                             
-                            //twitterAPI.onOAuthRedirect.send(url) // send the url to the publisher
-                            
-                            
-                            
-                            
-//                            if let urlComponents = URLComponents(string: url.absoluteString) {
-//                                let queryItems = urlComponents.queryItems
-//                                guard let userInfoHash = queryItems?.first(where: {$0.name == "userInformation"})?.value else {
-//                                    print("not from our server")
-//                                    self.isLoading = false
-//                                    return
-//                                }
-//                                guard let userEmail = queryItems?.first(where: {$0.name == "emailAddress"})?.value else {
-//                                    return
-//                                }
-//
-//                                // now build a request and post this data back to the server to see if the codes are correct
-//                                service.verifyAccount(userEmailAddress: userEmail, userInformationHash: userInfoHash, completion: { verificationResponse in
-//                                    switch(verificationResponse) {
-//                                        case .success( _):
-//                                            DispatchQueue.main.async {
-//                                                print("they can login now")
-//                                                self.isLoading = false
-//                                            }
-//                                        case .failure(let verificationError):
-//                                            print(verificationError)
-//                                            if verificationError == .wrongCode {
-//                                                print("the code they attempted was invalid")
-//                                            } else if verificationError == .userNotFound {
-//                                                print("that user couldn't be found")
-//                                            } else {
-//                                                print("a server side error occurred")
-//                                            }
-//                                            self.isLoading = false
-//                                            self.verificationCodeError = true
-//                                    }
-//                                })
-//                            } else {
-//                                print("one of the social media share links was clicked")
-//                                self.isLoading = false
-//                            }
+                            if let urlComponents = URLComponents(string: url.absoluteString) {
+                                let queryItems = urlComponents.queryItems
+                                guard let userInfoHash = queryItems?.first(where: {$0.name == "userInformation"})?.value else {
+                                    print("not from our server")
+                                    self.isLoading = false
+                                    return
+                                }
+                                guard let userEmail = queryItems?.first(where: {$0.name == "emailAddress"})?.value else {
+                                    self.isLoading = false
+                                    return
+                                }
+
+                                // now build a request and post this data back to the server to see if the codes are correct
+                                service.verifyAccount(userEmailAddress: userEmail, userInformationHash: userInfoHash, completion: { verificationResponse in
+                                    switch(verificationResponse) {
+                                        case .success( _):
+                                            DispatchQueue.main.async {
+                                                print("they can login now")
+                                                self.isLoading = false
+                                            }
+                                        case .failure(let verificationError):
+                                            print(verificationError)
+                                            if verificationError == .wrongCode {
+                                                print("the code they attempted was invalid")
+                                            } else if verificationError == .userNotFound {
+                                                print("that user couldn't be found")
+                                            } else {
+                                                print("a server side error occurred")
+                                            }
+                                            self.isLoading = false
+                                            self.verificationCodeError = true
+                                    }
+                                })
+                            } else {
+                                print("one of the social media share links was clicked")
+                                self.isLoading = false
+                            }
                             
                         }
                         .environmentObject(user)
