@@ -52,10 +52,11 @@ final class UserNetworking {
         }.resume()
     }
     
-    func sendUsernameAndEmailForPasswordRecovery(username:String, email:String, completion: @escaping (Result<ResponseFromServer<String>, UserErrors>) -> ()) {
-        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/forgot-password-step-one", post: true)
+    func sendUsernameAndEmailForPasswordRecovery(email:String, completion: @escaping (Result<ResponseFromServer<String>, UserErrors>) -> ()) {
+        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/forgot-password-step-one", post: true)
+        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/forgot-password-step-one", post: true)
         let session = URLSession.shared
-        let body = ["emailAddress": email, "username": username]
+        let body = ["emailAddress": email]
         
         let request = networker.buildReqBody(req: reqWithoutBody, body: body)
         session.dataTask(with: request) {(data, response, error) in

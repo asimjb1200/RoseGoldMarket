@@ -10,6 +10,7 @@
 		6800EDD627B06B0100461643 /* MessageErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6800EDD527B06B0100461643 /* MessageErrors.swift */; };
 		6800EDD827B06C3600461643 /* ChatData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6800EDD727B06C3600461643 /* ChatData.swift */; };
 		680A3B4528CEB2F500E784E8 /* AddressInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680A3B4428CEB2F500E784E8 /* AddressInformation.swift */; };
+		68135B8029403CA500760038 /* SecurityCodeTextBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68135B7F29403CA500760038 /* SecurityCodeTextBox.swift */; };
 		681AB5C727A650F700B1629B /* ItemDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681AB5C627A650F700B1629B /* ItemDetails.swift */; };
 		682292E928DE9FB200F2A8BF /* UIResponderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 682292E828DE9FB200F2A8BF /* UIResponderExtension.swift */; };
 		6823B7D227990199008F2CB7 /* NetworkingHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6823B7D127990199008F2CB7 /* NetworkingHelper.swift */; };
@@ -78,6 +79,7 @@
 		6800EDD527B06B0100461643 /* MessageErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageErrors.swift; sourceTree = "<group>"; };
 		6800EDD727B06C3600461643 /* ChatData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatData.swift; sourceTree = "<group>"; };
 		680A3B4428CEB2F500E784E8 /* AddressInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressInformation.swift; sourceTree = "<group>"; };
+		68135B7F29403CA500760038 /* SecurityCodeTextBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityCodeTextBox.swift; sourceTree = "<group>"; };
 		681AB5C627A650F700B1629B /* ItemDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemDetails.swift; sourceTree = "<group>"; };
 		682292E828DE9FB200F2A8BF /* UIResponderExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIResponderExtension.swift; sourceTree = "<group>"; };
 		6823B7D127990199008F2CB7 /* NetworkingHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingHelper.swift; sourceTree = "<group>"; };
@@ -202,6 +204,7 @@
 				68F5B5E228FB8FCE00E571A7 /* CustomTextBubble.swift */,
 				684452D128406AAD0019DF7F /* PlaceholderStyling.swift */,
 				687A0BCA28602E23003B76D1 /* UnderlineTextFieldModifier.swift */,
+				68135B7F29403CA500760038 /* SecurityCodeTextBox.swift */,
 			);
 			path = ViewModifier;
 			sourceTree = "<group>";
@@ -494,6 +497,7 @@
 				683C6B9028C98C07005790A5 /* MapSearch.swift in Sources */,
 				68E9192627D01AA000154DBB /* AccountOptions.swift in Sources */,
 				684B923027D27DD800CF25D9 /* ItemNameAndId.swift in Sources */,
+				68135B8029403CA500760038 /* SecurityCodeTextBox.swift in Sources */,
 				687A0BCB28602E23003B76D1 /* UnderlineTextFieldModifier.swift in Sources */,
 				682E194527DD423E00C304DA /* RegisterUser.swift in Sources */,
 				683854B927E2CDE6008E4F88 /* ServiceUser.swift in Sources */,
@@ -657,7 +661,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = RoseGoldMarket/RoseGoldMarket.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_ASSET_PATHS = "\"RoseGoldMarket/Preview Content\"";
 				DEVELOPMENT_TEAM = P2B946HD8M;
 				ENABLE_PREVIEWS = YES;
@@ -692,7 +696,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = RoseGoldMarket/RoseGoldMarket.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_ASSET_PATHS = "\"RoseGoldMarket/Preview Content\"";
 				DEVELOPMENT_TEAM = P2B946HD8M;
 				ENABLE_PREVIEWS = YES;
