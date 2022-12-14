@@ -96,7 +96,7 @@ final class UserNetworking {
     }
     
     func checkSecurityCode(email:String, securityCode: String, completion: @escaping (Result<Bool, UserErrors>) -> ()) {
-        let reqWithoutBody: URLRequest = networker.constructRequest(uri: "https://rosegoldgarden.com/api/users/check-sec-code", post: true)
+        let reqWithoutBody: URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/check-sec-code", post: true)
         //let reqWithoutBody: URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/check-sec-code", post: true)
         //let reqWithoutBody: URLRequest = networker.constructRequest(uri: "http://192.168.1.65:4000/api/users/check-sec-code", post: true)
         
