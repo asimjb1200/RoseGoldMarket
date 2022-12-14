@@ -390,7 +390,7 @@ struct Register: View {
                     }
                 }
                 .alert(isPresented: $viewModel.passwordLengthIsInvalid) {
-                    Alert(title: Text("Password must be between 8 & 16 characters"))
+                    Alert(title: Text("Password must be between 8 & 20 characters"))
                 }
                 
                 // MARK: confirm password

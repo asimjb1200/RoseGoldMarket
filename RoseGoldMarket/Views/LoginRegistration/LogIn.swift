@@ -18,6 +18,7 @@ struct LogIn: View {
     @State var badUsername = false
     @State var badEmail = false
     @State var badCreds = false
+    @State var loading = false
     @FocusState private var focusedField:FormFields?
     @EnvironmentObject var globalUser:UserModel
     var inputChecker:InputChecker = .shared
@@ -83,33 +84,37 @@ struct LogIn: View {
                     Text("Forgot Password?").font(.subheadline).frame(maxWidth: .infinity, alignment: .trailing).foregroundColor(.blue)
                 }
                 
-                Button("Log In") {
-                    guard !self.email.isEmpty else {
-                        self.badEmail = true
-                        focusedField = .email
-                        return
+                if loading {
+                    ProgressView()
+                } else {
+                    Button("Log In") {
+                        guard !self.email.isEmpty else {
+                            self.badEmail = true
+                            focusedField = .email
+                            return
+                        }
+                        
+                        guard inputChecker.isValidEmail(email: self.email) else {
+                            self.badEmail = true
+                            focusedField = .email
+                            return
+                        }
+                        
+                        guard !self.password.isEmpty else {
+                            self.badPw = true
+                            focusedField = .password
+                            return
+                        }
+                        self.loginWithEmail()
                     }
-                    
-                    guard inputChecker.isValidEmail(email: self.email) else {
-                        self.badEmail = true
-                        focusedField = .email
-                        return
+                    .foregroundColor(Color.white)
+                    .font(.system(size: 16, weight: Font.Weight.bold))
+                    .padding()
+                    .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue).frame(width: 190))
+                    .padding(.top, 40)
+                    .alert(isPresented: $badCreds) {
+                        Alert(title: Text("Incorrect Credentials"), message: Text("Your username and password combination couldn't be found in our records"), dismissButton: .default(Text("OK")))
                     }
-                    
-                    guard !self.password.isEmpty else {
-                        self.badPw = true
-                        focusedField = .password
-                        return
-                    }
-                    self.loginWithEmail()
-                }
-                .foregroundColor(Color.white)
-                .font(.system(size: 16, weight: Font.Weight.bold))
-                .padding()
-                .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue).frame(width: 190))
-                .padding(.top, 40)
-                .alert(isPresented: $badCreds) {
-                    Alert(title: Text("Incorrect Credentials"), message: Text("Your username and password combination couldn't be found in our records"), dismissButton: .default(Text("OK")))
                 }
                 
                 Group {
@@ -231,6 +236,7 @@ struct LogIn: View {
 //    }
     
     func loginWithEmail() {
+        self.loading = true
         service.loginWithEmail(email: email.lowercased().filter { !$0.isWhitespace }, pw: password.filter{ !$0.isWhitespace }) { userData in
             switch (userData) {
                 case .success(let userRes):
@@ -239,18 +245,17 @@ struct LogIn: View {
                         service.saveAccessToken(accessToken: userRes.data.accessToken)
                         let savedPassword = service.loadUserPassword()
 
-//                        if savedPassword.isEmpty {// in the case that we've never saved their pw due to first login attempt
-//                            service.saveUserPassword(password: password, username: userRes.data.username)
-//                        } else if savedPassword != password { // maybe they've changed their pw
-//                            service.updateUserPassword(newPassword: password)
-//                        }
-                        
+                        self.loading = false
                         globalUser.login(serviceUsr: userRes.data)
                     }
                 
             case .failure(let err):
                 DispatchQueue.main.async {
+                    self.loading = false
                     if err == .badPassword {
+                        print("bad pw error")
+                        self.badPw = true
+                    } else {
                         self.badCreds = true
                     }
                     print(err.localizedDescription)

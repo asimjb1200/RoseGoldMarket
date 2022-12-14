@@ -127,7 +127,7 @@ struct ForgotPassword: View {
                         Text("Enter the 6 digit code that you received in your email")
                             .foregroundColor(Color.gray)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding([.leading, .bottom])
+                            .padding([.leading, .bottom, .trailing])
                             .alert(isPresented: $codeNotFound) {
                                 Alert(title: Text("That code is incorrect"))
                             }
@@ -196,10 +196,8 @@ struct ForgotPassword: View {
                             .fontWeight(.bold)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding([.leading, .bottom])
-                            .alert(isPresented: $dataPosted) {
-                                Alert(title: Text("Success"), message: Text("Your password has been updated. You can go back and log in now."), dismissButton: .default(Text("OK!")) {
-                                    dismiss() // go back to the login screen
-                                })
+                            .alert(isPresented: $pwNotValid) {
+                                Alert(title: Text("Invalid Password"), message: Text("Your password must be at least 8 and no more than 20 characters. It must also contain at least 1 number and 1 capital letter."), dismissButton: .default(Text("OK!")))
                             }
                         
                         Text("Set the new password for your account so you can login.")
@@ -214,13 +212,13 @@ struct ForgotPassword: View {
                             HStack(spacing: 0.0) {
                                 Image(systemName: "key.fill").foregroundColor(formField == FormFields.password ? accent : Color.gray)
                                 SecureField(" Password", text: $password)
+                                    .textContentType(UITextContentType.newPassword)
                                     .onChange(of: password) {
                                         password = String($0.prefix(20)) // this limits the char field to 20 chars
                                     }
                                     .textInputAutocapitalization(.never)
                                     .foregroundColor(formField == FormFields.password ? accent : Color.gray)
                                     .disableAutocorrection(true)
-                                    .textContentType(UITextContentType.password)
                                     .focused($formField, equals: .password)
                                     .onSubmit {
                                         formField = .confirmPassword
@@ -241,13 +239,13 @@ struct ForgotPassword: View {
                             HStack(spacing: 0.0) {
                                 Image(systemName: "key.fill").foregroundColor(formField == FormFields.passwordPlain ? accent : Color.gray)
                                 TextField(" Password", text: $password)
+                                    .textContentType(UITextContentType.newPassword)
                                     .onChange(of: password) {
                                         password = String($0.prefix(20)) // this limits the char field to 16 chars
                                     }
                                     .textInputAutocapitalization(.never)
                                     .foregroundColor(formField == FormFields.passwordPlain ? accent : Color.gray)
                                     .disableAutocorrection(true)
-                                    .textContentType(UITextContentType.password)
                                     .focused($formField, equals: .passwordPlain)
                                     .onSubmit {
                                         formField = .confirmPassword
@@ -268,12 +266,11 @@ struct ForgotPassword: View {
                         if showConfPW == false {
                             HStack(spacing: 0.0) {
                                 SecureField("Confirm Password", text: $confirmPassword)
+                                    .textContentType(UITextContentType.newPassword)
                                     .textInputAutocapitalization(.never)
                                     .foregroundColor(formField == FormFields.confirmPassword ? accent : Color.gray)
                                     .disableAutocorrection(true)
-                                    .textContentType(UITextContentType.password)
                                     .focused($formField, equals: .confirmPassword)
-                                
                                 
                                 Image(systemName: "eye")
                                     .foregroundColor(formField == FormFields.confirmPassword ? accent : Color.gray)
@@ -291,10 +288,10 @@ struct ForgotPassword: View {
                         } else {
                             HStack(spacing: 0.0) {
                                 TextField("Confirm Password", text: $confirmPassword)
+                                    .textContentType(UITextContentType.newPassword)
                                     .textInputAutocapitalization(.never)
                                     .foregroundColor(formField == FormFields.confirmPasswordPlain ? accent : Color.gray)
                                     .disableAutocorrection(true)
-                                    .textContentType(UITextContentType.password)
                                     .focused($formField, equals: .confirmPasswordPlain)
                                 
                                 Image(systemName: "eye.fill")
@@ -344,6 +341,15 @@ struct ForgotPassword: View {
                                 return
                             }
                             
+                            guard
+                                password.count > 8,
+                                password.count < 21
+                            else {
+                                print("password length invalid")
+                                pwNotValid = true
+                                return
+                            }
+                            
                             // kick off the password reset process
                             postNewPassword()
                         }
@@ -353,6 +359,11 @@ struct ForgotPassword: View {
                         .background(
                             RoundedRectangle(cornerRadius: 25).fill(accent)
                         )
+                        .alert(isPresented: $dataPosted) {
+                            Alert(title: Text("Success"), message: Text("Your password has been updated. You can go back and log in now."), dismissButton: .default(Text("OK!")) {
+                                dismiss() // go back to the login screen
+                            })
+                        }
                     }
                 }
             }
@@ -408,10 +419,12 @@ struct ForgotPassword: View {
     }
 
     func postNewPassword() {
+        self.loading = true
         userService.postNewPassword(securityCode: self.securityCodeFromUser, newPassword: self.password) { serverResponse in
             switch serverResponse {
                 case .success(let text):
                     DispatchQueue.main.async {
+                        self.loading = false
                         if text == "OK" {
                             self.dataPosted = true
                         } else {
@@ -421,6 +434,7 @@ struct ForgotPassword: View {
                 
                 case .failure(let err):
                     DispatchQueue.main.async {
+                        self.loading = false
                         print(err.localizedDescription)
                         self.errorOccurred = true
                     }
