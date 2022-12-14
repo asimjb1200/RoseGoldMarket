@@ -17,4 +17,5 @@ enum UserErrors: String, Error {
     case tokenExpired = "The access token has expired. Time to issue a new one"
     case dataConversionError = "Couldn't decode the data object from the server"
     case userNotFound = "Could not find that user"
+    case securityCodeNotFound = "The security code is invalid"
 }

@@ -52,10 +52,12 @@ final class UserNetworking {
         }.resume()
     }
     
-    func sendUsernameAndEmailForPasswordRecovery(username:String, email:String, completion: @escaping (Result<ResponseFromServer<String>, UserErrors>) -> ()) {
+    func sendUsernameAndEmailForPasswordRecovery(email:String, completion: @escaping (Result<ResponseFromServer<String>, UserErrors>) -> ()) {
         let reqWithoutBody:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/forgot-password-step-one", post: true)
+        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/forgot-password-step-one", post: true)
+        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://192.168.1.65:4000/api/users/forgot-password-step-one", post: true)
         let session = URLSession.shared
-        let body = ["emailAddress": email, "username": username]
+        let body = ["emailAddress": email]
         
         let request = networker.buildReqBody(req: reqWithoutBody, body: body)
         session.dataTask(with: request) {(data, response, error) in
@@ -89,6 +91,34 @@ final class UserNetworking {
                 } else {
                     completion(.failure(.serverError))
                 }
+            }
+        }.resume()
+    }
+    
+    func checkSecurityCode(email:String, securityCode: String, completion: @escaping (Result<Bool, UserErrors>) -> ()) {
+        let reqWithoutBody: URLRequest = networker.constructRequest(uri: "https://rosegoldgarden.com/api/users/check-sec-code", post: true)
+        //let reqWithoutBody: URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/check-sec-code", post: true)
+        //let reqWithoutBody: URLRequest = networker.constructRequest(uri: "http://192.168.1.65:4000/api/users/check-sec-code", post: true)
+        
+        let session = URLSession.shared
+        let body = ["emailAddress": email, "securityCode": securityCode]
+        
+        let request = networker.buildReqBody(req: reqWithoutBody, body: body)
+        session.dataTask(with: request) {(data, response, error) in
+            if error != nil {
+                print("error occurred")
+                completion(.failure(.failure))
+            }
+            
+            guard let response = response as? HTTPURLResponse else {
+                completion(.failure(.responseConversionError))
+                return
+            }
+            let isOK = self.networker.checkOkStatus(res: response)
+            if isOK {
+                completion(.success(true))
+            } else {
+                completion(.success(false))
             }
         }.resume()
     }
@@ -490,6 +520,7 @@ final class UserNetworking {
     
     func loginWithEmail(email:String, pw:String, completion: @escaping (Result<ResponseFromServer<ServiceUser>, UserErrors>) -> ()) {
         let reqWithoutBody:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/login", post: true)
+        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/login", post: true)
         
         let session = URLSession.shared
         let body = ["email": email, "password": pw]
@@ -529,7 +560,7 @@ final class UserNetworking {
     
     func postNewPassword(securityCode:String, newPassword:String, completion: @escaping(Result<String, UserErrors>) -> ()) {
         let reqWithoutBody:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/forgot-password-reset", post: true)
-        
+        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/forgot-password-reset", post: true)
         let session = URLSession.shared
         let body = ["securityCode": securityCode, "newPassword": newPassword]
         
