@@ -61,12 +61,12 @@ struct ForgotPassword: View {
                             .alert(isPresented: $errorOccurred) {
                                 Alert(title: Text("An Error Occurred"), message: Text("We ran into a problem on our end. Try again later."), dismissButton: .default(Text("OK")))
                             }
-                        
+
                         Text("Enter your email for the verification process, we will send a 6 digit code to your email.")
                             .foregroundColor(Color.gray)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding([.leading, .bottom])
-                        
+
                         HStack {
                             Image(systemName: "envelope.circle").foregroundColor(formField == FormFields.email ? accent : Color.gray)
                             TextField("Email", text: $email)
@@ -80,7 +80,7 @@ struct ForgotPassword: View {
                         .alert(isPresented: $userNotFound) {
                             Alert(title: Text("We don't recognize that email address"))
                         }
-                        
+
                         Button("Continue") {
                             withAnimation(.easeIn) {
                                 self.loading = true
@@ -134,43 +134,37 @@ struct ForgotPassword: View {
                         
                         HStack {
                             TextField("", text: $firstDigit)
-                                .focused($secField, equals: SecurityCodeFields.first)
-                                .modifier(SecurityCodeTextBox(textCode: $firstDigit))
+                                .modifier(SecurityCodeTextBox(textCode: $firstDigit, focusedField: _secField, boxNum: .first))
                                 .onSubmit {
                                     secField = .second
                                 }
                             
                             TextField("", text: $secondDigit)
-                                .focused($secField, equals: SecurityCodeFields.second)
-                                .modifier(SecurityCodeTextBox(textCode: $secondDigit))
+                                .modifier(SecurityCodeTextBox(textCode: $secondDigit, focusedField: _secField, boxNum: .second))
                                 .onSubmit {
                                     secField = .third
                                 }
                             
                             TextField("", text: $thirdDigit)
-                                .focused($secField, equals: SecurityCodeFields.third)
-                                .modifier(SecurityCodeTextBox(textCode: $thirdDigit))
+                                .modifier(SecurityCodeTextBox(textCode: $thirdDigit, focusedField: _secField, boxNum: .third))
                                 .onSubmit {
                                     secField = .fourth
                                 }
                             
                             TextField("", text: $fourthDigit)
-                                .focused($secField, equals: SecurityCodeFields.fourth)
-                                .modifier(SecurityCodeTextBox(textCode: $fourthDigit))
+                                .modifier(SecurityCodeTextBox(textCode: $fourthDigit, focusedField: _secField, boxNum: .fourth))
                                 .onSubmit {
                                     secField = .fifth
                                 }
                             
                             TextField("", text: $fifthDigit)
-                                .focused($secField, equals: SecurityCodeFields.fifth)
-                                .modifier(SecurityCodeTextBox(textCode: $fifthDigit))
+                                .modifier(SecurityCodeTextBox(textCode: $fifthDigit, focusedField: _secField, boxNum: .fifth))
                                 .onSubmit {
                                     secField = .sixth
                                 }
                             
                             TextField("", text: $sixthDigit)
-                                .focused($secField, equals: SecurityCodeFields.sixth)
-                                .modifier(SecurityCodeTextBox(textCode: $sixthDigit))
+                                .modifier(SecurityCodeTextBox(textCode: $sixthDigit, focusedField: _secField, boxNum: .sixth))
                         }.multilineTextAlignment(.center)
                         
                         Button("Continue") {
@@ -199,7 +193,7 @@ struct ForgotPassword: View {
                             .alert(isPresented: $pwNotValid) {
                                 Alert(title: Text("Invalid Password"), message: Text("Your password must be at least 8 and no more than 20 characters. It must also contain at least 1 number and 1 capital letter."), dismissButton: .default(Text("OK!")))
                             }
-                        
+
                         Text("Set the new password for your account so you can login.")
                             .foregroundColor(Color.gray)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -207,7 +201,7 @@ struct ForgotPassword: View {
                             .alert(isPresented: $pwDontMatch) {
                                 Alert(title: Text("Your Passwords Don't Match"))
                             }
-                        
+
                         if showPW == false {
                             HStack(spacing: 0.0) {
                                 Image(systemName: "key.fill").foregroundColor(formField == FormFields.password ? accent : Color.gray)
@@ -223,7 +217,7 @@ struct ForgotPassword: View {
                                     .onSubmit {
                                         formField = .confirmPassword
                                     }
-                                
+
                                 Image(systemName: "eye")
                                     .foregroundColor(formField == FormFields.password ? accent : Color.gray)
                                     .onTapGesture {
@@ -234,7 +228,7 @@ struct ForgotPassword: View {
                             .padding()
                             .modifier(CustomTextBubble(isActive: formField == FormFields.password, accentColor: .blue))
                             .padding([.leading, .trailing, .top], 15.0)
-                            
+
                         } else {
                             HStack(spacing: 0.0) {
                                 Image(systemName: "key.fill").foregroundColor(formField == FormFields.passwordPlain ? accent : Color.gray)
@@ -250,7 +244,7 @@ struct ForgotPassword: View {
                                     .onSubmit {
                                         formField = .confirmPassword
                                     }
-                                
+
                                 Image(systemName: "eye.fill")
                                     .foregroundColor(formField == FormFields.password ? accent : Color.gray)
                                     .onTapGesture {
@@ -262,7 +256,7 @@ struct ForgotPassword: View {
                             .modifier(CustomTextBubble(isActive: formField == FormFields.password, accentColor: .blue))
                             .padding([.leading, .trailing, .top])
                         }
-                        
+
                         if showConfPW == false {
                             HStack(spacing: 0.0) {
                                 SecureField("Confirm Password", text: $confirmPassword)
@@ -271,7 +265,7 @@ struct ForgotPassword: View {
                                     .foregroundColor(formField == FormFields.confirmPassword ? accent : Color.gray)
                                     .disableAutocorrection(true)
                                     .focused($formField, equals: .confirmPassword)
-                                
+
                                 Image(systemName: "eye")
                                     .foregroundColor(formField == FormFields.confirmPassword ? accent : Color.gray)
                                     .onTapGesture {
@@ -293,7 +287,7 @@ struct ForgotPassword: View {
                                     .foregroundColor(formField == FormFields.confirmPasswordPlain ? accent : Color.gray)
                                     .disableAutocorrection(true)
                                     .focused($formField, equals: .confirmPasswordPlain)
-                                
+
                                 Image(systemName: "eye.fill")
                                     .foregroundColor(formField == FormFields.confirmPasswordPlain ? accent : Color.gray)
                                     .onTapGesture {
@@ -308,39 +302,39 @@ struct ForgotPassword: View {
                                 Alert(title: Text("Passwords Don't Match"))
                             }
                         }
-                        
+
                         if pwNeedsCaps {
                             HStack(spacing: 0.0) {
                                 Text("1 Uppercase X").font(.caption2).foregroundColor(.red)
                             }.frame(maxWidth: .infinity, alignment: .leading).padding(.leading)
                         }
-                        
+
                         if pwNeedsNumbers {
                             HStack(spacing: 0.0) {
                                 Text("1 Number X").font(.caption2).foregroundColor(.red)
                             }.frame(maxWidth: .infinity, alignment: .leading).padding(.leading)
                         }
-                        
+
                         Button("Continue") {
                             guard password == confirmPassword else {
                                 print("passwords dont match")
                                 pwDontMatch = true
                                 return
                             }
-                            
+
                             // check for numbers and cap letters
                             guard pwContainsUppercase(password: self.password) == true else {
                                 print("pw needs uppercase")
                                 pwNeedsCaps = true
                                 return
                             }
-                            
+
                             guard pwContainsNumber(password: self.password) == true else {
                                 print("pw needs numbers")
                                 pwNeedsNumbers = true
                                 return
                             }
-                            
+
                             guard
                                 password.count > 8,
                                 password.count < 21
@@ -349,7 +343,7 @@ struct ForgotPassword: View {
                                 pwNotValid = true
                                 return
                             }
-                            
+
                             // kick off the password reset process
                             postNewPassword()
                         }
