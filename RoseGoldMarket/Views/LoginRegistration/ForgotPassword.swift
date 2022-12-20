@@ -18,6 +18,8 @@ struct ForgotPassword: View {
     @State var codeNotFound = false
     @State var userNotFound = false
     
+    @State var invalidEmail = false
+    
     @State var loading = false
     
     @State var password = ""
@@ -66,6 +68,9 @@ struct ForgotPassword: View {
                             .foregroundColor(Color.gray)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding([.leading, .bottom])
+                            .alert(isPresented: $invalidEmail) {
+                                Alert(title: Text("Please enter a valid email address"))
+                            }
 
                         HStack {
                             Image(systemName: "envelope.circle").foregroundColor(formField == FormFields.email ? accent : Color.gray)
@@ -81,9 +86,19 @@ struct ForgotPassword: View {
                             Alert(title: Text("We don't recognize that email address"))
                         }
 
-                        Button("Continue") {
+                        Button(
+                            action: {
                             withAnimation(.easeIn) {
                                 self.loading = true
+                            }
+                            guard
+                                self.email.count > 0,
+                                Validators.isValidEmail(email: self.email)
+                            else {
+                                print("invalid formatted email attempted during forgot password")
+                                self.loading = false
+                                self.invalidEmail = true
+                                return
                             }
                             userService.sendUsernameAndEmailForPasswordRecovery(email: email.trimmingCharacters(in: .whitespacesAndNewlines)) {(secCodeResponse) in
                                 switch(secCodeResponse) {
@@ -105,12 +120,15 @@ struct ForgotPassword: View {
                                     }
                                 }
                             }
-                        }
-                        .foregroundColor(.white)
-                        .frame(width: 200)
-                        .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 25).fill(accent)
+                        },
+                            label: {
+                                Text("Continue")
+                                    .foregroundColor(Color.white)
+                                    .frame(width: 190)
+                                    .font(.system(size: 16, weight: Font.Weight.bold))
+                                    .padding()
+                                    .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue))
+                            }
                         )
                     }
                 }
@@ -167,17 +185,21 @@ struct ForgotPassword: View {
                                 .modifier(SecurityCodeTextBox(textCode: $sixthDigit, focusedField: _secField, boxNum: .sixth))
                         }.multilineTextAlignment(.center)
                         
-                        Button("Continue") {
-                            securityCodeFromUser = "\(firstDigit)\(secondDigit)\(thirdDigit)\(fourthDigit)\(fifthDigit)\(sixthDigit)"
-                            
-                            // check the code
-                            checkCode()
-                        }
-                        .foregroundColor(.white)
-                        .frame(width: 200)
-                        .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 25).fill(accent)
+                        Button(
+                            action: {
+                                securityCodeFromUser = "\(firstDigit)\(secondDigit)\(thirdDigit)\(fourthDigit)\(fifthDigit)\(sixthDigit)"
+                                
+                                // check the code
+                                checkCode()
+                            },
+                            label: {
+                                Text("Continue")
+                                    .foregroundColor(.white)
+                                    .frame(width: 190)
+                                    .font(.system(size: 16, weight: Font.Weight.bold))
+                                    .padding()
+                                    .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue))
+                            }
                         )
                     }
                 }
@@ -315,45 +337,48 @@ struct ForgotPassword: View {
                             }.frame(maxWidth: .infinity, alignment: .leading).padding(.leading)
                         }
 
-                        Button("Continue") {
-                            guard password == confirmPassword else {
-                                print("passwords dont match")
-                                pwDontMatch = true
-                                return
-                            }
+                        Button(
+                            action: {
+                                guard password == confirmPassword else {
+                                    print("passwords dont match")
+                                    pwDontMatch = true
+                                    return
+                                }
 
-                            // check for numbers and cap letters
-                            guard pwContainsUppercase(password: self.password) == true else {
-                                print("pw needs uppercase")
-                                pwNeedsCaps = true
-                                return
-                            }
+                                // check for numbers and cap letters
+                                guard pwContainsUppercase(password: self.password) == true else {
+                                    print("pw needs uppercase")
+                                    pwNeedsCaps = true
+                                    return
+                                }
 
-                            guard pwContainsNumber(password: self.password) == true else {
-                                print("pw needs numbers")
-                                pwNeedsNumbers = true
-                                return
-                            }
+                                guard pwContainsNumber(password: self.password) == true else {
+                                    print("pw needs numbers")
+                                    pwNeedsNumbers = true
+                                    return
+                                }
 
-                            guard
-                                password.count > 8,
-                                password.count < 21
-                            else {
-                                print("password length invalid")
-                                pwNotValid = true
-                                return
-                            }
+                                guard
+                                    password.count > 8,
+                                    password.count < 21
+                                else {
+                                    print("password length invalid")
+                                    pwNotValid = true
+                                    return
+                                }
 
-                            // kick off the password reset process
-                            postNewPassword()
-                        }
-                        .foregroundColor(.white)
-                        .frame(width: 200)
-                        .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 25).fill(accent)
-                        )
-                        .alert(isPresented: $dataPosted) {
+                                // kick off the password reset process
+                                postNewPassword()
+                            },
+                            label: {
+                                Text("Continue")
+                                    .frame(width: 190)
+                                    .font(.system(size: 16, weight: Font.Weight.bold))
+                                    .padding()
+                                    .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue))
+                                
+                            }
+                        ).alert(isPresented: $dataPosted) {
                             Alert(title: Text("Success"), message: Text("Your password has been updated. You can go back and log in now."), dismissButton: .default(Text("OK!")) {
                                 dismiss() // go back to the login screen
                             })
