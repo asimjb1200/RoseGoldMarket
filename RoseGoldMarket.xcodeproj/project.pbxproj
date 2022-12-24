@@ -30,6 +30,7 @@
 		683854BC27E2CE19008E4F88 /* UserErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 683854BB27E2CE19008E4F88 /* UserErrors.swift */; };
 		683C6B9028C98C07005790A5 /* MapSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 683C6B8F28C98C07005790A5 /* MapSearch.swift */; };
 		684219DE28DC2ED400936369 /* RegistrationFormEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684219DD28DC2ED400936369 /* RegistrationFormEnum.swift */; };
+		6842DC5429576BB6002AE911 /* ContinueButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6842DC5329576BB6002AE911 /* ContinueButton.swift */; };
 		684452D228406AAD0019DF7F /* PlaceholderStyling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684452D128406AAD0019DF7F /* PlaceholderStyling.swift */; };
 		684452D428406F8E0019DF7F /* ForgotPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684452D328406F8E0019DF7F /* ForgotPassword.swift */; };
 		684867832798BAC70033969D /* RoseGoldMarketApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684867822798BAC70033969D /* RoseGoldMarketApp.swift */; };
@@ -102,6 +103,7 @@
 		683854BB27E2CE19008E4F88 /* UserErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserErrors.swift; sourceTree = "<group>"; };
 		683C6B8F28C98C07005790A5 /* MapSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapSearch.swift; sourceTree = "<group>"; };
 		684219DD28DC2ED400936369 /* RegistrationFormEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationFormEnum.swift; sourceTree = "<group>"; };
+		6842DC5329576BB6002AE911 /* ContinueButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinueButton.swift; sourceTree = "<group>"; };
 		684452D128406AAD0019DF7F /* PlaceholderStyling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderStyling.swift; sourceTree = "<group>"; };
 		684452D328406F8E0019DF7F /* ForgotPassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPassword.swift; sourceTree = "<group>"; };
 		6848677F2798BAC70033969D /* RoseGoldMarket.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RoseGoldMarket.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -211,6 +213,7 @@
 				684452D128406AAD0019DF7F /* PlaceholderStyling.swift */,
 				687A0BCA28602E23003B76D1 /* UnderlineTextFieldModifier.swift */,
 				68135B7F29403CA500760038 /* SecurityCodeTextBox.swift */,
+				6842DC5329576BB6002AE911 /* ContinueButton.swift */,
 			);
 			path = ViewModifier;
 			sourceTree = "<group>";
@@ -524,6 +527,7 @@
 				68E9192927D025CD00154DBB /* EmailSupport.swift in Sources */,
 				6866FA2427B345880052B8A5 /* SocketStuff.swift in Sources */,
 				682DE035285F8D7900B0EC69 /* ResetPassword.swift in Sources */,
+				6842DC5429576BB6002AE911 /* ContinueButton.swift in Sources */,
 				682E194727DD426C00C304DA /* User.swift in Sources */,
 				684867962798C9710033969D /* Item.swift in Sources */,
 				688591BB29077FF1006CE699 /* AccountVerificationErrors.swift in Sources */,

@@ -61,7 +61,7 @@ struct ForgotPassword: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding([.leading, .bottom])
                             .alert(isPresented: $errorOccurred) {
-                                Alert(title: Text("An Error Occurred"), message: Text("We ran into a problem on our end. Try again later."), dismissButton: .default(Text("OK")))
+                                Alert(title: Text("Try Again"), dismissButton: .default(Text("OK")))
                             }
 
                         Text("Enter your email for the verification process, we will send a 6 digit code to your email.")
@@ -83,7 +83,7 @@ struct ForgotPassword: View {
                         .modifier(CustomTextBubble(isActive: formField == .email, accentColor: .blue))
                         .padding()
                         .alert(isPresented: $userNotFound) {
-                            Alert(title: Text("We don't recognize that email address"))
+                            Alert(title: Text("Try Again"), message: Text("The email you entered did not match our records. Please double-check and try again."))
                         }
 
                         Button(
@@ -123,11 +123,7 @@ struct ForgotPassword: View {
                         },
                             label: {
                                 Text("Continue")
-                                    .foregroundColor(Color.white)
-                                    .frame(width: 190)
-                                    .font(.system(size: 16, weight: Font.Weight.bold))
-                                    .padding()
-                                    .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue))
+                                    .modifier(ContinueButtonStyling())
                             }
                         )
                     }
@@ -141,64 +137,62 @@ struct ForgotPassword: View {
                             .fontWeight(.bold)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding([.leading, .bottom])
-                        
-                        Text("Enter the 6 digit code that you received in your email")
+
+                        Text("Please check your inbox for the verification code sent to **\(self.email)**. Can't find it? Please check your spam folder.")
                             .foregroundColor(Color.gray)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding([.leading, .bottom, .trailing])
                             .alert(isPresented: $codeNotFound) {
                                 Alert(title: Text("That code is incorrect"))
                             }
-                        
+
                         HStack {
                             TextField("", text: $firstDigit)
                                 .modifier(SecurityCodeTextBox(textCode: $firstDigit, focusedField: _secField, boxNum: .first))
                                 .onSubmit {
                                     secField = .second
                                 }
-                            
+
                             TextField("", text: $secondDigit)
                                 .modifier(SecurityCodeTextBox(textCode: $secondDigit, focusedField: _secField, boxNum: .second))
                                 .onSubmit {
                                     secField = .third
                                 }
-                            
+
                             TextField("", text: $thirdDigit)
                                 .modifier(SecurityCodeTextBox(textCode: $thirdDigit, focusedField: _secField, boxNum: .third))
                                 .onSubmit {
                                     secField = .fourth
                                 }
-                            
+
                             TextField("", text: $fourthDigit)
                                 .modifier(SecurityCodeTextBox(textCode: $fourthDigit, focusedField: _secField, boxNum: .fourth))
                                 .onSubmit {
                                     secField = .fifth
                                 }
-                            
+
                             TextField("", text: $fifthDigit)
                                 .modifier(SecurityCodeTextBox(textCode: $fifthDigit, focusedField: _secField, boxNum: .fifth))
                                 .onSubmit {
                                     secField = .sixth
                                 }
-                            
+
                             TextField("", text: $sixthDigit)
                                 .modifier(SecurityCodeTextBox(textCode: $sixthDigit, focusedField: _secField, boxNum: .sixth))
-                        }.multilineTextAlignment(.center)
-                        
+                        }
+                        .multilineTextAlignment(.center)
+                        .padding(.bottom)
+
                         Button(
                             action: {
                                 securityCodeFromUser = "\(firstDigit)\(secondDigit)\(thirdDigit)\(fourthDigit)\(fifthDigit)\(sixthDigit)"
-                                
+
                                 // check the code
                                 checkCode()
                             },
                             label: {
                                 Text("Continue")
-                                    .foregroundColor(.white)
-                                    .frame(width: 190)
-                                    .font(.system(size: 16, weight: Font.Weight.bold))
-                                    .padding()
-                                    .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue))
+                                    .modifier(ContinueButtonStyling())
                             }
                         )
                     }
@@ -276,7 +270,7 @@ struct ForgotPassword: View {
                             }
                             .padding()
                             .modifier(CustomTextBubble(isActive: formField == FormFields.password, accentColor: .blue))
-                            .padding([.leading, .trailing, .top])
+                            .padding([.leading, .trailing, .top], 15.0)
                         }
 
                         if showConfPW == false {
@@ -297,7 +291,7 @@ struct ForgotPassword: View {
                             }
                             .padding()
                             .modifier(CustomTextBubble(isActive: formField == FormFields.confirmPassword, accentColor: .blue))
-                            .padding([.leading, .trailing, .top])
+                            .padding()
                             .alert(isPresented: $pwDontMatch) {
                                 Alert(title: Text("Passwords Don't Match"))
                             }
@@ -319,7 +313,7 @@ struct ForgotPassword: View {
                             }
                             .padding()
                             .modifier(CustomTextBubble(isActive: formField == FormFields.confirmPasswordPlain, accentColor: .blue))
-                            .padding([.leading, .trailing, .top])
+                            .padding()
                             .alert(isPresented: $pwDontMatch) {
                                 Alert(title: Text("Passwords Don't Match"))
                             }
@@ -346,13 +340,13 @@ struct ForgotPassword: View {
                                 }
 
                                 // check for numbers and cap letters
-                                guard pwContainsUppercase(password: self.password) == true else {
+                                guard Validators.pwContainsUppercase(password: self.password) == true else {
                                     print("pw needs uppercase")
                                     pwNeedsCaps = true
                                     return
                                 }
 
-                                guard pwContainsNumber(password: self.password) == true else {
+                                guard Validators.pwContainsNumber(password: self.password) == true else {
                                     print("pw needs numbers")
                                     pwNeedsNumbers = true
                                     return
@@ -372,10 +366,7 @@ struct ForgotPassword: View {
                             },
                             label: {
                                 Text("Continue")
-                                    .frame(width: 190)
-                                    .font(.system(size: 16, weight: Font.Weight.bold))
-                                    .padding()
-                                    .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue))
+                                    .modifier(ContinueButtonStyling())
                                 
                             }
                         ).alert(isPresented: $dataPosted) {
@@ -388,28 +379,6 @@ struct ForgotPassword: View {
             }
         }
     }
-
-    func pwContainsNumber(password: String) -> Bool {
-        var numberFound = false
-        for chr in password {
-            if chr.isNumber {
-                numberFound = true
-                break
-            }
-        }
-        return numberFound
-    }
-
-    func pwContainsUppercase(password: String) -> Bool {
-            var uppercaseFound = false
-            for chr in password {
-                if chr.isUppercase {
-                    uppercaseFound = true
-                    break
-                }
-            }
-            return uppercaseFound
-        }
     
     func checkCode() {
         self.loading = true
