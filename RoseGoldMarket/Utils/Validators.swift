@@ -26,13 +26,31 @@ struct Validators {
     }
 
     static func pwContainsUppercase(password: String) -> Bool {
-            var uppercaseFound = false
-            for chr in password {
-                if chr.isUppercase {
-                    uppercaseFound = true
-                    break
-                }
+        var uppercaseFound = false
+        for chr in password {
+            if chr.isUppercase {
+                uppercaseFound = true
+                break
             }
-            return uppercaseFound
         }
+        return uppercaseFound
+    }
+    
+    static func spacesFound(fieldsToCheck: [String]) -> Bool {
+        for field in fieldsToCheck {
+            guard field.contains(" ") == false else {
+                return true
+            }
+        }
+        return false
+    }
+    
+    static func foundEmptyTextField(wordList: [String]) -> Bool {
+        for field in wordList {
+            guard !field.isEmpty else {
+                return true
+            }
+        }
+        return false
+    }
 }

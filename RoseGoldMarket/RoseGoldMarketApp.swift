@@ -35,7 +35,7 @@ struct RoseGoldMarketApp: App {
                             print("URL OPENED. let's give them a loading screen while we verify the code: \(url)")
                             // this is going to open for every link the login page receives, so I'll have to do some addtl checks
                             self.isLoading = true
-                            
+
                             if let urlComponents = URLComponents(string: url.absoluteString) {
                                 let queryItems = urlComponents.queryItems
                                 guard let userInfoHash = queryItems?.first(where: {$0.name == "userInformation"})?.value else {
@@ -73,7 +73,6 @@ struct RoseGoldMarketApp: App {
                                 print("one of the social media share links was clicked")
                                 self.isLoading = false
                             }
-                            
                         }
                         .environmentObject(user)
                 }

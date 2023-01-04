@@ -42,6 +42,8 @@
 		684867982798CCF20033969D /* CategoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684867972798CCF20033969D /* CategoryMapper.swift */; };
 		6848679B2798CD9A0033969D /* ItemForBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6848679A2798CD9A0033969D /* ItemForBackend.swift */; };
 		6848679E2798D5CB0033969D /* ItemService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6848679D2798D5CB0033969D /* ItemService.swift */; };
+		684872A4295D0533004DA1D8 /* ImageSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684872A3295D0533004DA1D8 /* ImageSelector.swift */; };
+		684872A6295D2230004DA1D8 /* CameraAccessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684872A5295D2230004DA1D8 /* CameraAccessor.swift */; };
 		684B923027D27DD800CF25D9 /* ItemNameAndId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684B922F27D27DD800CF25D9 /* ItemNameAndId.swift */; };
 		684B923227D2BA7B00CF25D9 /* EditItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684B923127D2BA7B00CF25D9 /* EditItem.swift */; };
 		684F3EDD29496DBD00D1D40A /* SecurityCodeFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684F3EDC29496DBD00D1D40A /* SecurityCodeFields.swift */; };
@@ -116,6 +118,8 @@
 		684867972798CCF20033969D /* CategoryMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryMapper.swift; sourceTree = "<group>"; };
 		6848679A2798CD9A0033969D /* ItemForBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemForBackend.swift; sourceTree = "<group>"; };
 		6848679D2798D5CB0033969D /* ItemService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemService.swift; sourceTree = "<group>"; };
+		684872A3295D0533004DA1D8 /* ImageSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSelector.swift; sourceTree = "<group>"; };
+		684872A5295D2230004DA1D8 /* CameraAccessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraAccessor.swift; sourceTree = "<group>"; };
 		684B922F27D27DD800CF25D9 /* ItemNameAndId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemNameAndId.swift; sourceTree = "<group>"; };
 		684B923127D2BA7B00CF25D9 /* EditItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditItem.swift; sourceTree = "<group>"; };
 		684F3EDC29496DBD00D1D40A /* SecurityCodeFields.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityCodeFields.swift; sourceTree = "<group>"; };
@@ -177,14 +181,13 @@
 			children = (
 				6878BCCA27F270C700CD071A /* badwords.txt */,
 				6823B7D8279913A4008F2CB7 /* PhotoPicker.swift */,
-				68D7FC4D279923DD00F9CFBB /* PlantPictureOptions.swift */,
 				6878BCC727F26C7F00CD071A /* InputChecker.swift */,
 				683C6B8F28C98C07005790A5 /* MapSearch.swift */,
-				684219DD28DC2ED400936369 /* RegistrationFormEnum.swift */,
 				68BDD46D28DE65F700FCE429 /* KeyboardNotificationPublisher.swift */,
 				682292E828DE9FB200F2A8BF /* UIResponderExtension.swift */,
-				684F3EDC29496DBD00D1D40A /* SecurityCodeFields.swift */,
 				680F155E2951680700911999 /* Validators.swift */,
+				684872A3295D0533004DA1D8 /* ImageSelector.swift */,
+				684872A5295D2230004DA1D8 /* CameraAccessor.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -345,6 +348,9 @@
 		68A90D7627A255C200CD3768 /* Enums */ = {
 			isa = PBXGroup;
 			children = (
+				684F3EDC29496DBD00D1D40A /* SecurityCodeFields.swift */,
+				68D7FC4D279923DD00F9CFBB /* PlantPictureOptions.swift */,
+				684219DD28DC2ED400936369 /* RegistrationFormEnum.swift */,
 				6800EDD427B06AEC00461643 /* Messages */,
 				68A90D7727A255D600CD3768 /* AddItemsView */,
 			);
@@ -483,6 +489,7 @@
 				684219DE28DC2ED400936369 /* RegistrationFormEnum.swift in Sources */,
 				68E083DF27ACBE4000DA0110 /* MessagingService.swift in Sources */,
 				68A90D7927A2560100CD3768 /* EnumsForAddItemsView.swift in Sources */,
+				684872A6295D2230004DA1D8 /* CameraAccessor.swift in Sources */,
 				684B923227D2BA7B00CF25D9 /* EditItem.swift in Sources */,
 				6848679E2798D5CB0033969D /* ItemService.swift in Sources */,
 				6823B7D9279913A4008F2CB7 /* PhotoPicker.swift in Sources */,
@@ -530,6 +537,7 @@
 				6842DC5429576BB6002AE911 /* ContinueButton.swift in Sources */,
 				682E194727DD426C00C304DA /* User.swift in Sources */,
 				684867962798C9710033969D /* Item.swift in Sources */,
+				684872A4295D0533004DA1D8 /* ImageSelector.swift in Sources */,
 				688591BB29077FF1006CE699 /* AccountVerificationErrors.swift in Sources */,
 				684867852798BAC70033969D /* ContentView.swift in Sources */,
 				684867922798BB060033969D /* HomeMarket.swift in Sources */,

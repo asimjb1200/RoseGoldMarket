@@ -21,11 +21,10 @@ final class RegisterUserViewModel: ObservableObject {
     @Published var zipCode = ""
     @Published var state = ""
     @Published var city = ""
-    @Published var avatar:UIImage? = UIImage(named: "AddPhoto")!
-    @Published var avatarLight:UIImage? = UIImage(named: "AddPhotoLight")!
+    @Published var avatar:UIImage?
+    var useCamera = false
     @Published var dataPosted = false
     @Published var canLoginNow = false
-    @Published var imageEnum: PlantOptions = .imageOne
     @Published var isShowingPhotoPicker = false
     @Published var spacesFoundInField = false
     @Published var fieldsEmpty = false
@@ -48,66 +47,17 @@ final class RegisterUserViewModel: ObservableObject {
     @Published var statePicker: [String] = ["Select A State","AL","AK","AZ","AR","AS","CA","CO","CT","DE","DC","FL","GA","GU","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","CM","OH","OK","OR","PA","PR","RI","SC","SD","TN","TX","TT","UT","VT","VI","WA","WV","WI","WY"]
     
     
-//    func getAndSaveUserLocation() {
-//        let geocoder = CLGeocoder()
-//        let checkAddressForGeoLo = "\(self.address), \(self.city), \(self.state) \(self.zipCode)"
-//        geocoder.geocodeAddressString(checkAddressForGeoLo) { placemarks, error in
-//            guard error == nil else {
-//                self.addressIsFake = true
-//                return
-//            }
-//            let placemark = placemarks?.first
-//            let lat = placemark?.location?.coordinate.latitude
-//            let lon = placemark?.location?.coordinate.longitude
-//
-//            if let lon = lon, let lat = lat { // unwrap the optionals
-//                // (long, lat) for database now send new addy and long/lat to the database
-//                let geoLocation = "(\(lon),\(lat))"
-//
-//                // register the new user
-//                self.registerUser(geolocation: geoLocation)
-//            }
-//        }
-//    }
-    
-//    func registerUser(geolocation:String) -> () {
-//        guard
-//            let avatar = avatar,
-//            let avatarImgCompressed = avatar.jpegData(compressionQuality: 0.5)
-//        else {
-//            return
-//        }
-//
-//        guard let zipCodeInt = UInt(self.zipCode) else { return }
-//
-//        UserNetworking.shared.registerUser(firstName: self.firstName, lastName: self.lastName, username: self.username.lowercased(), email: self.email, pw: self.password, addy: self.address, zip: zipCodeInt, state: self.state, city: self.city, geolocation: geolocation, avi: avatarImgCompressed) {[weak self] registerResponse in
-//            switch registerResponse {
-//                case .success(let res):
-//                    DispatchQueue.main.async {
-//                        self?.dataPosted = res
-//                    }
-//                case .failure(let err):
-//                    DispatchQueue.main.async {
-//                        if err == .usernameTaken {
-//                            self?.nameNotAvailable = true
-//                        }
-//                        print(err)
-//                    }
-//            }
-//        }
-//    }
-    
-    func registerUserV2(address:String, phone:String, city:String, state:String, zipCode:String, geolocation:String, colorScheme:ColorScheme = .light) -> () {
+    func registerUserV2(address:String, phone:String, city:String, state:String, zipCode:String, geolocation:String) -> () {
         guard
-            let avatar = (colorScheme == .light ? avatarLight : avatar), // pick the right avi image based off the app's color scheme
+            let avatar = avatar,
             let avatarImgCompressed = avatar.jpegData(compressionQuality: 0.5)
         else {
+            print("image wasn't set or i wasn't able to compress it")
             return
         }
         
-        // remove dashes from phone
-        
         guard let zipCodeInt = UInt(zipCode) else { return }
+        
         UserNetworking.shared.registerUser(firstName: self.firstName, lastName: self.lastName, username: self.username.lowercased(), email: self.email, phone: phone, pw: self.password, addy: address, zip: zipCodeInt, state: state, city: city, geolocation: geolocation, avi: avatarImgCompressed) { [weak self] registerResponse in
             switch registerResponse {
                 case .success( _):
@@ -129,76 +79,5 @@ final class RegisterUserViewModel: ObservableObject {
                     }
             }
         }
-    }
-    
-    func textFieldsEmpty() -> Bool {
-        var fieldIsEmpty = false
-        for field in [self.firstName, self.lastName, self.username, self.email, self.password] {
-            if field.isEmpty {
-                fieldIsEmpty = true
-                break
-            }
-        }
-        return fieldIsEmpty
-    }
-    
-    func spacesFound() -> Bool {
-        var spacesFound = false
-        for field in [self.username, self.email, self.password, self.zipCode, self.state] {
-            if field.contains(" ") {
-                if spacesFound == false {
-                    spacesFound = true
-                }
-            }
-        }
-        return spacesFound
-    }
-    
-    func pwContainsUppercase() -> Bool {
-        var uppercaseFound = false
-        for chr in self.password {
-            if chr.isUppercase {
-                uppercaseFound = true
-                break
-            }
-        }
-        return uppercaseFound
-    }
-    
-    func pwContainsNumber() -> Bool {
-        var numberFound = false
-        for chr in self.password {
-            if chr.isNumber {
-                numberFound = true
-                break
-            }
-        }
-        return numberFound
-    }
-    
-    func containsEnoughChars(text:String) -> Bool {
-        var containsEnoughChars = false
-        var charCount = 0
-        
-        guard text.count > 7 else {
-            return containsEnoughChars
-        }
-        
-        for char in text {
-            if char.isLetter {
-                charCount += 1
-                if charCount >= 5 {
-                    containsEnoughChars = true
-                    break
-                }
-            }
-        }
-        return containsEnoughChars
-    }
-    
-    func isValidEmail(email: String) -> Bool {
-        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-        return emailPred.evaluate(with: email)
     }
 }

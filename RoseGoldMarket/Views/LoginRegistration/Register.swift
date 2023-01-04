@@ -111,7 +111,7 @@ struct Register: View {
                         .foregroundColor(focusedField == FormFields.email ? accent : Color.gray)
                         .onSubmit {
                             guard
-                                viewModel.isValidEmail(email: viewModel.email)
+                                Validators.isValidEmail(email: viewModel.email)
                             else {
                                 focusedField = .email
                                 viewModel.invalidEmail = true
@@ -452,13 +452,13 @@ struct Register: View {
                             viewModel.firstName.count > 1,
                             viewModel.lastName.count > 1
                         else {
-                            self.namesTooShort = true
                             focusedField = .fullName
+                            self.namesTooShort = true
                             return
                         }
                         
                         guard
-                            viewModel.isValidEmail(email: viewModel.email)
+                            Validators.isValidEmail(email: viewModel.email)
                         else {
                             focusedField = FormFields.email
                             viewModel.invalidEmail = true
@@ -476,19 +476,20 @@ struct Register: View {
                             viewModel.password.count >= 8,
                             viewModel.password.count <= 20
                         else {
-                            viewModel.passwordLengthIsInvalid = true
                             focusedField = .password
+                            viewModel.passwordLengthIsInvalid = true
                             return
                         }
                         
                         
-                        let containsNums = viewModel.pwContainsNumber()
-                        let containsUppers = viewModel.pwContainsUppercase()
+                        let containsNums = Validators.pwContainsNumber(password: viewModel.password)
+                        let containsUppers = Validators.pwContainsUppercase(password: viewModel.password)
                         
                         guard
                             containsNums == true,
                             containsUppers == true
                         else {
+                            focusedField = .password
                             if !containsUppers {
                                 withAnimation(.easeIn) {
                                     viewModel.pwNeedsCaps = true
@@ -507,15 +508,14 @@ struct Register: View {
                                     viewModel.pwNeedsNumbers = false
                                 }
                             }
-                            focusedField = .password
                             return
                         }
                         
                         guard
                             viewModel.password == confirmPassword
                         else {
-                            self.pwDontMatch = true
                             focusedField = .confirmPassword
+                            self.pwDontMatch = true
                             return
                         }
 
@@ -527,6 +527,7 @@ struct Register: View {
                         }
                         
                         guard viewModel.addressInfo != nil else {
+                            focusedField = .address
                             noAddyChosen = true
                             return
                         }
@@ -553,16 +554,6 @@ struct Register: View {
                 }.padding(.top, 60)
             }
         }
-        .sheet(isPresented: $viewModel.isShowingPhotoPicker, content: {
-            switch(colorScheme) {
-                case .dark:
-                    PhotoPicker(plantImage: $viewModel.avatar, plantImage2: Binding.constant(nil), plantImage3: Binding.constant(nil), plantEnum: $viewModel.imageEnum)
-                case .light:
-                    PhotoPicker(plantImage: $viewModel.avatarLight, plantImage2: Binding.constant(nil), plantImage3: Binding.constant(nil), plantEnum: $viewModel.imageEnum)
-                default:
-                    PhotoPicker(plantImage: $viewModel.avatarLight, plantImage2: Binding.constant(nil), plantImage3: Binding.constant(nil), plantEnum: $viewModel.imageEnum)
-            }
-        })
         .shadow(radius: 10)
         .navigationBarTitle(Text(""), displayMode: .inline)
         .tint(Color.blue)

@@ -20,8 +20,6 @@ struct AddProfilePic: View {
     @State var acceptedTerms = false
 
     let accent = Color.blue
-    private let defaultImage = UIImage(named: "AddPhoto")!
-    private let defaultImageLight = UIImage(named: "AddPhotoLight")!
     private let nonActiveField: some View = RoundedRectangle(cornerRadius: 30).stroke(.gray, lineWidth: 1)
     private let activeField: some View = RoundedRectangle(cornerRadius: 30).stroke(Color.blue, lineWidth:3)
     
@@ -39,63 +37,34 @@ struct AddProfilePic: View {
                 
                 // MARK: Avatar
                 ZStack {
-                    switch (colorScheme) {
-                    case .dark:
-                        if registerViewModel.avatar == defaultImage {
-                            Circle()
-                                .frame(width: 160, height: 160)
-                                .foregroundColor(accent)
-                                .shadow(radius: 25)
+                        Circle()
+                            .frame(width: 160, height: 160)
+                            .foregroundColor(accent)
+                            .shadow(radius: 25)
+                    if registerViewModel.avatar == nil {
+                        Menu("Add a Photo") {
+                            Button("Take Photo") {
+                                registerViewModel.useCamera = true
+                                registerViewModel.isShowingPhotoPicker.toggle()
+                            }
+                            Button("Choose From Library") {
+                                registerViewModel.useCamera = false
+                                registerViewModel.isShowingPhotoPicker.toggle()
+                            }
                         }
+                        .background(Circle().frame(width: 150, height: 150).foregroundColor(colorScheme == .light ? .white : .black))
+                        .alert(isPresented: $registerViewModel.avatarNotUploaded) {
+                            Alert(title: Text("Please upload an avatar"))
+                        }
+                    } else {
                         Image(uiImage: registerViewModel.avatar!)
                             .resizable()
-                            .scaledToFit()
+                            .scaledToFill()
                             .clipShape(Circle())
-                            .foregroundColor(.white)
                             .frame(width: 150, height: 150)
                             .shadow(radius: 25)
                             .onTapGesture {
-                                registerViewModel.imageEnum = .imageOne
-                                registerViewModel.isShowingPhotoPicker = true
-                            }
-                            .alert(isPresented: $registerViewModel.avatarNotUploaded) {
-                                Alert(title: Text("Please upload an avatar"))
-                            }
-                    case .light:
-                        if registerViewModel.avatarLight == defaultImageLight {
-                            Circle()
-                                .frame(width: 160, height: 160)
-                                .foregroundColor(accent)
-                                .shadow(radius: 25)
-                        }
-                        Image(uiImage: registerViewModel.avatarLight!)
-                            .resizable()
-                            .scaledToFit()
-                            .clipShape(Circle())
-                            .foregroundColor(.white)
-                            .frame(width: 150, height: 150)
-                            .shadow(radius: 25)
-                            .onTapGesture {
-                                registerViewModel.imageEnum = .imageOne
-                                registerViewModel.isShowingPhotoPicker = true
-                            }
-                            .alert(isPresented: $registerViewModel.avatarNotUploaded) {
-                                Alert(title: Text("Please upload an avatar"))
-                            }
-                    @unknown default:
-                        Image(uiImage: registerViewModel.avatarLight!)
-                            .resizable()
-                            .scaledToFit()
-                            .clipShape(Circle())
-                            .foregroundColor(.white)
-                            .frame(width: 150, height: 150)
-                            .shadow(radius: 25)
-                            .onTapGesture {
-                                registerViewModel.imageEnum = .imageOne
-                                registerViewModel.isShowingPhotoPicker = true
-                            }
-                            .alert(isPresented: $registerViewModel.avatarNotUploaded) {
-                                Alert(title: Text("Please upload an avatar"))
+                                registerViewModel.avatar = nil
                             }
                     }
                 }.frame(maxHeight: 250)
@@ -169,18 +138,11 @@ struct AddProfilePic: View {
                             return
                         }
                         
-                        if colorScheme == .dark {
-                            guard registerViewModel.avatar != UIImage(named: "AddPhoto") else {
-                                registerViewModel.avatarNotUploaded = true
-                                return
-                            }
-                        } else {
-                            guard registerViewModel.avatarLight != UIImage(named: "AddPhotoLight") else {
-                                registerViewModel.avatarNotUploaded = true
-                                return
-                            }
+                        guard registerViewModel.avatar != nil else {
+                            registerViewModel.avatarNotUploaded = true
+                            return
                         }
-                        
+
                         guard
                             registerViewModel.username.count <= 16,
                             registerViewModel.username.count > 5
@@ -208,11 +170,8 @@ struct AddProfilePic: View {
                         let sanitizedPhone = registerViewModel.phone.replacingOccurrences(of: "-", with: "")
                         
                         registerViewModel.loading = true
-                        if colorScheme == .light {
-                            registerViewModel.registerUserV2(address: addyInfo.address, phone: sanitizedPhone, city: addyInfo.city, state: addyInfo.state, zipCode: addyInfo.zipCode, geolocation: addyInfo.geolocation)
-                        } else {
-                            registerViewModel.registerUserV2(address: addyInfo.address, phone: sanitizedPhone, city: addyInfo.city, state: addyInfo.state, zipCode: addyInfo.zipCode, geolocation: addyInfo.geolocation, colorScheme: ColorScheme.dark)
-                        }
+                        registerViewModel.registerUserV2(address: addyInfo.address, phone: sanitizedPhone, city: addyInfo.city, state: addyInfo.state, zipCode: addyInfo.zipCode, geolocation: addyInfo.geolocation)
+                        
                     }
                     .foregroundColor(Color.white)
                     .font(.system(size: 16, weight: Font.Weight.bold))
@@ -227,7 +186,15 @@ struct AddProfilePic: View {
                     }.shadow(radius: 5)
 
                 Spacer()
-            }.tint(accent)
+            }
+            .tint(accent)
+            .sheet(isPresented: $registerViewModel.isShowingPhotoPicker) {
+                if registerViewModel.useCamera {
+                    CameraAccessor(selectedImage: $registerViewModel.avatar)
+                } else {
+                    ImageSelector(image: $registerViewModel.avatar)
+                }
+            }
         }
     }
 }
