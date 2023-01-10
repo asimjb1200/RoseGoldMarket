@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 final class AddItemsViewModel: ObservableObject {
     @Published var isShowingPhotoPicker = false
@@ -13,11 +14,11 @@ final class AddItemsViewModel: ObservableObject {
     @Published var plantName: String = ""
     @Published var plantDescription: String = ""
     @Published var itemPosted: Bool = false
-    @Published var plantEnum: PlantOptions = .imageOne
     @Published var categories: [UInt] = []
     @Published var categoryHolder: [Category] = []
     @Published var showAlert = false
     @Published var errorOccurred = false
+    @Published var plantImages: [PlantImage] = [PlantImage(id: UUID(), image: nil), PlantImage(id: UUID(), image: nil), PlantImage(id: UUID(), image: nil)]
     var viewStateErrors: AddItemViewStates = .imagesEmpty
     var categoryChosen: Bool {
         return 0 != self.categoryHolder.filter{ $0.isActive == true }.count

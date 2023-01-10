@@ -48,7 +48,7 @@ struct ChangeAvatar: View {
             }
             Spacer()
         }.sheet(isPresented: $isShowingPhotoPicker, content: {
-            PhotoPicker(plantImage: $userImage, plantImage2: Binding.constant(nil), plantImage3: Binding.constant(nil), plantEnum: $imageEnum)
+            //PhotoPicker(plantImage: $userImage, plantImage2: Binding.constant(nil), plantImage3: Binding.constant(nil), plantEnum: $imageEnum)
         })
     }
 }

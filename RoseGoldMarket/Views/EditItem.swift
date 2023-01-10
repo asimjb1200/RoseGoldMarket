@@ -225,7 +225,7 @@ struct EditItem: View {
             
         }.sheet(isPresented: $viewModel.isShowingPhotoPicker, content: {
             if viewModel.plantImage != nil, viewModel.plantImage2 != nil, viewModel.plantImage3 != nil {
-                PhotoPicker(plantImage: $viewModel.plantImage, plantImage2: $viewModel.plantImage2, plantImage3: $viewModel.plantImage3, plantEnum: $viewModel.plantEnum)
+                //PhotoPicker(plantImage: $viewModel.plantImage, plantImage2: $viewModel.plantImage2, plantImage3: $viewModel.plantImage3, plantEnum: $viewModel.plantEnum)
 
             }
         })
