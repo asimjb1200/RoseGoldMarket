@@ -192,7 +192,7 @@ struct AddProfilePic: View {
                 if registerViewModel.useCamera {
                     CameraAccessor(selectedImage: $registerViewModel.avatar)
                 } else {
-                    ImageSelector(image: $registerViewModel.avatar)
+                    ImageSelector(image: $registerViewModel.avatar, canSelectMultipleImages: true, images: Binding.constant([]))
                 }
             }
         }

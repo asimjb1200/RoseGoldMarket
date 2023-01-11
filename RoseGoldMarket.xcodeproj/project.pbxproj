@@ -56,6 +56,7 @@
 		68A4296427D1C15600CC8DF2 /* AddressInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A4296327D1C15600CC8DF2 /* AddressInfo.swift */; };
 		68A73B0127D6874900DC2C04 /* EditItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A73B0027D6874900DC2C04 /* EditItemViewModel.swift */; };
 		68A90D7927A2560100CD3768 /* EnumsForAddItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A90D7827A2560100CD3768 /* EnumsForAddItemsView.swift */; };
+		68AB6814296D0CD2009F5558 /* PlantImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68AB6813296D0CD2009F5558 /* PlantImage.swift */; };
 		68BDD46E28DE65F700FCE429 /* KeyboardNotificationPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68BDD46D28DE65F700FCE429 /* KeyboardNotificationPublisher.swift */; };
 		68C305FD28DA60070041EEB2 /* AddProfilePic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68C305FC28DA60070041EEB2 /* AddProfilePic.swift */; };
 		68C489FF27A4ADBC00AEF0F5 /* HomeMarketViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68C489FE27A4ADBC00AEF0F5 /* HomeMarketViewModel.swift */; };
@@ -133,6 +134,7 @@
 		68A4296327D1C15600CC8DF2 /* AddressInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressInfo.swift; sourceTree = "<group>"; };
 		68A73B0027D6874900DC2C04 /* EditItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditItemViewModel.swift; sourceTree = "<group>"; };
 		68A90D7827A2560100CD3768 /* EnumsForAddItemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnumsForAddItemsView.swift; sourceTree = "<group>"; };
+		68AB6813296D0CD2009F5558 /* PlantImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantImage.swift; sourceTree = "<group>"; };
 		68BDD46D28DE65F700FCE429 /* KeyboardNotificationPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardNotificationPublisher.swift; sourceTree = "<group>"; };
 		68C305FC28DA60070041EEB2 /* AddProfilePic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddProfilePic.swift; sourceTree = "<group>"; };
 		68C489FE27A4ADBC00AEF0F5 /* HomeMarketViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeMarketViewModel.swift; sourceTree = "<group>"; };
@@ -314,6 +316,7 @@
 				6823D74627C72BD8001876A8 /* IdentifiableView.swift */,
 				68A4296327D1C15600CC8DF2 /* AddressInfo.swift */,
 				680A3B4428CEB2F500E784E8 /* AddressInformation.swift */,
+				68AB6813296D0CD2009F5558 /* PlantImage.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -548,6 +551,7 @@
 				68D7FC4E279923DD00F9CFBB /* PlantPictureOptions.swift in Sources */,
 				68E9192F27D0276F00154DBB /* ChangeAvatar.swift in Sources */,
 				68A4296427D1C15600CC8DF2 /* AddressInfo.swift in Sources */,
+				68AB6814296D0CD2009F5558 /* PlantImage.swift in Sources */,
 				68E083D827ACAFC400DA0110 /* MessageThread.swift in Sources */,
 				68F6188F27F1F5F3001BEF70 /* LocationManager.swift in Sources */,
 				684452D428406F8E0019DF7F /* ForgotPassword.swift in Sources */,

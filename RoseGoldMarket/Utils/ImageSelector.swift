@@ -12,12 +12,19 @@ import PhotosUI
 struct ImageSelector: UIViewControllerRepresentable {
     
     @Binding var image:UIImage?
+    var canSelectMultipleImages:Bool
+    @Binding var images: [PlantImage]
     
     // will handle the job of presenting the content from UIKit to SwiftUI
     func makeUIViewController(context: Context) -> PHPickerViewController {
         var config = PHPickerConfiguration()
         config.filter = .images
-        config.selectionLimit = 1
+        if canSelectMultipleImages {
+            config.selectionLimit = 3
+        } else {
+            config.selectionLimit = 1
+        }
+        
         let picker = PHPickerViewController(configuration: config)
         picker.delegate = context.coordinator // this uses the coordinator returned by the makeCoordinator function
         return picker
@@ -33,15 +40,43 @@ struct ImageSelector: UIViewControllerRepresentable {
     // respond to interaction from the user while they're using the picker. Acts as the picker's delegate
     final class Coordinator: NSObject, PHPickerViewControllerDelegate {
         func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+            
             picker.dismiss(animated: true) // tell the picker to go away
+            //self.parent.images = []
+            var newImages: [PlantImage] = []
             
-            // exit if no selection was made
-            guard let provider = results.first?.itemProvider else {return}
-            
-            // if this has an image, use it
-            if provider.canLoadObject(ofClass: UIImage.self) {
-                provider.loadObject(ofClass: UIImage.self) { image, _ in
-                    self.parent.image = image as? UIImage
+            if results.count == 3 {
+                // unpack the selected items
+                for result in results {
+                    let itemProvider = result.itemProvider
+                    if itemProvider.canLoadObject(ofClass: UIImage.self) {
+                        itemProvider.loadObject(ofClass: UIImage.self) {[weak self] image, _ in
+                            guard let image = image as? UIImage else {
+                                return
+                            }
+                        
+                            newImages.append(PlantImage(id: UUID(), image: image))
+                            
+                            if newImages.count == 3 {
+                                DispatchQueue.main.async {
+                                    self?.parent.images = newImages
+                                    print("found your images")
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                // exit if no selection was made
+                guard let provider = results.first?.itemProvider else {return}
+                
+                // if this has an image, use it
+                if provider.canLoadObject(ofClass: UIImage.self) {
+                    provider.loadObject(ofClass: UIImage.self) { image, _ in
+                        DispatchQueue.main.async {
+                            self.parent.image = image as? UIImage
+                        }
+                    }
                 }
             }
         }
