@@ -50,13 +50,13 @@ struct AddItems: View {
                             ZStack {
                                 Circle() // outer rim
                                     .frame(width: 100, height: 100)
-                                    .foregroundColor(accent)
+                                    .foregroundColor(Color(.lightGray))
                                     .shadow(radius: 25)
                                 
                                 if data.image == nil {
                                     Circle()
                                         .frame(width: 90, height: 90)
-                                        .foregroundColor(.gray)
+                                        .foregroundColor(Color(.systemGray6))
                                         .padding()
                                         .shadow(radius: 25)
                                 } else {
@@ -135,7 +135,6 @@ struct AddItems: View {
                                 
                                 var focusedTextInputBottom = UIResponder.currentFirstResponder?.globalFrame?.maxY ?? 0
                                 
-                                
                                 let screen = UIScreen.main.bounds
                                 let topOfKeyboard = screen.size.height - keyboardHeight
                                 let moveUpThisMuch = focusedTextInputBottom - topOfKeyboard
@@ -147,7 +146,7 @@ struct AddItems: View {
                             }
                             .listRowSeparator(.hidden)
                         }
-                        .frame(height: 190)
+                        .frame(height: 100)
                         .overlay(RoundedRectangle(cornerRadius: 20.0).stroke(descriptionFieldIsFocus == true ? .blue : .gray, lineWidth: descriptionFieldIsFocus == true ? 3 : 1).shadow(radius: 5))
                         .padding([.leading, .trailing])
                         .listStyle(PlainListStyle())
@@ -251,6 +250,7 @@ struct AddItems: View {
                     )
                     .frame(maxWidth: .infinity, maxHeight: 100, alignment: .center)
                     .shadow(radius: 5)
+                    .padding(.bottom)
                     .alert(isPresented: $viewModel.itemPosted) {
                         return Alert(title: Text("Success"), message: Text("Your plant is now live on the market!"), dismissButton: .default(Text("OK!"), action: {
                             self.tab = 0
