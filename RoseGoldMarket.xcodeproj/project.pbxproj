@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		6800EDD627B06B0100461643 /* MessageErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6800EDD527B06B0100461643 /* MessageErrors.swift */; };
 		6800EDD827B06C3600461643 /* ChatData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6800EDD727B06C3600461643 /* ChatData.swift */; };
+		6802E52A296E77AB009EF0E9 /* LandingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6802E529296E77AB009EF0E9 /* LandingPage.swift */; };
 		680A3B4528CEB2F500E784E8 /* AddressInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680A3B4428CEB2F500E784E8 /* AddressInformation.swift */; };
 		680F155F2951680700911999 /* Validators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680F155E2951680700911999 /* Validators.swift */; };
 		68135B8029403CA500760038 /* SecurityCodeTextBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68135B7F29403CA500760038 /* SecurityCodeTextBox.swift */; };
@@ -84,6 +85,7 @@
 /* Begin PBXFileReference section */
 		6800EDD527B06B0100461643 /* MessageErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageErrors.swift; sourceTree = "<group>"; };
 		6800EDD727B06C3600461643 /* ChatData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatData.swift; sourceTree = "<group>"; };
+		6802E529296E77AB009EF0E9 /* LandingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingPage.swift; sourceTree = "<group>"; };
 		680A3B4428CEB2F500E784E8 /* AddressInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressInformation.swift; sourceTree = "<group>"; };
 		680F155E2951680700911999 /* Validators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Validators.swift; sourceTree = "<group>"; };
 		68135B7F29403CA500760038 /* SecurityCodeTextBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityCodeTextBox.swift; sourceTree = "<group>"; };
@@ -231,6 +233,7 @@
 				682E193E27DD2F4700C304DA /* Register.swift */,
 				682DE034285F8D7900B0EC69 /* ResetPassword.swift */,
 				68C305FC28DA60070041EEB2 /* AddProfilePic.swift */,
+				6802E529296E77AB009EF0E9 /* LandingPage.swift */,
 			);
 			path = LoginRegistration;
 			sourceTree = "<group>";
@@ -546,6 +549,7 @@
 				684867922798BB060033969D /* HomeMarket.swift in Sources */,
 				684867832798BAC70033969D /* RoseGoldMarketApp.swift in Sources */,
 				6823B7D627991322008F2CB7 /* AddItemsViewModel.swift in Sources */,
+				6802E52A296E77AB009EF0E9 /* LandingPage.swift in Sources */,
 				68C48A0427A4AFA200AEF0F5 /* ItemPreview.swift in Sources */,
 				68E9193527D02BD400154DBB /* UserService.swift in Sources */,
 				68D7FC4E279923DD00F9CFBB /* PlantPictureOptions.swift in Sources */,
