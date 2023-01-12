@@ -107,6 +107,7 @@ struct LogIn: View {
                             focusedField = .password
                             return
                         }
+                        focusedField = nil
                         self.loginWithEmail()
                     }
                     .foregroundColor(Color.white)
