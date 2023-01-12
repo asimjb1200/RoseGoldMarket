@@ -24,7 +24,6 @@ struct AddItems: View {
     
     
     var categoryMapper = CategoryMapper()
-    var profanityChecker:InputChecker = .shared
     let accent = Color(hue: 1.0, saturation: 0.03, brightness: 0.454)
     
     init(tab: Binding<Int>) {
@@ -217,13 +216,13 @@ struct AddItems: View {
                         }
                         
                         // check for profanity
-                        guard
-                            profanityChecker.containsProfanity(message: viewModel.plantDescription) == false,
-                            profanityChecker.containsProfanity(message: viewModel.plantName) == false
-                        else {
-                            profanityFound.toggle()
-                            return
-                        }
+//                        guard
+//                            profanityChecker.containsProfanity(message: viewModel.plantDescription) == false,
+//                            profanityChecker.containsProfanity(message: viewModel.plantName) == false
+//                        else {
+//                            profanityFound.toggle()
+//                            return
+//                        }
                         
                         guard
                             let plantImage = viewModel.plantImages[0].image?.jpegData(compressionQuality: 0.5),

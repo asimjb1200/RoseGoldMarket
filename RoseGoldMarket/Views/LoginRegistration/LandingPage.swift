@@ -8,32 +8,46 @@
 import SwiftUI
 
 struct LandingPage: View {
-    @State var signUpSelected = false
+    @Binding var appViewState: AppViewStates
+    
     var body: some View {
-        NavigationView {
-            ZStack {
-                Image(uiImage: UIImage(named: "LandingPage")!)
-                    .resizable()
-                    .scaledToFill()
-                    .ignoresSafeArea()
+        ZStack {
+            Image(uiImage: UIImage(named: "LandingPage")!)
+                .resizable()
+                .scaledToFill()
+                .ignoresSafeArea()
+            
+            VStack {
+                Button(
+                    action: {
+                        withAnimation {
+                            appViewState = .LoginView
+                        }
+                    },
+                    label: {
+                    Text("Login")
+                        .frame(width: 200)
+                        .foregroundColor(.white)
+                        .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue).frame(width: 200, height: 50))
+                        .padding()
+                        
+                }).offset(y: 160)
                 
-                VStack {
-                    NavigationLink(destination: LogIn()) {
-                        Text("Login")
-                            .frame(width: 200)
-                            .foregroundColor(.white)
-                            .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue).frame(width: 200, height: 50))
-                            .padding()
-                    }.offset(y: 160)
-                    
-                    NavigationLink(destination: Register()) {
+                Button(
+                    action: {
+                        withAnimation {
+                            appViewState = .RegistrationView
+                        }
+                    },
+                    label: {
                         Text("Sign Up")
-                            .frame(width: 200)
-                            .foregroundColor(.black)
-                            .background(RoundedRectangle(cornerRadius: 25).fill(Color.white).frame(width: 200, height: 50))
-                            .padding()
-                    }.offset(y: 160)
-                }
+                        .frame(width: 200)
+                        .foregroundColor(.black)
+                        .background(RoundedRectangle(cornerRadius: 25).fill(Color.white).frame(width: 200, height: 50))
+                        .padding()
+                    }
+                )
+                .offset(y: 160)
             }
         }
     }
@@ -41,6 +55,6 @@ struct LandingPage: View {
 
 struct LandingPage_Previews: PreviewProvider {
     static var previews: some View {
-        LandingPage()
+        LandingPage(appViewState: Binding.constant(.LandingPage))
     }
 }

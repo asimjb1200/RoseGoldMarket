@@ -18,6 +18,7 @@ struct AddProfilePic: View {
     @Environment(\.dismiss) private var dismiss
     
     @State var acceptedTerms = false
+    @Binding var appViewState: AppViewStates
 
     let accent = Color.blue
     private let nonActiveField: some View = RoundedRectangle(cornerRadius: 30).stroke(.gray, lineWidth: 1)
@@ -181,7 +182,10 @@ struct AddProfilePic: View {
                     .alert(isPresented: $registerViewModel.dataPosted) {
                         Alert(title: Text("Verify Account"), message: Text("You've completed the first registration step. Go to your email and check for a message from us (support@rosegoldgardens.com) to complete the verification process. Make sure to check your spam/junk folders if you don't see it."), dismissButton: .default(Text("Log In")) {
                             registerViewModel.canLoginNow = true
-                            dismiss()
+                            //dismiss()
+                            withAnimation {
+                                appViewState = .LoginView
+                            }
                         })
                     }.shadow(radius: 5)
 
@@ -192,7 +196,7 @@ struct AddProfilePic: View {
                 if registerViewModel.useCamera {
                     CameraAccessor(selectedImage: $registerViewModel.avatar)
                 } else {
-                    ImageSelector(image: $registerViewModel.avatar, canSelectMultipleImages: true, images: Binding.constant([]))
+                    ImageSelector(image: $registerViewModel.avatar, canSelectMultipleImages: false, images: Binding.constant([]))
                 }
             }
         }
@@ -201,7 +205,7 @@ struct AddProfilePic: View {
 
 struct AddProfilePic_Previews: PreviewProvider {
     static var previews: some View {
-        AddProfilePic(registerViewModel: RegisterUserViewModel())
+        AddProfilePic(registerViewModel: RegisterUserViewModel(), appViewState: Binding.constant(.RegistrationView))
             .preferredColorScheme(.dark)
             
     }

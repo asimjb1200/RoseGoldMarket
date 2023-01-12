@@ -21,8 +21,6 @@ struct ContentView: View {
     @Environment(\.scenePhase) var scenePhase
     @Environment(\.colorScheme) var colorScheme
     
-    
-    var profanityChecker:InputChecker = .shared
     let socket:SocketUtils = .shared
 
     init() {

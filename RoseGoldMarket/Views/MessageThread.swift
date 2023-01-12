@@ -24,7 +24,6 @@ struct MessageThread: View {
 
     var mainColor = Color("MainColor")
     var accent = Color("AccentColor")
-    var profanityChecker:InputChecker = .shared
     
     var body: some View {
         NavigationView {
@@ -148,20 +147,6 @@ struct MessageThread: View {
                                             }
                                         }
                                     }
-                                    
-                                    
-                                    
-//                                    if let chatHistory = viewModel.allChats[String(receiverId)] {
-//                                        if let lastChat = chatHistory.last {
-//                                            let recUsername = lastChat.senderUsername == viewingUser.username ? lastChat.receiverUsername : lastChat.senderUsername
-//
-//                                            let newChatId = viewModel.sendMessageToUser(newMessage: newMessage, receiverId: receiverId, receiverUsername: recUsername, senderUsername: viewingUser.username, senderId: viewingUser.accountId)
-//                                            newMessage = ""
-//
-//                                            // scroll to the last chat
-//                                            scroller.scrollTo(newChatId, anchor: .top)
-//                                        }
-//                                    }
                                 }
                                 .background(
                                     RoundedRectangle(cornerRadius: 10)
@@ -196,9 +181,6 @@ struct MessageThread: View {
                 .onDisappear() {
                     viewModel.listOfChats = viewModel.buildUniqueChatList()
                 }
-//                .alert(isPresented: $profanityFound) {
-//                    Alert(title: Text("Remove your profanity"))
-//                }
             }.navigationBarHidden(true)
             Spacer()
         }.navigationViewStyle(.stack)

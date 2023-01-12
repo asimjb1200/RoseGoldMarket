@@ -21,19 +21,21 @@ struct LogIn: View {
     @State var loading = false
     @FocusState private var focusedField:FormFields?
     @EnvironmentObject var globalUser:UserModel
-    var inputChecker:InputChecker = .shared
-    var appBanner:UIImage? = UIImage(named: "AppBanner")
+    @Binding var appViewState: AppViewStates
+    var appBanner:UIImage? = UIImage(named: "UpdatedBanner")
     var service:UserNetworking = .shared
     var gradient = LinearGradient(gradient: Gradient(colors: [.white,  Color("MainColor")]), startPoint: .leading, endPoint: .trailing)
     let accent = Color.blue
     var body: some View {
         NavigationView {
-            VStack {
+            VStack(spacing: 0) {
                 if appBanner != nil {
                     Image(uiImage: appBanner!)
                         .resizable()
-                        .scaledToFit()
-                        .padding([.bottom, .top])
+                        .scaledToFill()
+                        .frame(width: UIScreen.main.bounds.width)
+                        .padding(.bottom)
+                    
                 } else {
                     Text("Rose Gold Gardens")
                         .fontWeight(.heavy)
@@ -54,7 +56,7 @@ struct LogIn: View {
                 }
                 
                 HStack {
-                    Image(systemName: "envelope.circle").foregroundColor((focusedField == FormFields.firstName || focusedField == FormFields.lastName) ? accent : Color.gray)
+                    Image(systemName: "envelope.circle").foregroundColor(focusedField == FormFields.email ? accent : Color.gray)
                     TextField("Email", text: $email)
                     .textContentType(UITextContentType.emailAddress)
                     .focused($focusedField, equals: .email)
@@ -67,7 +69,7 @@ struct LogIn: View {
                 }
                 
                 HStack {
-                    Image(systemName: "lock.fill").foregroundColor((focusedField == FormFields.firstName || focusedField == FormFields.lastName) ? accent : Color.gray)
+                    Image(systemName: "lock.fill").foregroundColor(focusedField == FormFields.password ? accent : Color.gray)
                     
                     SecureField("Password", text: $password)
                     .textContentType(.password)
@@ -94,7 +96,7 @@ struct LogIn: View {
                             return
                         }
                         
-                        guard inputChecker.isValidEmail(email: self.email) else {
+                        guard Validators.isValidEmail(email: self.email) else {
                             self.badEmail = true
                             focusedField = .email
                             return
@@ -118,7 +120,7 @@ struct LogIn: View {
                 }
                 
                 Group {
-                    Text("Share Us!").font(.footnote).foregroundColor(Color.gray).padding(.top, 40)
+                    Text("Share Us!").font(.footnote).foregroundColor(Color.gray).padding(.top)
                     HStack {
                         Image("Instagram")
                             .resizable()
@@ -191,11 +193,11 @@ struct LogIn: View {
                                 //dialog.mode = .shareSheet
                                 dialog.show()
                             }
-                    }
-                }
+                    }.padding(.bottom)
+                }.padding(.bottom)
 
                 Spacer()
-                NavigationLink(destination: Register()) {
+                NavigationLink(destination: Register(appViewState: $appViewState)) {
                     Text("Don't have an account? \(Text("Sign Up").foregroundColor(.blue))")
                 }
                 
@@ -205,35 +207,6 @@ struct LogIn: View {
             .padding()
         }
     }
-    
-//    func login() {
-//        service.login(username: username.lowercased().filter { !$0.isWhitespace }, pw: password.filter{ !$0.isWhitespace }) { userData in
-//            switch (userData) {
-//                case .success(let userRes):
-//                    DispatchQueue.main.async {
-//                        service.saveUserToDevice(user: userRes.data)
-//                        service.saveAccessToken(accessToken: userRes.data.accessToken)
-//                        let savedPassword = service.loadUserPassword()
-//
-//                        if savedPassword.isEmpty {// in the case that we've never saved their pw due to first login attempt
-//                            service.saveUserPassword(password: password, username: username)
-//                        } else if savedPassword != password { // maybe they've changed their pw
-//                            service.updateUserPassword(newPassword: password)
-//                        }
-//
-//                        globalUser.login(serviceUsr: userRes.data)
-//                    }
-//
-//            case .failure(let err):
-//                DispatchQueue.main.async {
-//                    if err == .badPassword {
-//                        self.badCreds = true
-//                    }
-//                    print(err.localizedDescription)
-//                }
-//            }
-//        }
-//    }
     
     func loginWithEmail() {
         self.loading = true
@@ -291,6 +264,6 @@ struct LogIn: View {
 
 struct LogIn_Previews: PreviewProvider {
     static var previews: some View {
-        LogIn()
+        LogIn(appViewState: Binding.constant(.LoginView))
     }
 }

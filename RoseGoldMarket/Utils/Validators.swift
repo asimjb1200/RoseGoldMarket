@@ -8,6 +8,7 @@
 import Foundation
 
 struct Validators {
+    private var badWords: [String]? // make sure to get this from the plist
     static func isValidEmail(email: String) -> Bool {
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
         let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
