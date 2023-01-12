@@ -145,7 +145,7 @@ struct AddItems: View {
                             }
                             .listRowSeparator(.hidden)
                         }
-                        .frame(height: 100)
+                        .frame(height: 200)
                         .overlay(RoundedRectangle(cornerRadius: 20.0).stroke(descriptionFieldIsFocus == true ? .blue : .gray, lineWidth: descriptionFieldIsFocus == true ? 3 : 1).shadow(radius: 5))
                         .padding([.leading, .trailing])
                         .listStyle(PlainListStyle())
