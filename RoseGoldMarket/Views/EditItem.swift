@@ -6,99 +6,113 @@
 //
 
 import SwiftUI
+import Combine // for access to the publisher
 
 struct EditItem: View {
     @StateObject var viewModel = EditItemVM()
     @Environment(\.dismiss) private var dismiss
     @State var areYouSure = false
     @EnvironmentObject var user:UserModel
+    @State var descOffset: CGFloat = 0
+    @State var typing = false
     var categoryMapper = CategoryMapper()
     let itemName:String
     let ownerName:String
     let itemId:UInt
-    private enum Fields: Int, CaseIterable {
+    private enum EditFields: Int, CaseIterable {
         case name, description
     }
-    @FocusState private var focusedField:Fields?
+    @FocusState private var focusedField:EditFields?
     
     var body: some View {
-        VStack {
-            Text("Tap to change your photos").foregroundColor(Color("AccentColor")).padding([.leading, .top])
+        VStack(alignment: .leading) {
+            Text("Tap to change your photos")
+                .foregroundColor(Color("AccentColor"))
+                .padding([.leading, .top])
+                .offset(y: descOffset * -1)
+            
+            // MARK: Plant Photos
             HStack {
-                if viewModel.plantImage != nil {
-                    Image(uiImage: viewModel.plantImage!)
-                        .resizable()
-                        .scaledToFit()
-                        .clipShape(Circle())
-                        .onTapGesture {
-                            viewModel.plantEnum = .imageOne
-                            viewModel.isShowingPhotoPicker = true
+                ForEach($viewModel.plantImages, id: \.id) { $data in
+                    ZStack {
+                        Circle() // outer rim
+                            .frame(width: 100, height: 100)
+                            .foregroundColor(Color(.lightGray))
+                            .shadow(radius: 25)
+                            .task {
+                                getImage(owner: ownerName, itemName: itemName, plantID: data.id)
+                            }
+                        
+                        if data.image != nil {
+                            Image(uiImage: data.image!)
+                                .resizable()
+                                .scaledToFill()
+                                .clipShape(Circle())
+                                .frame(width: 90, height: 90)
+                        } else {
+                            Circle()
+                                .frame(width: 90, height: 90)
+                                .foregroundColor(Color(.systemGray6))
+                                .padding()
+                                .shadow(radius: 25)
                         }
-                } else {
-                    ProgressView()
+                    }
                 }
-
-                if viewModel.plantImage2 != nil {
-                    Image(uiImage: viewModel.plantImage2!)
-                        .resizable()
-                        .scaledToFit()
-                        .clipShape(Circle())
-                        .onTapGesture {
-                            viewModel.plantEnum = .imageTwo
-                            viewModel.isShowingPhotoPicker = true
-                        }
-                } else {
-                    ProgressView()
-                }
-
-                if viewModel.plantImage3 != nil {
-                    Image(uiImage: viewModel.plantImage3!)
-                        .resizable()
-                        .scaledToFit()
-                        .clipShape(Circle())
-                        .onTapGesture {
-                            viewModel.plantEnum = .imageThree
-                            viewModel.isShowingPhotoPicker = true
-                        }
-                } else {
-                    ProgressView()
-                }
-            }.onAppear{
-                viewModel.getImages(itemName: self.itemName, ownerName: self.ownerName)
             }
-            .navigationBarTitle("Edit Item", displayMode: .inline)
+            .offset(y: descOffset * -1)
+            .navigationBarTitle(Text(self.typing ? "" : "Edit Item"), displayMode: .inline)
             .frame(maxWidth: .infinity, alignment: .center)
             .alert(isPresented: $viewModel.networkError) {
                 Alert(title:Text("A Problem Occurred"), message: Text("Something went wrong on our end. try again later"))
             }
             
-            Text("Plant Name 20 character limit..").padding(.leading).onAppear(){ viewModel.getItemData(itemId: itemId, user: user) }
-            TextField("", text: $viewModel.plantName)
-                .textFieldStyle(OvalTextFieldStyle())
-                .padding([.leading, .trailing])
-                .focused($focusedField, equals: .name)
-                .toolbar {
-                    ToolbarItem(placement: .keyboard) {
-                        Button("Done") {
-                            focusedField = nil
-                        }.frame(maxWidth: .infinity, alignment: .leading)
+            // MARK: Plant Name
+            Group {
+                Text("Name:").foregroundColor(Color("AccentColor")).padding(.leading)
+                TextField("", text: $viewModel.plantName)
+                    .padding()
+                    .focused($focusedField, equals: .name)
+                    .modifier(CustomTextBubble(isActive: focusedField == EditFields.name, accentColor: .blue))
+                    .padding([.leading, .trailing])
+                    .shadow(radius: 5)
+                    .toolbar {
+                        ToolbarItem(placement: .keyboard) {
+                            Button("Done") {
+                                focusedField = nil
+                            }.frame(maxWidth: .infinity, alignment: .leading)
+                        }
                     }
-                }
+                    .onSubmit {
+                        focusedField = .description
+                    }
+                    .onAppear(){ viewModel.getItemData(itemId: itemId, user: user) }
+            }.offset(y: descOffset * -1)
             
-            Text("Description 200 character limit..").foregroundColor(Color("AccentColor"))
-                .padding([.leading, .top])
-                .alert(isPresented: $viewModel.tooManyChars) {
-                    Alert(title: Text("Too Many Characters"), message: Text("Name field can have no more than 20 characters. The description field can have no more than 200."))
-                }
-            TextEditor(text: $viewModel.plantDescription)
-                .padding(.leading)
-                .background(
-                    RoundedRectangle(cornerRadius: 25)
-                        .fill(Color.gray)
-                )
-                .frame( height: 100)
-                .padding([.leading, .trailing, .bottom])
-                .focused($focusedField, equals: .description)
+            // MARK: Description
+            Group {
+                Text("Description:")
+                    .foregroundColor(Color("AccentColor"))
+                    .padding([.leading, .top])
+                    .alert(isPresented: $viewModel.tooManyChars) {
+                        Alert(title: Text("Too Many Characters"), message: Text("Name field can have no more than 20 characters. The description field can have no more than 200."))
+                    }
+                
+                TextEditor(text: $viewModel.plantDescription)
+                    .padding(.leading)
+                    .frame( height: 200)
+                    .focused($focusedField, equals: .description)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20.0).stroke(focusedField == EditFields.description ? .blue : .gray, lineWidth: focusedField == EditFields.description ? 3 : 1).shadow(radius: 5)
+                    )
+                    .padding([.leading, .trailing, .bottom])
+                    .onChange(of: viewModel.plantDescription) {
+                        viewModel.plantDescription = String($0.prefix(200)) // limit to 200 characters
+                    }
+                    .onSubmit {
+                        focusedField = nil
+                    }
+            }
+            .offset(y: self.descOffset * -1)
             
             Toggle("Still available?", isOn: $viewModel.isAvailable)
                 .padding(.leading)
@@ -137,8 +151,6 @@ struct EditItem: View {
                 Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: 100, alignment: .center)
-            
-//            Spacer()
             
             HStack {
                 Text("Delete Item")
@@ -187,9 +199,9 @@ struct EditItem: View {
                     }
                     
                     guard
-                        let plantImage = viewModel.plantImage?.jpegData(compressionQuality: 0.5),
-                        let plantImage2 = viewModel.plantImage2?.jpegData(compressionQuality: 0.5),
-                        let plantImage3 = viewModel.plantImage3?.jpegData(compressionQuality: 0.5)
+                        let plantImage = viewModel.plantImages[0].image?.jpegData(compressionQuality: 0.5),
+                        let plantImage2 = viewModel.plantImages[1].image?.jpegData(compressionQuality: 0.5),
+                        let plantImage3 = viewModel.plantImages[2].image?.jpegData(compressionQuality: 0.5)
                     else {
                         return
                     }
@@ -221,14 +233,40 @@ struct EditItem: View {
                 }
             }
             .padding(.bottom)
-            
-            
-        }.sheet(isPresented: $viewModel.isShowingPhotoPicker, content: {
-            if viewModel.plantImage != nil, viewModel.plantImage2 != nil, viewModel.plantImage3 != nil {
-                //PhotoPicker(plantImage: $viewModel.plantImage, plantImage2: $viewModel.plantImage2, plantImage3: $viewModel.plantImage3, plantEnum: $viewModel.plantEnum)
+        }.sheet(isPresented: $viewModel.isShowingPhotoPicker){
+            ImageSelector(image: Binding.constant(nil), canSelectMultipleImages: true, images: $viewModel.plantImages)
+        }
+    }
+}
 
-            }
-        })
+extension EditItem {
+    func getImage(owner: String, itemName: String, plantID: UUID) {
+        let itemNameWithoutSpaces: String = itemName.replacingOccurrences(of: " ", with: "%20")
+        let imageIndex: Int? = viewModel.plantImages.firstIndex { $0.id == plantID }
+        guard let imageIndex = imageIndex else {
+            print("that image doesnt exist")
+            return
+        }
+        let imageNumber = imageIndex + 1
+        
+        // for each plant the images are stored as "image1", "image2", "image3"
+        if let url: URL = URL(string: "https://rosegoldgardens.com/api/images/\(ownerName)/\(itemNameWithoutSpaces)/image\(imageNumber).jpg") {
+            URLSession.shared.dataTask(with: url) { (data, response, err) in
+                guard err == nil else {
+                    print("an error occurred")
+                    return
+                }
+                
+                guard let imageData: Data = data else {
+                    print("couldnt decode data")
+                    return
+                }
+                
+                DispatchQueue.main.async {
+                    viewModel.plantImages[imageIndex] = PlantImage(id: UUID(), image: UIImage(data: imageData))
+                }
+            }.resume()
+        }
     }
 }
 

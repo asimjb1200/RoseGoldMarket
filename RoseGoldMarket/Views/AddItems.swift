@@ -111,7 +111,7 @@ struct AddItems: View {
                     
                     // MARK: Description
                     Group {
-                        Text("Description").foregroundColor(Color("AccentColor")).padding([.leading, .top]).listRowSeparator(.hidden)
+                        Text("Description:").foregroundColor(Color("AccentColor")).padding([.leading, .top]).listRowSeparator(.hidden)
                         List {
                             ZStack {
                                 TextEditor(text: $viewModel.plantDescription)
@@ -272,8 +272,6 @@ struct AddItems: View {
         return true
     }
 }
-
-
 
 struct AddItems_Previews: PreviewProvider {
     static var previews: some View {
