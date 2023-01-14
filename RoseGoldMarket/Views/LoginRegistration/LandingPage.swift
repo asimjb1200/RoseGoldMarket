@@ -9,13 +9,14 @@ import SwiftUI
 
 struct LandingPage: View {
     @Binding var appViewState: AppViewStates
+    var buttonWidth = UIScreen.main.bounds.width * 0.85
     
     var body: some View {
         ZStack {
             Image(uiImage: UIImage(named: "LandingPage")!)
                 .resizable()
                 .scaledToFill()
-                .ignoresSafeArea()
+                .edgesIgnoringSafeArea([.top, .bottom])
             
             VStack {
                 Button(
@@ -25,10 +26,11 @@ struct LandingPage: View {
                         }
                     },
                     label: {
-                    Text("Login")
-                        .frame(width: 200)
+                    Text("Log In")
+                        .fontWeight(.bold)
+                        .frame(width: buttonWidth)
                         .foregroundColor(.white)
-                        .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue).frame(width: 200, height: 50))
+                        .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue).frame(width: buttonWidth, height: 50))
                         .padding()
                         
                 }).offset(y: 160)
@@ -41,9 +43,10 @@ struct LandingPage: View {
                     },
                     label: {
                         Text("Sign Up")
-                        .frame(width: 200)
+                        .fontWeight(.bold)
+                        .frame(width: buttonWidth)
                         .foregroundColor(.black)
-                        .background(RoundedRectangle(cornerRadius: 25).fill(Color.white).frame(width: 200, height: 50))
+                        .background(RoundedRectangle(cornerRadius: 25).fill(Color.white).frame(width: buttonWidth, height: 50))
                         .padding()
                     }
                 )

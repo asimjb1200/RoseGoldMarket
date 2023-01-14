@@ -24,18 +24,20 @@ struct LogIn: View {
     @Binding var appViewState: AppViewStates
     var appBanner:UIImage? = UIImage(named: "UpdatedBanner")
     var service:UserNetworking = .shared
-    var gradient = LinearGradient(gradient: Gradient(colors: [.white,  Color("MainColor")]), startPoint: .leading, endPoint: .trailing)
     let accent = Color.blue
+    //let darkGreen = Color("DarkGreen") may try to do a gradient type thing under the banner in the future
+    var buttonWidth = UIScreen.main.bounds.width * 0.85
+    
+    
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
                 if appBanner != nil {
-                    Image(uiImage: appBanner!)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: UIScreen.main.bounds.width)
-                        .padding(.bottom)
-                    
+                        Image(uiImage: appBanner!)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: UIScreen.main.bounds.width * 0.999)
+
                 } else {
                     Text("Rose Gold Gardens")
                         .fontWeight(.heavy)
@@ -47,7 +49,7 @@ struct LogIn: View {
                         .font(.title2)
                         .fontWeight(.bold)
                         .padding(.top, 10)
-                        
+                    
                     Text("Log in to your Rose Gold Markets account")
                         .font(.footnote)
                         .foregroundColor(.gray)
@@ -58,8 +60,8 @@ struct LogIn: View {
                 HStack {
                     Image(systemName: "envelope.circle").foregroundColor(focusedField == FormFields.email ? accent : Color.gray)
                     TextField("Email", text: $email)
-                    .textContentType(UITextContentType.emailAddress)
-                    .focused($focusedField, equals: .email)
+                        .textContentType(UITextContentType.emailAddress)
+                        .focused($focusedField, equals: .email)
                 }
                 .padding()
                 .modifier(CustomTextBubble(isActive: focusedField == .email, accentColor: .blue))
@@ -72,8 +74,8 @@ struct LogIn: View {
                     Image(systemName: "lock.fill").foregroundColor(focusedField == FormFields.password ? accent : Color.gray)
                     
                     SecureField("Password", text: $password)
-                    .textContentType(.password)
-                    .focused($focusedField, equals: .password)
+                        .textContentType(.password)
+                        .focused($focusedField, equals: .password)
                 }
                 .padding()
                 .modifier(CustomTextBubble(isActive: focusedField == .password, accentColor: .blue))
@@ -83,41 +85,49 @@ struct LogIn: View {
                 }
                 
                 NavigationLink(destination: ForgotPassword()) {
-                    Text("Forgot Password?").font(.subheadline).frame(maxWidth: .infinity, alignment: .trailing).foregroundColor(.blue)
+                    Text("Forgot Password?").font(.subheadline)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        .foregroundColor(.blue)
+                        .padding(.trailing)
                 }
                 
                 if loading {
                     ProgressView()
                 } else {
-                    Button("Log In") {
-                        guard !self.email.isEmpty else {
-                            self.badEmail = true
-                            focusedField = .email
-                            return
-                        }
-                        
-                        guard Validators.isValidEmail(email: self.email) else {
-                            self.badEmail = true
-                            focusedField = .email
-                            return
-                        }
-                        
-                        guard !self.password.isEmpty else {
-                            self.badPw = true
-                            focusedField = .password
-                            return
-                        }
-                        focusedField = nil
-                        self.loginWithEmail()
-                    }
-                    .foregroundColor(Color.white)
-                    .font(.system(size: 16, weight: Font.Weight.bold))
-                    .padding()
-                    .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue).frame(width: 190))
-                    .padding(.top, 40)
-                    .alert(isPresented: $badCreds) {
-                        Alert(title: Text("Incorrect Credentials"), message: Text("Your username and password combination couldn't be found in our records"), dismissButton: .default(Text("OK")))
-                    }
+                    Button(
+                        action: {
+                            guard !self.email.isEmpty else {
+                                self.badEmail = true
+                                focusedField = .email
+                                return
+                            }
+                            
+                            guard Validators.isValidEmail(email: self.email) else {
+                                self.badEmail = true
+                                focusedField = .email
+                                return
+                            }
+                            
+                            guard !self.password.isEmpty else {
+                                self.badPw = true
+                                focusedField = .password
+                                return
+                            }
+                            focusedField = nil
+                            self.loginWithEmail()
+                        },
+                        label: {
+                            Text("Log In")
+                                .foregroundColor(Color.white)
+                                .frame(width: buttonWidth)
+                                .font(.system(size: 16, weight: Font.Weight.bold))
+                                .padding()
+                                .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue).frame(width: buttonWidth))
+                                .padding(.top, 40)
+                                .alert(isPresented: $badCreds) {
+                                    Alert(title: Text("Incorrect Credentials"), message: Text("Your username and password combination couldn't be found in our records"), dismissButton: .default(Text("OK")))
+                                }
+                    })
                 }
                 
                 Group {
@@ -159,7 +169,7 @@ struct LogIn: View {
                                     print("couldnt encode url")
                                     return
                                 }
-
+                                
                                 // cast to an url
                                 guard let url = URL(string: escapedShareString) else {
                                     print("couldnt build url for twitter")
@@ -196,16 +206,17 @@ struct LogIn: View {
                             }
                     }.padding(.bottom)
                 }.padding(.bottom)
-
-                Spacer()
+                
                 NavigationLink(destination: Register(appViewState: $appViewState)) {
                     Text("Don't have an account? \(Text("Sign Up").foregroundColor(.blue))")
                 }
                 
+                Spacer()
+                
             }
             .navigationBarTitle("")
             .navigationBarHidden(true)
-            .padding()
+            .edgesIgnoringSafeArea(.top)
         }
     }
     
