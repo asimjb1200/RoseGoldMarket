@@ -31,7 +31,7 @@ struct Register: View {
     @State private var keyboardWillShow = false
     @State private var showLoginHere = true
     @State private var noAddyChosen = false
-    @Binding var appViewState: AppViewStates
+    @EnvironmentObject var appViewState: CurrentAppView
     //var addyChosen = false
 
     private let nonActiveField: some View = RoundedRectangle(cornerRadius: 30).stroke(.gray, lineWidth: 1)
@@ -47,9 +47,9 @@ struct Register: View {
     let accent = Color.blue
     
     var body: some View {
-        VStack(spacing: 0.0) {
-            NavigationView {
-                ScrollView {
+        NavigationView {
+            ScrollView {
+                VStack {
                     if self.pwPadding == 0 {
                         Group {
                             Text("Let's Get Started!")
@@ -224,33 +224,31 @@ struct Register: View {
                     }
                     
                     if !mapSearch.locationResults.isEmpty{
-                        Section {
-                            ScrollView {
-                                ForEach(mapSearch.locationResults, id: \.self) { location in
-                                    VStack(alignment: .leading, spacing: 0.0) {
-                                        Text(location.title)
-                                            .font(.subheadline)
-                                            .frame(maxWidth: .infinity, alignment: .center)
-                                        Text(location.subtitle)
-                                            .font(.system(.caption))
-                                            .frame(maxWidth: .infinity, alignment: .center)
-                                    }.onTapGesture {
-                                        mapSearch.validateAddress(location: location) {(addressFound, addyInfo) in
-                                            if addressFound && addyInfo != nil {
-                                                viewModel.addressInfo = addyInfo
-                                                // when they select a location clear out the search results and then...
-                                                mapSearch.addressFound = true
-                                                mapSearch.locationResults = []
-                                                focusedField = .addressLineTwo
-                                                mapSearch.searchTerm = "\(location.title)"
-                                            }
+                        ScrollView {
+                            ForEach(mapSearch.locationResults, id: \.self) { location in
+                                VStack(alignment: .leading, spacing: 0.0) {
+                                    Text(location.title)
+                                        .font(.subheadline)
+                                        .frame(maxWidth: .infinity, alignment: .center)
+                                    Text(location.subtitle)
+                                        .font(.system(.caption))
+                                        .frame(maxWidth: .infinity, alignment: .center)
+                                }.onTapGesture {
+                                    mapSearch.validateAddress(location: location) {(addressFound, addyInfo) in
+                                        if addressFound && addyInfo != nil {
+                                            viewModel.addressInfo = addyInfo
+                                            // when they select a location clear out the search results and then...
+                                            mapSearch.addressFound = true
+                                            mapSearch.locationResults = []
+                                            focusedField = .addressLineTwo
+                                            mapSearch.searchTerm = "\(location.title)"
                                         }
                                     }
-                                    Divider()
                                 }
+                                Divider()
                             }
-                            .frame(maxHeight: 120)
                         }
+                        .frame(maxHeight: 120)
                         .overlay(suggestionsListOutline)
                         .padding(.horizontal, 3.0)
                         .offset(y: self.pwPadding * -1)
@@ -355,7 +353,7 @@ struct Register: View {
                     }
                     .offset(y: self.pwPadding * -1)
                     .onReceive(Publishers.keyboardHeight) { keyboardHeight in
-                        
+                        // MARK: Keyboard Height
                         guard keyboardHeight > 0 else {
                             withAnimation(.linear) {
                                 self.pwPadding = 0
@@ -439,7 +437,7 @@ struct Register: View {
                     .offset(y: self.pwPadding * -1)
                     
                     // MARK: Continue Button
-                    NavigationLink(destination: AddProfilePic(registerViewModel: viewModel, appViewState: $appViewState), isActive: $activateLink) {
+                    NavigationLink(destination: AddProfilePic(registerViewModel: viewModel), isActive: $activateLink) {
                         Button("CONTINUE") {
                             print(viewModel.firstName.count)
                             guard
@@ -537,27 +535,27 @@ struct Register: View {
                         .font(.system(size: 16, weight: Font.Weight.bold))
                         .padding()
                         .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue).frame(width: 190))
-                        .padding(.top, 40)
+                        .padding(.top)
                     }
                     
-                    HStack(spacing: 0.0) {
+                    HStack {
                         Text("Already have an account? ")
                         Button("Login Here") {
                             withAnimation {
-                                appViewState = .LoginView // navigate back to the login screen
+                                appViewState.currentView = .LoginView // navigate back to the login screen
                             }
                         }.foregroundColor(Color.blue)
-                    }.padding(.top, 60)
+                    }.padding(.top)
                 }
             }
+            .shadow(radius: 10)
+            .navigationBarTitle(Text(""), displayMode: .inline)
         }
-        .shadow(radius: 10)
-        .navigationBarTitle(Text(""), displayMode: .inline)
         .tint(Color.blue)
         .onAppear() {
             if viewModel.canLoginNow {
                 withAnimation(.easeOut){
-                    appViewState = .LoginView // send them to the login screen because they've already signed up
+                    appViewState.currentView = .LoginView // send them to the login screen because they've already signed up
                 }
             }
         }
@@ -568,6 +566,6 @@ struct Register: View {
 
 struct Register_Previews: PreviewProvider {
     static var previews: some View {
-        Register(appViewState: Binding.constant(.RegistrationView))
+        Register()
     }
 }

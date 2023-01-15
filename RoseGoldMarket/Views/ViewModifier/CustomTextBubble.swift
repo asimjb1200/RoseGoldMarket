@@ -10,10 +10,18 @@ import SwiftUI
 
 struct CustomTextBubble:ViewModifier {
     var isActive: Bool
-    //var textField: Binding<String>
     var accentColor: Color
     
     public func body(content: Content) -> some View {
         content.background(RoundedRectangle(cornerRadius: 30).stroke(isActive ? accentColor : Color.gray, lineWidth: isActive ? 3 : 1)).background(RoundedRectangle(cornerRadius: 30).fill(Color(.systemGray6)))
+    }
+}
+
+struct AddItemTextBubble:ViewModifier {
+    var isActive: Bool
+    var accentColor: Color
+    
+    public func body(content: Content) -> some View {
+        content.background(RoundedRectangle(cornerRadius: 30).stroke(isActive ? accentColor : Color.gray, lineWidth: 4))
     }
 }

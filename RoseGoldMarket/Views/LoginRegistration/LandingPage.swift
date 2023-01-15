@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct LandingPage: View {
-    @Binding var appViewState: AppViewStates
+    //@Binding var appViewState: AppViewStates
+    @EnvironmentObject var appViewState: CurrentAppView
     var buttonWidth = UIScreen.main.bounds.width * 0.85
     
     var body: some View {
@@ -22,7 +23,7 @@ struct LandingPage: View {
                 Button(
                     action: {
                         withAnimation {
-                            appViewState = .LoginView
+                            appViewState.currentView = .LoginView
                         }
                     },
                     label: {
@@ -38,7 +39,7 @@ struct LandingPage: View {
                 Button(
                     action: {
                         withAnimation {
-                            appViewState = .RegistrationView
+                            appViewState.currentView = .RegistrationView
                         }
                     },
                     label: {
@@ -58,6 +59,6 @@ struct LandingPage: View {
 
 struct LandingPage_Previews: PreviewProvider {
     static var previews: some View {
-        LandingPage(appViewState: Binding.constant(.LandingPage))
+        LandingPage()
     }
 }

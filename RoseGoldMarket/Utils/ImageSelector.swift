@@ -26,6 +26,7 @@ struct ImageSelector: UIViewControllerRepresentable {
         }
         
         let picker = PHPickerViewController(configuration: config)
+        
         picker.delegate = context.coordinator // this uses the coordinator returned by the makeCoordinator function
         return picker
     }

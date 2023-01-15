@@ -14,6 +14,7 @@
 		680F155F2951680700911999 /* Validators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680F155E2951680700911999 /* Validators.swift */; };
 		68135B8029403CA500760038 /* SecurityCodeTextBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68135B7F29403CA500760038 /* SecurityCodeTextBox.swift */; };
 		681AB5C727A650F700B1629B /* ItemDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681AB5C627A650F700B1629B /* ItemDetails.swift */; };
+		681DDD6329726CD6004923CB /* CurrentAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681DDD6229726CD6004923CB /* CurrentAppView.swift */; };
 		682292E928DE9FB200F2A8BF /* UIResponderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 682292E828DE9FB200F2A8BF /* UIResponderExtension.swift */; };
 		6823B7D227990199008F2CB7 /* NetworkingHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6823B7D127990199008F2CB7 /* NetworkingHelper.swift */; };
 		6823B7D427990844008F2CB7 /* AddItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6823B7D327990844008F2CB7 /* AddItems.swift */; };
@@ -90,6 +91,7 @@
 		680F155E2951680700911999 /* Validators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Validators.swift; sourceTree = "<group>"; };
 		68135B7F29403CA500760038 /* SecurityCodeTextBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityCodeTextBox.swift; sourceTree = "<group>"; };
 		681AB5C627A650F700B1629B /* ItemDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemDetails.swift; sourceTree = "<group>"; };
+		681DDD6229726CD6004923CB /* CurrentAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentAppView.swift; sourceTree = "<group>"; };
 		682292E828DE9FB200F2A8BF /* UIResponderExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIResponderExtension.swift; sourceTree = "<group>"; };
 		6823B7D127990199008F2CB7 /* NetworkingHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingHelper.swift; sourceTree = "<group>"; };
 		6823B7D327990844008F2CB7 /* AddItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItems.swift; sourceTree = "<group>"; };
@@ -319,6 +321,7 @@
 				68A4296327D1C15600CC8DF2 /* AddressInfo.swift */,
 				680A3B4428CEB2F500E784E8 /* AddressInformation.swift */,
 				68AB6813296D0CD2009F5558 /* PlantImage.swift */,
+				681DDD6229726CD6004923CB /* CurrentAppView.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -525,6 +528,7 @@
 				683854B927E2CDE6008E4F88 /* ServiceUser.swift in Sources */,
 				688F476827C86C1800B81715 /* AccountDetailsView.swift in Sources */,
 				68C48A0127A4AE8A00AEF0F5 /* ItemTile.swift in Sources */,
+				681DDD6329726CD6004923CB /* CurrentAppView.swift in Sources */,
 				683854BC27E2CE19008E4F88 /* UserErrors.swift in Sources */,
 				68E9192D27D026E300154DBB /* FavoriteItems.swift in Sources */,
 				684F3EDD29496DBD00D1D40A /* SecurityCodeFields.swift in Sources */,

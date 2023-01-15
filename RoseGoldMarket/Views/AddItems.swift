@@ -21,6 +21,15 @@ struct AddItems: View {
     @FocusState var descriptionFieldIsFocus:Bool
     @FocusState var nameFieldIsFocus:Bool
     @State var typing = false
+    var buttonWidth = UIScreen.main.bounds.width * 0.85
+    
+    enum WhichPhoto {
+        case image1, image2, image3
+    }
+    @State var currentPhotoChoice: WhichPhoto = .image1
+    @State var image1: UIImage?
+    @State var image2: UIImage?
+    @State var image3: UIImage?
     
     
     var categoryMapper = CategoryMapper()
@@ -37,36 +46,123 @@ struct AddItems: View {
         NavigationView {
                 VStack(alignment: .leading) {
                     Text("Tap to add 3 photos")
+                        .fontWeight(.bold)
                         .offset(y: descOffset * -1)
                         .foregroundColor(Color("AccentColor"))
                         .padding([.leading, .top])
                         .alert(isPresented: $viewModel.errorOccurred) {
                             Alert(title: Text("There was a problem. Try again later."))
                         }
-                    
+
                     HStack {
-                        ForEach($viewModel.plantImages, id: \.id) { $data in
-                            ZStack {
+                        ZStack {
+                            if image1 == nil {
                                 Circle() // outer rim
                                     .frame(width: 100, height: 100)
                                     .foregroundColor(Color(.lightGray))
                                     .shadow(radius: 25)
-                                
-                                if data.image == nil {
-                                    Circle()
-                                        .frame(width: 90, height: 90)
-                                        .foregroundColor(Color(.systemGray6))
-                                        .padding()
-                                        .shadow(radius: 25)
-                                } else {
-                                    Image(uiImage: data.image!)
-                                        .resizable()
-                                        .scaledToFill()
-                                        .clipShape(Circle())
-                                        .frame(width: 90, height: 90)
-                                }
+                                Circle()
+                                    .frame(width: 90, height: 90)
+                                    .foregroundColor(Color(.systemGray6))
+                                    .padding()
+                                    .shadow(radius: 25)
+                            } else {
+                                Circle() // outer rim
+                                    .frame(width: 100, height: 100)
+                                    .foregroundColor(.blue)
+                                    .shadow(radius: 25)
+                                Image(uiImage: image1!)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .clipShape(Circle())
+                                    .frame(width: 90, height: 90)
                             }
+                        }.onTapGesture {
+                            currentPhotoChoice = .image1
+                            viewModel.isShowingPhotoPicker = true
                         }
+                        
+                        ZStack {
+                            if image2 == nil {
+                                Circle() // outer rim
+                                    .frame(width: 100, height: 100)
+                                    .foregroundColor(Color(.lightGray))
+                                    .shadow(radius: 25)
+                                Circle()
+                                    .frame(width: 90, height: 90)
+                                    .foregroundColor(Color(.systemGray6))
+                                    .padding()
+                                    .shadow(radius: 25)
+                                    .onTapGesture {
+                                        
+                                    }
+                            } else {
+                                Circle() // outer rim
+                                    .frame(width: 100, height: 100)
+                                    .foregroundColor(.blue)
+                                    .shadow(radius: 25)
+                                Image(uiImage: image2!)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .clipShape(Circle())
+                                    .frame(width: 90, height: 90)
+                            }
+                        }.onTapGesture {
+                            currentPhotoChoice = .image2
+                            viewModel.isShowingPhotoPicker = true
+                        }
+                        
+                        ZStack {
+                            if image3 == nil {
+                                Circle() // outer rim
+                                    .frame(width: 100, height: 100)
+                                    .foregroundColor(Color(.lightGray))
+                                    .shadow(radius: 25)
+                                Circle()
+                                    .frame(width: 90, height: 90)
+                                    .foregroundColor(Color(.systemGray6))
+                                    .padding()
+                                    .shadow(radius: 25)
+                            } else {
+                                Circle() // outer rim
+                                    .frame(width: 100, height: 100)
+                                    .foregroundColor(.blue)
+                                    .shadow(radius: 25)
+                                Image(uiImage: image3!)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .clipShape(Circle())
+                                    .frame(width: 90, height: 90)
+                            }
+                        }.onTapGesture {
+                            currentPhotoChoice = .image3
+                            viewModel.isShowingPhotoPicker = true
+                        }
+//                        ForEach($viewModel.plantImages, id: \.id) { $data in
+//                            ZStack {
+//                                if data.image == nil {
+//                                    Circle() // outer rim
+//                                        .frame(width: 100, height: 100)
+//                                        .foregroundColor(Color(.lightGray))
+//                                        .shadow(radius: 25)
+//                                    Circle()
+//                                        .frame(width: 90, height: 90)
+//                                        .foregroundColor(Color(.systemGray6))
+//                                        .padding()
+//                                        .shadow(radius: 25)
+//                                } else {
+//                                    Circle() // outer rim
+//                                        .frame(width: 100, height: 100)
+//                                        .foregroundColor(.blue)
+//                                        .shadow(radius: 25)
+//                                    Image(uiImage: data.image!)
+//                                        .resizable()
+//                                        .scaledToFill()
+//                                        .clipShape(Circle())
+//                                        .frame(width: 90, height: 90)
+//                                }
+//                            }
+//                        }
                     }
                     .offset(y: descOffset * -1)
                     .onTapGesture {
@@ -79,11 +175,11 @@ struct AddItems: View {
                     
                     // MARK: Name
                     Group {
-                        Text("Name:").foregroundColor(Color("AccentColor")).padding(.leading)
+                        Text("Plant Name").fontWeight(.bold).foregroundColor(Color("AccentColor")).padding(.leading)
                         TextField("20 characters max..", text: $viewModel.plantName)
                             .padding()
                             .focused($nameFieldIsFocus)
-                            .modifier(CustomTextBubble(isActive: nameFieldIsFocus == true, accentColor: .blue))
+                            .modifier(AddItemTextBubble(isActive: nameFieldIsFocus == true, accentColor: .blue))
                             .padding([.leading, .trailing])
                             .shadow(radius: 5)
                             .onChange(of: viewModel.plantName) {
@@ -111,7 +207,7 @@ struct AddItems: View {
                     
                     // MARK: Description
                     Group {
-                        Text("Description").foregroundColor(Color("AccentColor")).padding([.leading, .top]).listRowSeparator(.hidden)
+                        Text("Description").fontWeight(.bold).foregroundColor(Color("AccentColor")).padding([.leading, .top]).listRowSeparator(.hidden)
                         List {
                             ZStack {
                                 TextEditor(text: $viewModel.plantDescription)
@@ -146,7 +242,7 @@ struct AddItems: View {
                             .listRowSeparator(.hidden)
                         }
                         .frame(height: 200)
-                        .overlay(RoundedRectangle(cornerRadius: 20.0).stroke(descriptionFieldIsFocus == true ? .blue : .gray, lineWidth: descriptionFieldIsFocus == true ? 3 : 1).shadow(radius: 5))
+                        .overlay(RoundedRectangle(cornerRadius: 20.0).stroke(descriptionFieldIsFocus == true ? .blue : .gray, lineWidth: 4).shadow(radius: 5))
                         .padding([.leading, .trailing])
                         .listStyle(PlainListStyle())
                     }
@@ -155,110 +251,122 @@ struct AddItems: View {
                         Alert(title: Text("Too Many Characters"), message: Text("Enter no more than 200 characters for Description."), dismissButton: .default(Text("OK")))
                     }
                     
+                    //Spacer()
+                    
+                    Button(
+                        action: {viewModel.isShowingCategoryPicker = true},
+                        label: {
+                            Text("Choose Categories")
+                                .fontWeight(.bold)
+                                .padding()
+                                .sheet(isPresented: $viewModel.isShowingCategoryPicker) {
+                                    Text("Choose Your Categories")
+                                        .fontWeight(.bold)
+                                        .foregroundColor(Color("MainColor"))
+                                        .padding([.top, .bottom])
+                                    
+                                    ForEach($viewModel.categoryHolder) { $cat in
+                                        Toggle("\(categoryMapper.categories[cat.category]!)", isOn: $cat.isActive)
+                                            .tint(Color("MainColor"))
+                                            .padding([.leading, .trailing])
+                                    }
+                                    Spacer()
+                                }
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .alert(isPresented: $categoriesMissing) {
+                                    Alert(title: Text("Missing Categories"), message: Text("Add categories to your plant."), dismissButton: .default(Text("OK!")))
+                                }
+                        }
+                    )
+                    
+                    Button(
+                        action: {
+                            guard plantImagesAdded() == true else {
+                                imagesMissing = true
+                                return
+                            }
+                            
+                            guard !viewModel.plantName.isEmpty else {
+                                nameFieldIsFocus = true
+                                return
+                            }
+                            
+                            guard !viewModel.plantDescription.isEmpty else {
+                                descriptionFieldIsFocus = true
+                                return
+                            }
+                            
+                            guard viewModel.categoryChosen == true else {
+                                categoriesMissing = true
+                                return
+                            }
+                            
+                            guard
+                                viewModel.plantName.count <= 20
+                            else {
+                                nameFieldIsFocus = true
+                                tooManyChars = true
+                                return
+                            }
+                            
+                            guard viewModel.plantDescription.count <= 200
+                            else {
+                                descriptionFieldIsFocus = true
+                                descriptionLengthInvalid = true
+                                return
+                            }
+                            
+                            guard
+                                let plantImage = image1?.jpegData(compressionQuality: 0.5),
+                                let plantImage2 = image2?.jpegData(compressionQuality: 0.5),
+                                let plantImage3 = image3?.jpegData(compressionQuality: 0.5)
+                            else {
+                                print("couldn't get the images and compress them")
+                                return
+                            }
+                            
+                            viewModel.savePlant(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, user: user)
+
+                            // reset everything now
+                            viewModel.plantName = ""
+                            viewModel.plantDescription = ""
+                            descriptionFieldIsFocus = false
+                            nameFieldIsFocus = false
+                        },
+                        label: {
+                            Text("Submit")
+                                .fontWeight(.bold)
+                                .padding()
+                                .foregroundColor(.white)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 20)
+                                        .fill(Color("AccentColor")).frame(width: buttonWidth, alignment: .center)
+                                )
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .shadow(radius: 5)
+                                .padding(.bottom)
+                                .alert(isPresented: $viewModel.itemPosted) {
+                                    return Alert(title: Text("Success"), message: Text("Your plant is now live on the market!"), dismissButton: .default(Text("OK!"), action: {
+                                        self.tab = 0
+                                    }))
+                                }
+                        }
+                    )
+                    
                     Spacer()
                     
-                    Button("Choose Categories") {
-                        viewModel.isShowingCategoryPicker = true
-                    }
-                    .padding()
-                    .sheet(isPresented: $viewModel.isShowingCategoryPicker) {
-                        Text("Choose Your Categories")
-                            .fontWeight(.bold)
-                            .foregroundColor(Color("MainColor"))
-                            .padding([.top, .bottom])
-                        
-                        ForEach($viewModel.categoryHolder) { $cat in
-                            Toggle("\(categoryMapper.categories[cat.category]!)", isOn: $cat.isActive)
-                                .tint(Color("MainColor"))
-                                .padding([.leading, .trailing])
-                        }
-                        Spacer()
-                    }
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .alert(isPresented: $categoriesMissing) {
-                        Alert(title: Text("Missing Categories"), message: Text("Add categories to your plant."), dismissButton: .default(Text("OK!")))
-                    }
-                    
-                    Button("Submit") {
-                        guard plantImagesAdded() == true else {
-                            imagesMissing = true
-                            return
-                        }
-                        
-                        guard !viewModel.plantName.isEmpty else {
-                            nameFieldIsFocus = true
-                            return
-                        }
-                        
-                        guard !viewModel.plantDescription.isEmpty else {
-                            descriptionFieldIsFocus = true
-                            return
-                        }
-                        
-                        guard viewModel.categoryChosen == true else {
-                            categoriesMissing = true
-                            return
-                        }
-                        
-                        guard
-                            viewModel.plantName.count <= 20
-                        else {
-                            nameFieldIsFocus = true
-                            tooManyChars = true
-                            return
-                        }
-                        
-                        guard viewModel.plantDescription.count <= 200
-                        else {
-                            descriptionFieldIsFocus = true
-                            descriptionLengthInvalid = true
-                            return
-                        }
-                        
-                        // check for profanity
-//                        guard
-//                            profanityChecker.containsProfanity(message: viewModel.plantDescription) == false,
-//                            profanityChecker.containsProfanity(message: viewModel.plantName) == false
-//                        else {
-//                            profanityFound.toggle()
-//                            return
-//                        }
-                        
-                        guard
-                            let plantImage = viewModel.plantImages[0].image?.jpegData(compressionQuality: 0.5),
-                            let plantImage2 = viewModel.plantImages[1].image?.jpegData(compressionQuality: 0.5),
-                            let plantImage3 = viewModel.plantImages[2].image?.jpegData(compressionQuality: 0.5)
-                        else {
-                            print("couldn't get the images and compress them")
-                            return
-                        }
-                        
-                        viewModel.savePlant(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, user: user)
-                        
-                        // reset everything now
-                        viewModel.plantName = ""
-                        viewModel.plantDescription = ""
-                        descriptionFieldIsFocus = false
-                        nameFieldIsFocus = false
-                    }
-                    .padding()
-                    .foregroundColor(.white)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color("AccentColor"))
-                    )
-                    .frame(maxWidth: .infinity, maxHeight: 100, alignment: .center)
-                    .shadow(radius: 5)
-                    .padding(.bottom)
-                    .alert(isPresented: $viewModel.itemPosted) {
-                        return Alert(title: Text("Success"), message: Text("Your plant is now live on the market!"), dismissButton: .default(Text("OK!"), action: {
-                            self.tab = 0
-                        }))
-                    }
                 }
                 .navigationBarTitle(Text(self.typing ? "" : "New Plant Listing"), displayMode: .inline)
                 .sheet(isPresented: $viewModel.isShowingPhotoPicker, content: {
-                    ImageSelector(image: Binding.constant(nil), canSelectMultipleImages: true, images: $viewModel.plantImages)
+                    switch currentPhotoChoice {
+                        case .image1:
+                            ImageSelector(image: $image1, canSelectMultipleImages: false, images: Binding.constant([]))
+                        case .image2:
+                            ImageSelector(image: $image2, canSelectMultipleImages: false, images: Binding.constant([]))
+                        case .image3:
+                            ImageSelector(image: $image3, canSelectMultipleImages: false, images: Binding.constant([]))
+                    }
+                    
                 })
         }
     }

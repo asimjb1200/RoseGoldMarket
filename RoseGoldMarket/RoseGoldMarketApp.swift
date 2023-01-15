@@ -16,7 +16,7 @@ struct RoseGoldMarketApp: App {
     @State var appViewState: AppViewStates = .LandingPage
     var service:UserNetworking = .shared
     @StateObject var user:UserModel = .shared
-    //@StateObject var appState:AppViewStates = .L
+    @StateObject var currentAppView:CurrentAppView = CurrentAppView()
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     
@@ -29,62 +29,68 @@ struct RoseGoldMarketApp: App {
                     ContentView()
                         .environmentObject(user)
                 } else {
-                    switch appViewState {
-                    case .LandingPage:
-                        LandingPage(appViewState: $appViewState)
-                        
-                    case .LoginView:
-                        LogIn(appViewState: $appViewState)
-                            .alert(isPresented: $verificationCodeError) {
-                                Alert(title: Text("There was a problem"), message: Text("Try again or contact us."))
-                            }
-                            .onOpenURL { url in
-                                print("URL OPENED. let's give them a loading screen while we verify the code: \(url)")
-                                // this is going to open for every link the login page receives, so I'll have to do some addtl checks
-                                self.isLoading = true
-                                
-                                if let urlComponents = URLComponents(string: url.absoluteString) {
-                                    let queryItems = urlComponents.queryItems
-                                    guard let userInfoHash = queryItems?.first(where: {$0.name == "userInformation"})?.value else {
-                                        print("not from our server")
-                                        self.isLoading = false
-                                        return
-                                    }
-                                    guard let userEmail = queryItems?.first(where: {$0.name == "emailAddress"})?.value else {
-                                        self.isLoading = false
-                                        return
-                                    }
-                                    
-                                    // now build a request and post this data back to the server to see if the codes are correct
-                                    service.verifyAccount(userEmailAddress: userEmail, userInformationHash: userInfoHash, completion: { verificationResponse in
-                                        switch(verificationResponse) {
-                                        case .success( _):
-                                            DispatchQueue.main.async {
-                                                print("they can login now")
-                                                self.isLoading = false
-                                            }
-                                        case .failure(let verificationError):
-                                            print(verificationError)
-                                            if verificationError == .wrongCode {
-                                                print("the code they attempted was invalid")
-                                            } else if verificationError == .userNotFound {
-                                                print("that user couldn't be found")
-                                            } else {
-                                                print("a server side error occurred")
-                                            }
-                                            self.isLoading = false
-                                            self.verificationCodeError = true
-                                        }
-                                    })
-                                } else {
-                                    print("one of the social media share links was clicked")
-                                    self.isLoading = false
+                    switch currentAppView.currentView {
+                        case .LandingPage:
+                            LandingPage().environmentObject(currentAppView)
+                            
+                        case .LoginView:
+                            LogIn()
+                                .alert(isPresented: $verificationCodeError) {
+                                    Alert(title: Text("There was a problem"), message: Text("Try again or contact us."))
                                 }
-                            }
-                            .environmentObject(user)
+                                .onOpenURL { url in
+                                    print("URL OPENED. let's give them a loading screen while we verify the code: \(url)")
+                                    // this is going to open for every link the login page receives, so I'll have to do some addtl checks
+                                    self.isLoading = true
+                                    
+                                    if let urlComponents = URLComponents(string: url.absoluteString) {
+                                        let queryItems = urlComponents.queryItems
+                                        guard let userInfoHash = queryItems?.first(where: {$0.name == "userInformation"})?.value else {
+                                            print("not from our server")
+                                            self.isLoading = false
+                                            return
+                                        }
+                                        guard let userEmail = queryItems?.first(where: {$0.name == "emailAddress"})?.value else {
+                                            self.isLoading = false
+                                            return
+                                        }
+                                        
+                                        // now build a request and post this data back to the server to see if the codes are correct
+                                        service.verifyAccount(userEmailAddress: userEmail, userInformationHash: userInfoHash, completion: { verificationResponse in
+                                            switch(verificationResponse) {
+                                            case .success( _):
+                                                DispatchQueue.main.async {
+                                                    print("they can login now")
+                                                    self.isLoading = false
+                                                }
+                                            case .failure(let verificationError):
+                                                print(verificationError)
+                                                if verificationError == .wrongCode {
+                                                    print("the code they attempted was invalid")
+                                                } else if verificationError == .userNotFound {
+                                                    print("that user couldn't be found")
+                                                } else {
+                                                    print("a server side error occurred")
+                                                }
+                                                self.isLoading = false
+                                                self.verificationCodeError = true
+                                            }
+                                        })
+                                    } else {
+                                        print("one of the social media share links was clicked")
+                                        self.isLoading = false
+                                    }
+                                }
+                                .environmentObject(user)
+                                .environmentObject(currentAppView)
+                            
+                        case .RegistrationView:
+                            Register()
+                                .environmentObject(user)
+                                .environmentObject(currentAppView)
                         
-                    case .RegistrationView:
-                        Register(appViewState: $appViewState).environmentObject(user)
+                    case .ForgotPassword:
+                        ForgotPassword().environmentObject(currentAppView)
                     }
                 }
             }

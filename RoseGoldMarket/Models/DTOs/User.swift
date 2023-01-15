@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 
 class UserModel: ObservableObject, UserProtocol {
@@ -33,7 +34,9 @@ class UserModel: ObservableObject, UserProtocol {
         self.accountId = serviceUsr.accountId
         self.avatarUrl = serviceUsr.avatarUrl
         socket.connectToServer(withId: serviceUsr.accountId)
-        self.isLoggedIn = true
+        withAnimation {
+            self.isLoggedIn = true
+        }
     }
     
     func logout() {

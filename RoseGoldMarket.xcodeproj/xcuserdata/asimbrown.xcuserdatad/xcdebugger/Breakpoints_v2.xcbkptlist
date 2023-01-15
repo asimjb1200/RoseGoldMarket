@@ -62,8 +62,8 @@
             filePath = "RoseGoldMarket/RoseGoldMarketApp.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "126"
-            endingLineNumber = "126"
+            startingLineNumber = "132"
+            endingLineNumber = "132"
             landmarkName = "startUpStuff()"
             landmarkType = "7">
          </BreakpointContent>
@@ -78,8 +78,8 @@
             filePath = "RoseGoldMarket/Views/AddItems.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "204"
-            endingLineNumber = "204"
+            startingLineNumber = "305"
+            endingLineNumber = "305"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -94,8 +94,8 @@
             filePath = "RoseGoldMarket/Utils/ImageSelector.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "60"
-            endingLineNumber = "60"
+            startingLineNumber = "61"
+            endingLineNumber = "61"
             landmarkName = "picker(_:didFinishPicking:)"
             landmarkType = "7">
          </BreakpointContent>

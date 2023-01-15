@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ForgotPassword: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var appViewState: CurrentAppView
     
     @State var email:String = ""
     @State var securityCodeFromUser = ""
@@ -52,6 +53,19 @@ struct ForgotPassword: View {
             if loading {
                 ProgressView()
             } else {
+                Button(
+                    action:{
+                        withAnimation {
+                            appViewState.currentView = .LoginView
+                        }
+                    },
+                    label: {
+                        Text("Cancel")
+                            .foregroundColor(accent)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding()
+                    })
+                Spacer()
                 if codeReceived == false {
                     // MARK: Enter Email
                     Group {
@@ -127,8 +141,9 @@ struct ForgotPassword: View {
                             }
                         )
                     }
+                    
                 }
-                
+
                 // MARK: Enter Code
                 if codeReceived && codesMatch == false {
                     Group {
@@ -197,7 +212,7 @@ struct ForgotPassword: View {
                         )
                     }
                 }
-                
+
                 // MARK: Passwords
                 if codesMatch {
                     Group {
@@ -335,6 +350,7 @@ struct ForgotPassword: View {
                             action: {
                                 guard password == confirmPassword else {
                                     print("passwords dont match")
+                                    formField = .password
                                     pwDontMatch = true
                                     return
                                 }
@@ -342,12 +358,14 @@ struct ForgotPassword: View {
                                 // check for numbers and cap letters
                                 guard Validators.pwContainsUppercase(password: self.password) == true else {
                                     print("pw needs uppercase")
+                                    formField = .password
                                     pwNeedsCaps = true
                                     return
                                 }
 
                                 guard Validators.pwContainsNumber(password: self.password) == true else {
                                     print("pw needs numbers")
+                                    formField = .password
                                     pwNeedsNumbers = true
                                     return
                                 }
@@ -357,6 +375,7 @@ struct ForgotPassword: View {
                                     password.count < 21
                                 else {
                                     print("password length invalid")
+                                    formField = .password
                                     pwNotValid = true
                                     return
                                 }
@@ -371,11 +390,14 @@ struct ForgotPassword: View {
                             }
                         ).alert(isPresented: $dataPosted) {
                             Alert(title: Text("Success"), message: Text("Your password has been updated. You can go back and log in now."), dismissButton: .default(Text("OK!")) {
-                                dismiss() // go back to the login screen
+                                withAnimation {
+                                    appViewState.currentView = .LoginView
+                                }
                             })
                         }
                     }
                 }
+                Spacer()
             }
         }
     }

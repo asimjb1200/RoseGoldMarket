@@ -18,7 +18,7 @@ struct AddProfilePic: View {
     @Environment(\.dismiss) private var dismiss
     
     @State var acceptedTerms = false
-    @Binding var appViewState: AppViewStates
+    @EnvironmentObject var appViewState: CurrentAppView
 
     let accent = Color.blue
     private let nonActiveField: some View = RoundedRectangle(cornerRadius: 30).stroke(.gray, lineWidth: 1)
@@ -184,7 +184,7 @@ struct AddProfilePic: View {
                             registerViewModel.canLoginNow = true
                             //dismiss()
                             withAnimation {
-                                appViewState = .LoginView
+                                appViewState.currentView = .LoginView
                             }
                         })
                     }.shadow(radius: 5)
@@ -205,7 +205,7 @@ struct AddProfilePic: View {
 
 struct AddProfilePic_Previews: PreviewProvider {
     static var previews: some View {
-        AddProfilePic(registerViewModel: RegisterUserViewModel(), appViewState: Binding.constant(.RegistrationView))
+        AddProfilePic(registerViewModel: RegisterUserViewModel())
             .preferredColorScheme(.dark)
             
     }

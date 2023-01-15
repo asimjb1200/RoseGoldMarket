@@ -7,6 +7,6 @@
 
 import Foundation
 
-enum AppViewStates {
-    case LandingPage, LoginView, RegistrationView
+enum AppViewStates: Equatable {
+    case LandingPage, LoginView, RegistrationView, ForgotPassword
 }
