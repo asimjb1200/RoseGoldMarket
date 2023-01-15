@@ -381,8 +381,6 @@ struct AddItems: View {
     }
 }
 
-
-
 struct AddItems_Previews: PreviewProvider {
     static var previews: some View {
         AddItems(tab: Binding.constant(2))

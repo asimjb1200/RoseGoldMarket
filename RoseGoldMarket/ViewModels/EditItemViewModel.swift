@@ -24,6 +24,8 @@ final class EditItemVM:ObservableObject {
     @Published var showUpdateError = false
     @Published var tooManyChars = false
     @Published var networkError = false
+    @Published var plantImages: [PlantImage] = [PlantImage(id: UUID(), image: nil), PlantImage(id: UUID(), image: nil), PlantImage(id: UUID(), image: nil)]
+    
     var viewStateErrors: EditItemViewStates = .allGood
     var categoryMapper = CategoryMapper()
     var service = ItemService()

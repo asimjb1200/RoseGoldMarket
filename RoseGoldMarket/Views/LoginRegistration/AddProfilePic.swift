@@ -91,7 +91,7 @@ struct AddProfilePic: View {
                         }
                 }
                 .padding()
-                .background(focusedField == FormFields.username ? AnyView(activeField) : AnyView(nonActiveField))
+                .modifier(CustomTextBubble(isActive: focusedField == FormFields.username, accentColor: accent))
                 .padding([.leading, .trailing])
                 .padding(.top)
                 .alert(isPresented: $registerViewModel.nameNotAvailable) {

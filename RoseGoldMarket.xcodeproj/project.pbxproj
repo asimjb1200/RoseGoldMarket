@@ -19,7 +19,6 @@
 		6823B7D227990199008F2CB7 /* NetworkingHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6823B7D127990199008F2CB7 /* NetworkingHelper.swift */; };
 		6823B7D427990844008F2CB7 /* AddItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6823B7D327990844008F2CB7 /* AddItems.swift */; };
 		6823B7D627991322008F2CB7 /* AddItemsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6823B7D527991322008F2CB7 /* AddItemsViewModel.swift */; };
-		6823B7D9279913A4008F2CB7 /* PhotoPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6823B7D8279913A4008F2CB7 /* PhotoPicker.swift */; };
 		6823D74727C72BD8001876A8 /* IdentifiableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6823D74627C72BD8001876A8 /* IdentifiableView.swift */; };
 		6825899F27A7179C003E52D9 /* ResponseFromServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6825899E27A7179C003E52D9 /* ResponseFromServer.swift */; };
 		682DE035285F8D7900B0EC69 /* ResetPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 682DE034285F8D7900B0EC69 /* ResetPassword.swift */; };
@@ -96,7 +95,6 @@
 		6823B7D127990199008F2CB7 /* NetworkingHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingHelper.swift; sourceTree = "<group>"; };
 		6823B7D327990844008F2CB7 /* AddItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItems.swift; sourceTree = "<group>"; };
 		6823B7D527991322008F2CB7 /* AddItemsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemsViewModel.swift; sourceTree = "<group>"; };
-		6823B7D8279913A4008F2CB7 /* PhotoPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPicker.swift; sourceTree = "<group>"; };
 		6823D74627C72BD8001876A8 /* IdentifiableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentifiableView.swift; sourceTree = "<group>"; };
 		6825899E27A7179C003E52D9 /* ResponseFromServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseFromServer.swift; sourceTree = "<group>"; };
 		682BFD51288CEB9500818820 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -186,7 +184,6 @@
 			isa = PBXGroup;
 			children = (
 				6878BCCA27F270C700CD071A /* badwords.txt */,
-				6823B7D8279913A4008F2CB7 /* PhotoPicker.swift */,
 				683C6B8F28C98C07005790A5 /* MapSearch.swift */,
 				68BDD46D28DE65F700FCE429 /* KeyboardNotificationPublisher.swift */,
 				682292E828DE9FB200F2A8BF /* UIResponderExtension.swift */,
@@ -501,7 +498,6 @@
 				684872A6295D2230004DA1D8 /* CameraAccessor.swift in Sources */,
 				684B923227D2BA7B00CF25D9 /* EditItem.swift in Sources */,
 				6848679E2798D5CB0033969D /* ItemService.swift in Sources */,
-				6823B7D9279913A4008F2CB7 /* PhotoPicker.swift in Sources */,
 				681AB5C727A650F700B1629B /* ItemDetails.swift in Sources */,
 				680F155F2951680700911999 /* Validators.swift in Sources */,
 				6823B7D227990199008F2CB7 /* NetworkingHelper.swift in Sources */,
