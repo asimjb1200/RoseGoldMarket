@@ -90,16 +90,7 @@ struct ChangeLocation: View {
 
             Button(
                 action: {
-                    // check to make sure that each of the fields aren't 0 or blank
-                    guard
-                        !zipCode.isEmpty,
-                        let _ = UInt(zipCode)
-                    else {
-                        focusedField = .zipcode
-                        return
-                    }
-                        
-                    guard address.isEmpty else {
+                    guard !address.isEmpty else {
                         focusedField = .address
                         return
                     }
@@ -111,6 +102,15 @@ struct ChangeLocation: View {
                     
                     guard !state.isEmpty else {
                         focusedField = .state
+                        return
+                    }
+                    
+                    // check to make sure that each of the fields aren't 0 or blank
+                    guard
+                        !zipCode.isEmpty,
+                        let _ = UInt(zipCode)
+                    else {
+                        focusedField = .zipcode
                         return
                     }
                 
