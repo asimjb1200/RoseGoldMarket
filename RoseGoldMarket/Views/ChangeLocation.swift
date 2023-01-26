@@ -17,6 +17,7 @@ struct ChangeLocation: View {
     @State var dataNotSaved = false
     @State var addressData = ""
     @State var addressNotFound = false
+    var buttonWidth = UIScreen.main.bounds.width * 0.85
     @State var statePicker: [String] = ["Select A State","AL","AK","AZ","AR","AS","CA","CO","CT","DE","DC","FL","GA","GU","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","CM","OH","OK","OR","PA","PR","RI","SC","SD","TN","TX","TT","UT","VT","VI","WA","WV","WI","WY"]
     @EnvironmentObject var user:UserModel
     private enum Fields: Int, CaseIterable {
@@ -30,59 +31,51 @@ struct ChangeLocation: View {
                 .font(.title)
                 .fontWeight(.semibold)
                 .foregroundColor(Color("AccentColor"))
-            Text(addressData)
+            if addressData.isEmpty {
+                ProgressView().foregroundColor(.blue).frame(maxWidth: .infinity, alignment: .center)
+            } else {
+                Text(addressData)
+            }
+            
             HStack {
-                Image(systemName: "signpost.right.fill").foregroundColor(Color("MainColor"))
+                Image(systemName: "signpost.right.fill").foregroundColor(focusedField == .address ? .blue : .gray)
                 TextField("Address", text: $address).focused($focusedField, equals: .address)
-            }.padding()
-                .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(lineWidth: 1)
-                    .foregroundColor(Color("MainColor"))
-            )
+            }
+            .padding()
+            .modifier(CustomTextBubble(isActive: focusedField == .address, accentColor: .blue))
             .padding()
             
             HStack {
-                Image(systemName: "building.2.fill").foregroundColor(Color("MainColor"))
+                Image(systemName: "building.2.fill").foregroundColor(focusedField == .city ? .blue : .gray)
                 TextField("City", text: $city).focused($focusedField, equals: .city)
-            }.padding()
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(lineWidth: 1)
-                    .foregroundColor(Color("MainColor"))
-            )
+            }
+            .padding()
+            .modifier(CustomTextBubble(isActive: focusedField == .city, accentColor: .blue))
             .padding()
             .alert(isPresented: $addressNotFound) {
                 Alert(title: Text("Your new address could not be verified."))
             }
             
             HStack {
-                Image(systemName: "map.fill").foregroundColor(Color("MainColor"))
+                Image(systemName: "map.fill").foregroundColor(focusedField == .state ? .blue : .gray)
                 Picker("State", selection: $state) {
                     ForEach(statePicker, id:\.self) {
                         Text($0)
                     }
                 }
+                .focused($focusedField, equals: .state)
                 Spacer()
             }
             .padding()
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(lineWidth: 1)
-                    .foregroundColor(Color("MainColor"))
-            )
+            .modifier(CustomTextBubble(isActive: focusedField == .state, accentColor: .blue))
             .padding()
             
             HStack {
-                Image(systemName: "mappin.and.ellipse").foregroundColor(Color("MainColor"))
+                Image(systemName: "mappin.and.ellipse").foregroundColor(focusedField == .zipcode ? .blue : .gray)
                 TextField("Zip Code", text: $zipCode).focused($focusedField, equals: .zipcode)
             }
             .padding()
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(lineWidth: 1)
-                    .foregroundColor(Color("MainColor"))
-            )
+            .modifier(CustomTextBubble(isActive: focusedField == .zipcode, accentColor: .blue))
             .padding().keyboardType(.decimalPad)
             .toolbar {
                 ToolbarItem(placement: .keyboard) {
@@ -95,19 +88,43 @@ struct ChangeLocation: View {
                 Alert(title: Text("Address Not Updated"), message: Text("There was a problem saving your data. Try again later."), dismissButton: .default(Text("OK")))
             }
 
-            Button("Submit") {
-                // check to make sure that each of the fields aren't 0 or blank
-                guard
-                    UInt(zipCode)! > 0,
-                    !state.isEmpty,
-                    !city.isEmpty,
-                    !address.isEmpty
-                else {
-                    return
-                }
+            Button(
+                action: {
+                    // check to make sure that each of the fields aren't 0 or blank
+                    guard
+                        !zipCode.isEmpty,
+                        let _ = UInt(zipCode)
+                    else {
+                        focusedField = .zipcode
+                        return
+                    }
+                        
+                    guard address.isEmpty else {
+                        focusedField = .address
+                        return
+                    }
+                    
+                    guard !city.isEmpty else {
+                        focusedField = .city
+                        return
+                    }
+                    
+                    guard !state.isEmpty else {
+                        focusedField = .state
+                        return
+                    }
                 
-                getAndSaveUserLocation()
-            }
+                    getAndSaveUserLocation()
+                },
+                label: {
+                    Text("Submit")
+                        .fontWeight(.bold)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .foregroundColor(.white)
+                        .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(width: buttonWidth, height: 50))
+                        .padding()
+                }
+            )
             .alert(isPresented: $dataSaved) {
                 Alert(title: Text("Address Updated"), dismissButton: .default(Text("OK")))
             }

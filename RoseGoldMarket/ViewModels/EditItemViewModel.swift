@@ -21,6 +21,8 @@ final class EditItemVM:ObservableObject {
     @Published var isAvailable = true
     @Published var pickedUp = false
     @Published var itemIsDeleted = false
+    @Published var addPhotos = false
+    @Published var missingCategories = false
     @Published var showUpdateError = false
     @Published var tooManyChars = false
     @Published var networkError = false
