@@ -30,12 +30,12 @@ struct LogIn: View {
     
     
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 15) {
             if appBanner != nil {
                     Image(uiImage: appBanner!)
                         .resizable()
-                        .scaledToFit()
-                        .frame(width: UIScreen.main.bounds.width * 0.999)
+                        .scaledToFill()
+                        .frame(height: 200)
 
             } else {
                 Text("Rose Gold Gardens")
@@ -47,14 +47,12 @@ struct LogIn: View {
                 Text("Welcome Back!")
                     .font(.title2)
                     .fontWeight(.bold)
-                    .padding(.top, 10)
                 
                 Text("Log in to your Rose Gold Markets account")
                     .font(.footnote)
                     .foregroundColor(.gray)
-                    .offset(y: 10)
-                    .padding(.bottom)
             }
+            
             
             HStack {
                 Image(systemName: "envelope.circle").foregroundColor(focusedField == FormFields.email ? accent : Color.gray)
@@ -65,6 +63,7 @@ struct LogIn: View {
             .padding()
             .modifier(CustomTextBubble(isActive: focusedField == .email, accentColor: .blue))
             .padding()
+            .padding([.leading, .trailing])
             .alert(isPresented: $badEmail) {
                 Alert(title: Text("Email Address"), message: Text("Your email address is invalid"), dismissButton: .default(Text("OK")))
             }
@@ -79,6 +78,7 @@ struct LogIn: View {
             .padding()
             .modifier(CustomTextBubble(isActive: focusedField == .password, accentColor: .blue))
             .padding()
+            .padding([.leading, .trailing])
             .alert(isPresented: $badPw) {
                 Alert(title: Text("Incorrect Password"), message: Text("Your password contains invalid characters"), dismissButton: .default(Text("OK")))
             }
@@ -130,7 +130,7 @@ struct LogIn: View {
                             .font(.system(size: 16, weight: Font.Weight.bold))
                             .padding()
                             .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue).frame(width: buttonWidth))
-                            .padding(.top, 40)
+                            .padding(.top)
                             .alert(isPresented: $badCreds) {
                                 Alert(title: Text("Incorrect Credentials"), message: Text("Your username and password combination couldn't be found in our records"), dismissButton: .default(Text("OK")))
                             }
@@ -211,23 +211,21 @@ struct LogIn: View {
                             //dialog.mode = .shareSheet
                             dialog.show()
                         }
-                }.padding(.bottom)
-            }.padding(.bottom)
-            
+                }.padding([.bottom, .top])
+            }
+            Spacer()
             Button(
                 action: {appViewState.currentView = .RegistrationView},
                 label: {
-                    Text("Don't have an account? \(Text("Sign Up").foregroundColor(.blue))")
+                    Text("Don't have an account? \(Text("Sign Up").foregroundColor(.blue))").padding(.bottom)
                 }
             )
-//                NavigationLink(destination: Register()) {
-//                    Text("Don't have an account? \(Text("Sign Up").foregroundColor(.blue))")
-//                }
             
-            Spacer()
+            //
             
         }
         .edgesIgnoringSafeArea(.top)
+        .frame(maxHeight: .infinity, alignment: .topLeading)
     }
     
     func loginWithEmail() {

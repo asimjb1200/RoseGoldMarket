@@ -9,26 +9,40 @@ import SwiftUI
 
 struct EmailSupport: View {
     @StateObject var viewModel: EmailSupportViewModel = EmailSupportViewModel()
+    @FocusState var subjectFocus:Bool
+    @FocusState var descriptionFocus:Bool
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .center) {
             if viewModel.emailSent == false {
                 Text("Send Us A Message:").font(.custom("MontserratAlternates-ExtraBold", size: 20)).frame(maxWidth: .infinity)
                 TextField("Subject:", text: $viewModel.subjectLine)
+                    .focused($subjectFocus)
                     .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/, style: /*@START_MENU_TOKEN@*/.continuous/*@END_MENU_TOKEN@*/)
-                            .fill(Color(hue: 1.0, saturation: 0.0, brightness: 0.694, opacity: 0.763))
+                    .toolbar {
+                        ToolbarItem(placement: .keyboard) {
+                            Button("Done") {
+                                subjectFocus = false
+                                descriptionFocus = false
+                            }.frame(maxWidth: .infinity, alignment: .leading).padding(.leading)
+                        }
+                    }
+                    .modifier(
+                        CustomTextBubble(isActive: subjectFocus == true, accentColor: .blue)
                     )
                     .padding()
+                    .onSubmit {
+                        subjectFocus = false
+                        descriptionFocus = true
+                    }
                     .alert(isPresented: $viewModel.invalidText) {
                         return Alert(title: Text("Check Subject and Email"), message: Text("Make sure your subject line and message contains text"), dismissButton: .default(Text("OK")))
                     }
 
-                TextEditor(text: $viewModel.message)
-                    .background(Color(hue: 1.0, saturation: 0.0, brightness: 0.694, opacity: 0.763))
-                    .cornerRadius(25.0)
+                TextField("Message:", text: $viewModel.message, axis: .vertical)
+                    .focused($descriptionFocus)
                     .padding()
-                    .frame(height: 200, alignment: .center)
+                    .modifier(CustomTextBubble(isActive: descriptionFocus == true, accentColor: .blue))
+                    .padding()
 
                 Button("Send Email") {
                     guard
@@ -41,14 +55,12 @@ struct EmailSupport: View {
 //                    viewModel.sendEmail(user: user)
                 }
                 .foregroundColor(Color("Accent2"))
-                
+                Spacer()
             } else {
                 Text(viewModel.deliveryHeading).font(.custom("MontserratAlternates-ExtraBold", size: 28))
                 Text(viewModel.deliveryMessage).font(.custom("MontserratAlternates-Regular", size: 20))
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .edgesIgnoringSafeArea(.all)
     }
 }
 

@@ -22,18 +22,21 @@ struct EditItem: View {
     @State var image3: UIImage?
     @State var typingDesc = false
     
-    @State var buttonHeight:CGFloat = 30
+    @State var buttonHeight:CGFloat = 50
     var buttonWidth = UIScreen.main.bounds.width * 0.85
     
     var categoryMapper = CategoryMapper()
+    var leadingLabelPadding = UIScreen.main.bounds.width * 0.1
     let itemName:String
     let ownerName:String
     let itemId:UInt
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .center) {
             if !typingDesc {
                 Text("Tap to change your photos")
+                    .fontWeight(.bold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .foregroundColor(Color("AccentColor"))
                     .padding([.leading, .top])
             }
@@ -124,19 +127,19 @@ struct EditItem: View {
                     viewModel.isShowingPhotoPicker = true
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: 100, alignment: .center)
+            .frame(maxWidth: .infinity, maxHeight: 100)
             .alert(isPresented: $viewModel.addPhotos) {
                 Alert(title:Text("Plant Photos"), message: Text("Add 3 unique photos of your plant"))
             }.offset(y: descOffset * -1)
             
             // MARK: Plant Name
             Group {
-                Text("Name:").foregroundColor(Color("AccentColor")).padding(.leading)
+                Text("Name").foregroundColor(Color("AccentColor")).fontWeight(.bold).frame(maxWidth: .infinity, alignment: .leading).padding(.leading, leadingLabelPadding).padding(.top)
                 TextField("", text: $viewModel.plantName)
                     .padding()
                     .focused($focusedField, equals: .name)
                     .modifier(CustomTextBubble(isActive: focusedField == EditFields.name, accentColor: .blue))
-                    .padding([.leading, .trailing])
+                    .frame(width: buttonWidth)
                     .shadow(radius: 5)
                     .onChange(of: viewModel.plantName) {
                         viewModel.plantName = String($0.prefix(20)) // limit to 20 characters
@@ -161,9 +164,11 @@ struct EditItem: View {
             
             // MARK: Description
             Group {
-                Text("Description:")
+                Text("Description")
                     .foregroundColor(Color("AccentColor"))
-                    .padding([.leading, .top])
+                    .fontWeight(.bold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, leadingLabelPadding).padding(.top)
                     .alert(isPresented: $viewModel.tooManyChars) {
                         Alert(title: Text("Too Many Characters"), message: Text("Name field can have no more than 20 characters. The description field can have no more than 200."))
                     }
@@ -204,7 +209,7 @@ struct EditItem: View {
                     }
                     .padding()
                     .modifier(CustomTextBubble(isActive: focusedField == EditFields.description, accentColor: .blue))
-                    .padding([.leading, .trailing, .bottom])
+                    .frame(width: buttonWidth)
                     .shadow(radius: 5)
                     .onChange(of: viewModel.plantDescription) {
                         viewModel.plantDescription = String($0.prefix(200)) // limit to 200 characters
@@ -214,8 +219,10 @@ struct EditItem: View {
                     }
             }.offset(y: descOffset * -1)
             
+            // MARK: Still Available
             Toggle("Still available?", isOn: $viewModel.isAvailable)
-                .padding([.leading, .bottom, .trailing])
+                .padding([.leading, .trailing], leadingLabelPadding)
+                .padding(.top)
                 .tint(Color("MainColor"))
                 .offset(y: descOffset)
                 .alert(isPresented: $viewModel.itemIsDeleted) {
@@ -223,7 +230,7 @@ struct EditItem: View {
                 }
             
             if !viewModel.isAvailable {
-                Toggle("Has it been picked up?", isOn: $viewModel.pickedUp).padding([.leading, .bottom, .trailing]).tint(Color("MainColor"))
+                Toggle("Has it been picked up?", isOn: $viewModel.pickedUp).padding([.leading, .bottom, .trailing]).tint(Color("MainColor")).padding([.leading, .trailing], leadingLabelPadding)
             }
             
 
@@ -238,7 +245,7 @@ struct EditItem: View {
                         .frame(maxWidth: .infinity, maxHeight: buttonHeight, alignment: .center)
                         .foregroundColor(.white)
                         .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(width: buttonWidth, height: buttonHeight))
-                        .padding(.top)
+                        .padding([.top, .bottom])
                 }
             )
             .onAppear() {
@@ -318,6 +325,7 @@ struct EditItem: View {
                         .frame(maxWidth: .infinity, maxHeight: buttonHeight, alignment: .center)
                         .foregroundColor(.white)
                         .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(width: buttonWidth, height: buttonHeight))
+                        .padding([.top, .bottom])
                     
                 }
             )
@@ -338,9 +346,10 @@ struct EditItem: View {
                 label: {
                     Text("Delete")
                         .fontWeight(.bold)
-                        .frame(maxWidth: .infinity, maxHeight: buttonHeight, alignment: .center)
+                        .frame(maxWidth: .infinity, maxHeight: buttonHeight)
                         .foregroundColor(.white)
                         .background(RoundedRectangle(cornerRadius: 25).fill(Color.red).frame(width: buttonWidth, height: buttonHeight))
+                        .padding(.top)
                 }
             )
             .alert(isPresented: $areYouSure) {

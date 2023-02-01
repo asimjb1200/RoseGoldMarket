@@ -26,9 +26,10 @@ struct AddItems: View {
     @State var image2: UIImage?
     @State var image3: UIImage?
     @State var typing = false
-    @State var buttonHeight:CGFloat = 30
     
     var buttonWidth = UIScreen.main.bounds.width * 0.85
+    var submitButtonWidth = UIScreen.main.bounds.width * 0.70
+    var leadingLabelPadding = UIScreen.main.bounds.width * 0.1
     var categoryMapper = CategoryMapper()
     let accent = Color(hue: 1.0, saturation: 0.03, brightness: 0.454)
     
@@ -40,12 +41,13 @@ struct AddItems: View {
     }
     
     var body: some View {
-            VStack(alignment: .leading) {
+        VStack(alignment: .center, spacing: 15) {
                 if descOffset == 0 {
                     Text("Tap to Add Photos")
                         .fontWeight(.bold)
                         .foregroundColor(Color("AccentColor"))
                         .padding([.leading, .top])
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .alert(isPresented: $viewModel.errorOccurred) {
                             Alert(title: Text("There was a problem. Try again later."))
                         }
@@ -134,19 +136,19 @@ struct AddItems: View {
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
-                .offset(y: descOffset * -1)
+                .offset(y: descOffset)
                 .alert(isPresented: $imagesMissing) {
                     Alert(title: Text("Image Selection"), message: Text("Please upload 3 unique photos of your plant."), dismissButton: .default(Text("OK")))
                 }
                 
                 // MARK: Name
                 Group {
-                    Text("Plant Name").fontWeight(.bold).foregroundColor(Color("AccentColor")).padding(.leading)
+                    Text("Plant Name").fontWeight(.bold).foregroundColor(Color("AccentColor")).padding(.leading, leadingLabelPadding).frame(maxWidth: .infinity, alignment: .leading).padding(.top)
                     TextField("20 characters max..", text: $viewModel.plantName)
                         .padding()
                         .focused($nameFieldIsFocus)
+                        .frame(width: buttonWidth)
                         .modifier(CustomTextBubble(isActive: nameFieldIsFocus == true, accentColor: .blue))
-                        .padding([.leading, .trailing])
                         .shadow(radius: 5)
                         .onChange(of: viewModel.plantName) {
                             viewModel.plantName = String($0.prefix(20)) // limit 20 characters
@@ -166,20 +168,20 @@ struct AddItems: View {
                             }
                         }
                 }
-                .offset(y: descOffset * -1)
+                .offset(y: descOffset)
                 .alert(isPresented: $tooManyChars) {
                     Alert(title: Text("Too Many Characters"), message: Text("Enter no more than 20 characters for Name."), dismissButton: .default(Text("OK")))
                 }
 
                 // MARK: Description
                 Group {
-                    Text("Description").fontWeight(.bold).foregroundColor(Color("AccentColor")).padding([.leading, .top])
+                    Text("Description").fontWeight(.bold).foregroundColor(Color("AccentColor")).padding(.leading, leadingLabelPadding).frame(maxWidth: .infinity, alignment: .leading).padding(.top)
                     TextField("", text: $viewModel.plantDescription, axis: .vertical)
                         .focused($descriptionFieldIsFocus)
                         .lineLimit(5)
                         .padding()
+                        .frame(width: buttonWidth)
                         .modifier(CustomTextBubble(isActive: descriptionFieldIsFocus == true, accentColor: .blue))
-                        .padding([.leading, .trailing])
                         .shadow(radius: 5)
                         .onReceive(Publishers.keyboardHeight) { keyboardHeight in
                             if descriptionFieldIsFocus == true {
@@ -187,19 +189,12 @@ struct AddItems: View {
                                 guard keyboardHeight > 0 else {
                                     withAnimation {
                                         descOffset = 0
-                                        buttonHeight = 30
                                     }
                                     return
                                 }
                                 
-                                //let focusedTextInputBottom = UIResponder.currentFirstResponder?.globalFrame?.maxY ?? 0
-                                
-                                //let screen = UIScreen.main.bounds
-                                //let topOfKeyboard = screen.size.height - keyboardHeight
-                                //let moveUpThisMuch = focusedTextInputBottom - topOfKeyboard + 20
-                                
                                 withAnimation {
-                                    self.descOffset = 50
+                                    self.descOffset = 50 * -1
                                 }
                             } else {
                                 withAnimation {
@@ -210,17 +205,16 @@ struct AddItems: View {
                         .onChange(of: viewModel.plantDescription) {
                             viewModel.plantDescription = String($0.prefix(200)) // limit to 200 characters
                         }
-                }.offset(y: descOffset * -1)
-                Spacer()
+                }.offset(y: descOffset)
+               
                 Button(
                     action: {viewModel.isShowingCategoryPicker = true},
                     label: {
                         Text("Choose Categories")
                             .fontWeight(.bold)
-                            .frame(maxWidth: .infinity, alignment: .center)
                             .foregroundColor(.white)
                             .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(width: buttonWidth, height: 50))
-                            .padding()
+                            .offset(y: descOffset)
                             .sheet(isPresented: $viewModel.isShowingCategoryPicker) {
                                 Text("Choose Your Categories")
                                     .fontWeight(.bold)
@@ -234,7 +228,8 @@ struct AddItems: View {
                                 }
                                 Spacer()
                             }
-                            .frame(maxWidth: .infinity, alignment: .center)
+                            .frame(maxWidth: .infinity, maxHeight: 50, alignment: .center)
+                            .padding(.top)
                             .alert(isPresented: $categoriesMissing) {
                                 Alert(title: Text("Missing Categories"), message: Text("Add categories to your plant."), dismissButton: .default(Text("OK!")))
                             }
@@ -298,11 +293,11 @@ struct AddItems: View {
                     label: {
                         Text("Submit")
                             .fontWeight(.bold)
-                            .frame(maxWidth: .infinity, alignment: .center)
+                            .frame(maxWidth: .infinity, maxHeight: 50, alignment: .center)
                             .foregroundColor(.white)
-                            .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(width: buttonWidth, height: 50))
-                            .padding()
-                            .padding(.bottom)
+                            .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(width: submitButtonWidth, height: 50))
+                            .padding(.top)
+                            .offset(y: descOffset)
                             .alert(isPresented: $viewModel.itemPosted) {
                                 return Alert(title: Text("Success"), message: Text("Your plant is now live on the market!"), dismissButton: .default(Text("OK!"), action: {
                                     self.tab = 0
@@ -310,6 +305,7 @@ struct AddItems: View {
                             }
                     }
                 )
+                Spacer()
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .navigationBarTitle(Text("New Plant Listing"), displayMode: .inline)
