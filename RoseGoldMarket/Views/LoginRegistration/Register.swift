@@ -59,7 +59,6 @@ struct Register: View {
                         Text("Create a Rose Gold account to access the market.")
                             .font(.system(size: 15))
                             .foregroundColor(.gray)
-                            .offset(y: 10)
                     }
                 }
                 
@@ -547,7 +546,7 @@ struct Register: View {
                 }.padding(.top)
                 
             }
-            .shadow(radius: 10)
+            .shadow(radius: 5)
             .navigationBarTitle(Text(""), displayMode: .inline)
         }
         .tint(Color.blue)
