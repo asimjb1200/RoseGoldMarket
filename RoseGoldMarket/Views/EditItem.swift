@@ -153,7 +153,7 @@ struct EditItem: View {
                         focusedField = .description
                     }
                     .onAppear(){
-                        //viewModel.getItemData(itemId: itemId, user: user)
+                        viewModel.getItemData(itemId: itemId, user: user)
                     }
             }
             .alert(isPresented: $viewModel.tooManyChars) {
