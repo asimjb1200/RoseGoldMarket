@@ -28,6 +28,7 @@ struct AddItems: View {
     @State var typing = false
     
     var buttonWidth = UIScreen.main.bounds.width * 0.85
+    @State var buttonHeight:CGFloat = 50
     var submitButtonWidth = UIScreen.main.bounds.width * 0.70
     var leadingLabelPadding = UIScreen.main.bounds.width * 0.1
     var categoryMapper = CategoryMapper()
@@ -46,7 +47,6 @@ struct AddItems: View {
                     Text("Tap to Add Photos")
                         .fontWeight(.bold)
                         .foregroundColor(Color("AccentColor"))
-                        .padding([.leading, .top])
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .alert(isPresented: $viewModel.errorOccurred) {
                             Alert(title: Text("There was a problem. Try again later."))
@@ -143,11 +143,10 @@ struct AddItems: View {
                 
                 // MARK: Name
                 Group {
-                    Text("Plant Name").fontWeight(.bold).foregroundColor(Color("AccentColor")).padding(.leading, leadingLabelPadding).frame(maxWidth: .infinity, alignment: .leading).padding(.top)
+                    Text("Plant Name").fontWeight(.bold).foregroundColor(Color("AccentColor")).frame(maxWidth: .infinity, alignment: .leading).padding(.top)
                     TextField("20 characters max..", text: $viewModel.plantName)
                         .padding()
                         .focused($nameFieldIsFocus)
-                        .frame(width: buttonWidth)
                         .modifier(CustomTextBubble(isActive: nameFieldIsFocus == true, accentColor: .blue))
                         .shadow(radius: 5)
                         .onChange(of: viewModel.plantName) {
@@ -175,12 +174,11 @@ struct AddItems: View {
 
                 // MARK: Description
                 Group {
-                    Text("Description").fontWeight(.bold).foregroundColor(Color("AccentColor")).padding(.leading, leadingLabelPadding).frame(maxWidth: .infinity, alignment: .leading).padding(.top)
+                    Text("Description").fontWeight(.bold).foregroundColor(Color("AccentColor")).frame(maxWidth: .infinity, alignment: .leading).padding(.top)
                     TextField("", text: $viewModel.plantDescription, axis: .vertical)
                         .focused($descriptionFieldIsFocus)
                         .lineLimit(5)
                         .padding()
-                        .frame(width: buttonWidth)
                         .modifier(CustomTextBubble(isActive: descriptionFieldIsFocus == true, accentColor: .blue))
                         .shadow(radius: 5)
                         .onReceive(Publishers.keyboardHeight) { keyboardHeight in
@@ -212,8 +210,9 @@ struct AddItems: View {
                     label: {
                         Text("Choose Categories")
                             .fontWeight(.bold)
+                            .frame(maxWidth: .infinity, maxHeight: buttonHeight, alignment: .center)
                             .foregroundColor(.white)
-                            .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(width: buttonWidth, height: 50))
+                            .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(maxWidth: .infinity, maxHeight: buttonHeight))
                             .offset(y: descOffset)
                             .sheet(isPresented: $viewModel.isShowingCategoryPicker) {
                                 Text("Choose Your Categories")
@@ -228,7 +227,6 @@ struct AddItems: View {
                                 }
                                 Spacer()
                             }
-                            .frame(maxWidth: .infinity, maxHeight: 50, alignment: .center)
                             .padding(.top)
                             .alert(isPresented: $categoriesMissing) {
                                 Alert(title: Text("Missing Categories"), message: Text("Add categories to your plant."), dismissButton: .default(Text("OK!")))
@@ -293,9 +291,9 @@ struct AddItems: View {
                     label: {
                         Text("Submit")
                             .fontWeight(.bold)
-                            .frame(maxWidth: .infinity, maxHeight: 50, alignment: .center)
+                            .frame(maxWidth: .infinity, maxHeight: buttonHeight, alignment: .center)
                             .foregroundColor(.white)
-                            .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(width: submitButtonWidth, height: 50))
+                            .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(width: submitButtonWidth, height: buttonHeight))
                             .padding(.top)
                             .offset(y: descOffset)
                             .alert(isPresented: $viewModel.itemPosted) {
@@ -307,6 +305,7 @@ struct AddItems: View {
                 )
                 Spacer()
             }
+            .padding([.leading, .trailing])
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .navigationBarTitle(Text("New Plant Listing"), displayMode: .inline)
             .sheet(isPresented: $viewModel.isShowingPhotoPicker, content: {

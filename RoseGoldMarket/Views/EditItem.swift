@@ -32,13 +32,12 @@ struct EditItem: View {
     let itemId:UInt
     
     var body: some View {
-        VStack(alignment: .center) {
+        VStack(alignment: .center, spacing: 15) {
             if !typingDesc {
                 Text("Tap to change your photos")
                     .fontWeight(.bold)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .foregroundColor(Color("AccentColor"))
-                    .padding([.leading, .top])
             }
             
             // MARK: Plant Photos
@@ -134,12 +133,11 @@ struct EditItem: View {
             
             // MARK: Plant Name
             Group {
-                Text("Name").foregroundColor(Color("AccentColor")).fontWeight(.bold).frame(maxWidth: .infinity, alignment: .leading).padding(.leading, leadingLabelPadding).padding(.top)
+                Text("Name").foregroundColor(Color("AccentColor")).fontWeight(.bold).frame(maxWidth: .infinity, alignment: .leading).padding(.top)
                 TextField("", text: $viewModel.plantName)
                     .padding()
                     .focused($focusedField, equals: .name)
                     .modifier(CustomTextBubble(isActive: focusedField == EditFields.name, accentColor: .blue))
-                    .frame(width: buttonWidth)
                     .shadow(radius: 5)
                     .onChange(of: viewModel.plantName) {
                         viewModel.plantName = String($0.prefix(20)) // limit to 20 characters
@@ -155,7 +153,7 @@ struct EditItem: View {
                         focusedField = .description
                     }
                     .onAppear(){
-                        viewModel.getItemData(itemId: itemId, user: user)
+                        //viewModel.getItemData(itemId: itemId, user: user)
                     }
             }
             .alert(isPresented: $viewModel.tooManyChars) {
@@ -168,7 +166,7 @@ struct EditItem: View {
                     .foregroundColor(Color("AccentColor"))
                     .fontWeight(.bold)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.leading, leadingLabelPadding).padding(.top)
+                    .padding(.top)
                     .alert(isPresented: $viewModel.tooManyChars) {
                         Alert(title: Text("Too Many Characters"), message: Text("Name field can have no more than 20 characters. The description field can have no more than 200."))
                     }
@@ -209,7 +207,6 @@ struct EditItem: View {
                     }
                     .padding()
                     .modifier(CustomTextBubble(isActive: focusedField == EditFields.description, accentColor: .blue))
-                    .frame(width: buttonWidth)
                     .shadow(radius: 5)
                     .onChange(of: viewModel.plantDescription) {
                         viewModel.plantDescription = String($0.prefix(200)) // limit to 200 characters
@@ -221,7 +218,6 @@ struct EditItem: View {
             
             // MARK: Still Available
             Toggle("Still available?", isOn: $viewModel.isAvailable)
-                .padding([.leading, .trailing], leadingLabelPadding)
                 .padding(.top)
                 .tint(Color("MainColor"))
                 .offset(y: descOffset)
@@ -230,7 +226,9 @@ struct EditItem: View {
                 }
             
             if !viewModel.isAvailable {
-                Toggle("Has it been picked up?", isOn: $viewModel.pickedUp).padding([.leading, .bottom, .trailing]).tint(Color("MainColor")).padding([.leading, .trailing], leadingLabelPadding)
+                Toggle("Has it been picked up?", isOn: $viewModel.pickedUp).padding(.top)
+                    .tint(Color("MainColor"))
+                    .offset(y: descOffset)
             }
             
 
@@ -244,8 +242,8 @@ struct EditItem: View {
                         .fontWeight(.bold)
                         .frame(maxWidth: .infinity, maxHeight: buttonHeight, alignment: .center)
                         .foregroundColor(.white)
-                        .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(width: buttonWidth, height: buttonHeight))
-                        .padding([.top, .bottom])
+                        .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(maxWidth: .infinity, maxHeight: buttonHeight))
+                        .padding(.top)
                 }
             )
             .onAppear() {
@@ -324,8 +322,8 @@ struct EditItem: View {
                         .fontWeight(.bold)
                         .frame(maxWidth: .infinity, maxHeight: buttonHeight, alignment: .center)
                         .foregroundColor(.white)
-                        .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(width: buttonWidth, height: buttonHeight))
-                        .padding([.top, .bottom])
+                        .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(maxWidth: .infinity, maxHeight: buttonHeight))
+                        .padding(.top)
                     
                 }
             )
@@ -348,7 +346,7 @@ struct EditItem: View {
                         .fontWeight(.bold)
                         .frame(maxWidth: .infinity, maxHeight: buttonHeight)
                         .foregroundColor(.white)
-                        .background(RoundedRectangle(cornerRadius: 25).fill(Color.red).frame(width: buttonWidth, height: buttonHeight))
+                        .background(RoundedRectangle(cornerRadius: 25).fill(Color.red).frame(maxWidth: .infinity, maxHeight: buttonHeight))
                         .padding(.top)
                 }
             )
@@ -364,7 +362,9 @@ struct EditItem: View {
             }
             
             Spacer()
-        }.ignoresSafeArea(.keyboard, edges: .bottom)
+        }
+        .ignoresSafeArea(.keyboard, edges: .bottom)
+        .padding([.leading, .trailing])
     }
 }
 
