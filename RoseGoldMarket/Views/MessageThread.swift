@@ -112,7 +112,7 @@ struct MessageThread: View {
                             }
                         Group {
                             Divider()
-                            TextField("Enter your message...", text: $newMessage)
+                            TextField("Enter your message...", text: $newMessage, axis: .vertical)
                                 .padding()
                                 .focused($messageIsFocus)
                                 .toolbar {
@@ -148,15 +148,16 @@ struct MessageThread: View {
                                         }
                                     }
                                 }
-                                .background(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .fill(.gray.opacity(0.5))
-                                )
+                                .onChange(of: newMessage) {
+                                    // limit to 200 characters
+                                    newMessage = String($0.prefix(200))
+                                }
+                                .modifier(CustomTextBubble(isActive: messageIsFocus == true, accentColor: .blue))
                                 .padding([.leading, .trailing])
                                 .alert(isPresented: $tooManyChars) {
                                     Alert(title: Text("Over Character Limit"), message: Text("200 Characters Or Less"), dismissButton: .default(Text("OK")))
                                 }
-                                .frame(maxHeight: 70)
+                                .lineLimit(5)
                             
                             Text("Character Limit: \(charCount - newMessage.count)")
                                 .fontWeight(.light)
@@ -166,7 +167,8 @@ struct MessageThread: View {
                                 .foregroundColor(accent)
                         }
                         
-                    }.onChange(of: viewModel.allChats[String(receiverId)]!){ _ in
+                    }
+                    .onChange(of: viewModel.allChats[String(receiverId)]!) { _ in
                         if let chatHistory = viewModel.allChats[String(receiverId)] {
                             if let lastChat = chatHistory.last {
                                 let lastChatId = lastChat.id
