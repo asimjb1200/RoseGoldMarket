@@ -35,15 +35,7 @@ class MapSearch : NSObject, ObservableObject {
             .sink(receiveCompletion: { (completion) in // we subscribe to the values from the publisher here
                 //handle error
             }, receiveValue: { (results) in // this receives the values from the publisher that flat map creates, the published stream "sinks" into this method
-                //withAnimation(.linear) {
-                guard self.addressFound == false else {
-                    self.locationResults = []
-                    return
-                }
-
                 self.locationResults = results.filter { $0.subtitle.contains("United States") }
-                
-                //}
             })
             .store(in: &cancellables)
     }
