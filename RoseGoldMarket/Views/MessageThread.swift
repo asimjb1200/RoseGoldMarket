@@ -27,7 +27,7 @@ struct MessageThread: View {
     
     var body: some View {
         NavigationView {
-            VStack{
+            VStack (spacing: 0){
                 HStack(alignment: .center) {
                     Image(systemName: "arrow.backward")
                         .foregroundColor(accent)
@@ -62,6 +62,7 @@ struct MessageThread: View {
                         }
                     }
                 }
+                .frame(height: 50)
                 .background(
                     colorScheme == .dark ? Color.gray.opacity(0.5) : Color.white
                 )
@@ -69,8 +70,6 @@ struct MessageThread: View {
                     // load the other user's URL
                     self.otherUsersName = getOtherUsersUsername()
                 }
-                
-                Divider()
                 
                 ScrollViewReader { scroller in
                     VStack {
@@ -111,7 +110,6 @@ struct MessageThread: View {
                                 }
                             }
                         Group {
-                            Divider()
                             TextField("Enter your message...", text: $newMessage, axis: .vertical)
                                 .padding()
                                 .focused($messageIsFocus)

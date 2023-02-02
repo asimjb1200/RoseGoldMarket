@@ -94,7 +94,7 @@ struct HomeMarket: View {
                             determineUserLocation()
                         }
                         
-                        Divider().shadow(radius: 5)
+                        Divider()
                     }
                     .padding(.bottom, 2.0)
                     .background(
