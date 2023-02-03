@@ -93,8 +93,6 @@ struct HomeMarket: View {
                         .onAppear() {
                             determineUserLocation()
                         }
-                        
-                        Divider()
                     }
                     .padding(.bottom, 2.0)
                     .background(

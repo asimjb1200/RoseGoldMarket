@@ -49,16 +49,20 @@ struct Register: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                VStack(alignment: .center, spacing: 30) {
+                VStack(alignment: .center, spacing: 25) {
+                    Spacer()
                     if self.pwPadding == 0 {
                         Group {
                             Text("Let's Get Started!")
                                 .font(.system(size: 25, weight: .semibold))
+                                .padding(.top)
                                 .fontWeight(.bold)
                             
                             Text("Create a Rose Gold account to access the market.")
                                 .font(.system(size: 15))
                                 .foregroundColor(.gray)
+                                .padding(.top, -15.0)
+                                .padding(.bottom, 5)
                         }
                     }
                     
@@ -431,14 +435,19 @@ struct Register: View {
                     
                     // MARK: Continue Button
                     NavigationLink(destination: AddProfilePic(registerViewModel: viewModel), isActive: $activateLink) {
-                        Button("CONTINUE") {
-                            print(viewModel.firstName.count)
+                        Button(
+                            action :{
                             guard
-                                viewModel.firstName.count > 1,
-                                viewModel.lastName.count > 1
+                                viewModel.firstName.count > 1
                             else {
-                                focusedField = .fullName
                                 self.namesTooShort = true
+                                focusedField = .firstName
+                                return
+                            }
+                            
+                            guard viewModel.lastName.count > 1 else {
+                                self.namesTooShort = true
+                                focusedField = .lastName
                                 return
                             }
                             
@@ -523,12 +532,18 @@ struct Register: View {
                             }
                             
                             activateLink = true
-                        }
-                        .foregroundColor(Color.white)
-                        .font(.system(size: 16, weight: Font.Weight.bold))
-                        .padding()
-                        .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue).frame(width: 190))
-                        .padding(.top)
+                        },
+                            label: {
+                                Text("Continue")
+                                    .textCase(.uppercase)
+                                    .foregroundColor(Color.white)
+                                    .font(.system(size: 16, weight: Font.Weight.bold))
+                                    .padding()
+                                    .frame(width: 190)
+                                    .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue).frame(width: 190))
+                                    .padding(.top)
+                            })
+                        
                     }
                     
                     HStack {
@@ -542,7 +557,8 @@ struct Register: View {
                     
                 }
                 .shadow(radius: 5)
-                .padding([.leading, .trailing])
+                .padding([.leading, .trailing, .top])
+                .padding(.top)
             }
         }
         .tint(Color.blue)

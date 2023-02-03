@@ -30,7 +30,7 @@ struct LogIn: View {
     
     
     var body: some View {
-        VStack(spacing: 15) {
+        VStack(spacing: 0) {
             if appBanner != nil {
                     Image(uiImage: appBanner!)
                         .resizable()
@@ -42,15 +42,16 @@ struct LogIn: View {
                     .fontWeight(.heavy)
                     .foregroundColor(Color("MainColor"))
             }
-            
+            Spacer()
             Group {
                 Text("Welcome Back!")
-                    .font(.title2)
+                    .font(.title)
                     .fontWeight(.bold)
                 
                 Text("Log in to your Rose Gold Markets account")
                     .font(.footnote)
                     .foregroundColor(.gray)
+                    .padding(.bottom, 25)
             }
             
             
@@ -95,6 +96,8 @@ struct LogIn: View {
                         .frame(maxWidth: .infinity, alignment: .trailing)
                         .foregroundColor(.blue)
                         .padding(.trailing)
+                        .padding(.top, -8)
+                        .padding(.bottom)
                 }
             )
             
@@ -138,7 +141,7 @@ struct LogIn: View {
             }
             
             Group {
-                Text("Share Us!").font(.footnote).foregroundColor(Color.gray).padding(.top)
+                Text("Share Us!").font(.footnote).foregroundColor(Color.gray)
                 HStack {
                     Image("Instagram")
                         .resizable()
@@ -211,8 +214,8 @@ struct LogIn: View {
                             //dialog.mode = .shareSheet
                             dialog.show()
                         }
-                }.padding([.bottom, .top])
-            }
+                }.padding(.top, 15)
+            }.offset(y: 40)
             Spacer()
             Button(
                 action: {appViewState.currentView = .RegistrationView},

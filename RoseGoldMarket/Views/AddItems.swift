@@ -43,6 +43,9 @@ struct AddItems: View {
     
     var body: some View {
         VStack(alignment: .center, spacing: 15) {
+            Spacer()
+            Text("New Plant Listing").font(.title).fontWeight(.bold).foregroundColor(Color("MainColor")).padding(.bottom)
+            
                 if descOffset == 0 {
                     Text("Tap to Add Photos")
                         .fontWeight(.bold)
@@ -236,6 +239,7 @@ struct AddItems: View {
                 
                 Button(
                     action: {
+                        guard viewModel.itemPosted == false else {return}
                         guard plantImagesAdded() == true else {
                             imagesMissing = true
                             return
@@ -280,20 +284,29 @@ struct AddItems: View {
                             return
                         }
                         
-                        viewModel.savePlant(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, user: user)
+                        // viewModel.savePlant(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, user: user)
                         
-                        // reset everything now
-                        viewModel.plantName = ""
-                        viewModel.plantDescription = ""
-                        descriptionFieldIsFocus = false
-                        nameFieldIsFocus = false
+                        viewModel.savePlantV2(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, user: user) { itemPosted in
+                            if itemPosted {
+                                // reset everything now
+                                viewModel.plantName = ""
+                                viewModel.plantDescription = ""
+                                descriptionFieldIsFocus = false
+                                nameFieldIsFocus = false
+                                image1 = nil
+                                image2 = nil
+                                image3 = nil
+                            }
+                        }
+                        
+                        
                     },
                     label: {
                         Text("Submit")
                             .fontWeight(.bold)
                             .frame(maxWidth: .infinity, maxHeight: buttonHeight, alignment: .center)
                             .foregroundColor(.white)
-                            .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(width: submitButtonWidth, height: buttonHeight))
+                            .background(RoundedRectangle(cornerRadius: 25).fill(viewModel.itemPosted ? .blue : Color("AccentColor")).frame(width: submitButtonWidth, height: buttonHeight))
                             .padding(.top)
                             .offset(y: descOffset)
                             .alert(isPresented: $viewModel.itemPosted) {
@@ -307,7 +320,6 @@ struct AddItems: View {
             }
             .padding([.leading, .trailing])
             .ignoresSafeArea(.keyboard, edges: .bottom)
-            .navigationBarTitle(Text("New Plant Listing"), displayMode: .inline)
             .sheet(isPresented: $viewModel.isShowingPhotoPicker, content: {
                 switch currentPhotoChoice {
                 case .image1:
