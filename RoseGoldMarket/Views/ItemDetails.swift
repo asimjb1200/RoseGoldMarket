@@ -63,11 +63,11 @@ struct ItemDetails: View {
                 
                 ScrollView {
                     Text(item.description)
-                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, maxHeight: 220, alignment: .leading)
                         .padding()
                         .background(RoundedRectangle(cornerRadius: 25.0).fill(Color(.systemGray6)))
-                    
-                    
+                        .padding([.leading, .trailing, .bottom])
+
                     if viewingFromAccountDetails == false && inquirySent == false && item.owner != user.accountId {
                         Button(
                             action: {
@@ -88,7 +88,6 @@ struct ItemDetails: View {
                                     .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(height: 50))
                             }
                         )
-                       
                     }
                 }
                 Spacer()

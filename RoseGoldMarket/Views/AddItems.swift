@@ -43,8 +43,7 @@ struct AddItems: View {
     
     var body: some View {
         VStack(alignment: .center, spacing: 15) {
-            Spacer()
-            Text("New Plant Listing").font(.title).fontWeight(.bold).foregroundColor(Color("MainColor")).padding(.bottom)
+            Text("New Plant Listing").font(.title).fontWeight(.bold).foregroundColor(Color("MainColor")).padding(.bottom, 30)
             
                 if descOffset == 0 {
                     Text("Tap to Add Photos")
@@ -316,7 +315,6 @@ struct AddItems: View {
                             }
                     }
                 )
-                Spacer()
             }
             .padding([.leading, .trailing])
             .ignoresSafeArea(.keyboard, edges: .bottom)
