@@ -20,25 +20,20 @@ struct MessageList: View {
     }
     
     var body: some View {
+        NavigationStack {
         VStack{
-            if !viewModel.listOfChats.isEmpty {
+            if !viewModel.latestMessages.isEmpty {
                 ScrollView {
-                    ForEach(viewModel.listOfChats, id: \.id) { x in
-                        Button(action: {
-                            self.nextView = IdentifiableView(
-                                view: AnyView(
-                                    MessageThread(receiverId: getReceiverId(chatBlock: x),
-                                                  receiverUsername: getReceiverUsername(chatBlock: x)))
-                            )
-                        }, label: {
+                    ForEach(viewModel.latestMessages, id: \.id) { chatPreview in
+                        NavigationLink(value: chatPreview) {
                             HStack(spacing: 10) {
-                                AsyncImage(url: URL(string: "https://rosegoldgardens.com/api/images/avatars/\(getReceiverUsername(chatBlock: x)).jpg")) { phase in
+                                AsyncImage(url: URL(string: "http://192.168.1.65:4000/api/images/avatars/\(chatPreview.nonViewingUsersUsername).jpg")) { phase in
                                     if let image = phase.image {
                                         image
-                                        .resizable()
-                                        .scaledToFill()
-                                        .clipShape(Circle())
-                                        .frame(width: 60, height: 60)
+                                            .resizable()
+                                            .scaledToFill()
+                                            .clipShape(Circle())
+                                            .frame(width: 60, height: 60)
                                     } else if phase.error != nil {
                                         Color.red
                                     } else {
@@ -47,28 +42,82 @@ struct MessageList: View {
                                             .frame(width: 25, height: 25)
                                     }
                                 }
-
+                                
                                 VStack(alignment: .leading) {
-                                    Text(getReceiverUsername(chatBlock: x))
-                                    Text(x.message)
+                                    Text(chatPreview.nonViewingUsersUsername).fontWeight(.bold)
+                                    Text(chatPreview.message)
                                         .padding(.leading)
                                 }
                                 Spacer()
                                 
-                            }.frame(maxHeight: 70).shadow(radius: 5)
+                            }
+                            .frame(maxHeight: 70)
+                            .shadow(radius: 5)
                             
-                        })
+                        }
                         Divider()
                     }
-                }.fullScreenCover(item: self.$nextView, onDismiss: { nextView = nil}) { view in
-                    view.view
+                    .navigationTitle("Private Chat")
+                    .navigationDestination(for: ChatDataForPreview.self) { chatData in
+                        MessageThread(receiverId: chatData.recid, receiverUsername: chatData.nonViewingUsersUsername)
+                    }
                 }
-                Spacer()
             } else {
-                Text("No Conversations Yet")
-                .fontWeight(.bold)
-                .foregroundColor(Color("MainColor"))
+                ProgressView()
             }
+            
+            //            if !viewModel.listOfChats.isEmpty {
+            //                ScrollView {
+            //                    ForEach(viewModel.listOfChats, id: \.id) { x in
+            //                        Button(action: {
+            //                            self.nextView = IdentifiableView(
+            //                                view: AnyView(
+            //                                    MessageThread(receiverId: getReceiverId(chatBlock: x),
+            //                                                  receiverUsername: getReceiverUsername(chatBlock: x)))
+            //                            )
+            //                        }, label: {
+            //                            HStack(spacing: 10) {
+            //                                AsyncImage(url: URL(string: "https://rosegoldgardens.com/api/images/avatars/\(getReceiverUsername(chatBlock: x)).jpg")) { phase in
+            //                                    if let image = phase.image {
+            //                                        image
+            //                                        .resizable()
+            //                                        .scaledToFill()
+            //                                        .clipShape(Circle())
+            //                                        .frame(width: 60, height: 60)
+            //                                    } else if phase.error != nil {
+            //                                        Color.red
+            //                                    } else {
+            //                                        ProgressView()
+            //                                            .foregroundColor(Color("MainColor"))
+            //                                            .frame(width: 25, height: 25)
+            //                                    }
+            //                                }
+            //
+            //                                VStack(alignment: .leading) {
+            //                                    Text(getReceiverUsername(chatBlock: x))
+            //                                    Text(x.message)
+            //                                        .padding(.leading)
+            //                                }
+            //                                Spacer()
+            //
+            //                            }.frame(maxHeight: 70).shadow(radius: 5)
+            //
+            //                        })
+            //                        Divider()
+            //                    }
+            //                }.fullScreenCover(item: self.$nextView, onDismiss: { nextView = nil}) { view in
+            //                    view.view
+            //                }
+            //                Spacer()
+            //            } else {
+            //                Text("No Conversations Yet")
+            //                .fontWeight(.bold)
+            //                .foregroundColor(Color("MainColor"))
+            //            }
+        }
+        }
+        .onAppear() {
+            viewModel.getLatestMessages(viewingUser: currentUser.accountId)
         }
         .padding()
         .onDisappear() {
@@ -87,6 +136,11 @@ struct MessageList: View {
     }
     
     func getReceiverId(chatBlock:ChatData) -> UInt {
+        let receiversAccountId = chatBlock.recid == currentUser.accountId ? chatBlock.senderid : chatBlock.recid
+        return receiversAccountId
+    }
+    
+    func getReceiverId(chatBlock: ChatDataForPreview) -> UInt {
         let receiversAccountId = chatBlock.recid == currentUser.accountId ? chatBlock.senderid : chatBlock.recid
         return receiversAccountId
     }

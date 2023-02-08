@@ -15,7 +15,6 @@ struct MessageThread: View {
     @FocusState var messageIsFocus:Bool
     @State var tooManyChars = false
     @State var profanityFound = false
-    @State var otherUsersName:String = ""
     @State var newMessage = ""
     var charCount = 200
 
@@ -26,7 +25,6 @@ struct MessageThread: View {
     var accent = Color("AccentColor")
     
     var body: some View {
-        NavigationView {
             VStack (spacing: 0){
                 HStack(alignment: .center) {
                     Image(systemName: "arrow.backward")
@@ -38,26 +36,24 @@ struct MessageThread: View {
                             dismiss()
                         }
                     Spacer()
-                    if !otherUsersName.isEmpty {
                         // present the other user's avi so that the user can tap it and go to their profile
-                        NavigationLink(destination: AccountDetailsView(username: receiverUsername, accountid: receiverId)) {
-                            Text(otherUsersName).foregroundColor(mainColor).fontWeight(.bold)
-                            AsyncImage(url: URL(string: "https://rosegoldgardens.com/api/images/avatars/\(otherUsersName).jpg")) { phase in
-                                if let image = phase.image {
-                                    image
-                                    .resizable()
-                                    .scaledToFill()
-                                    .clipShape(Circle())
-                                    .frame(width: 40, height: 40)
-                                    .padding(.trailing)
-                                    .shadow(radius: 5.0)
-                                } else if phase.error != nil {
-                                    Color.red
-                                } else {
-                                    ProgressView()
-                                        .foregroundColor(Color("MainColor"))
-                                        .frame(width: 25, height: 25)
-                                }
+                    NavigationLink(destination: AccountDetailsView(username: receiverUsername, accountid: receiverId)) {
+                        Text(receiverUsername).foregroundColor(mainColor).fontWeight(.bold)
+                        AsyncImage(url: URL(string: "http://192.168.1.65:4000/api/images/avatars/\(receiverUsername).jpg")) { phase in
+                            if let image = phase.image {
+                                image
+                                .resizable()
+                                .scaledToFill()
+                                .clipShape(Circle())
+                                .frame(width: 40, height: 40)
+                                .padding(.trailing)
+                                .shadow(radius: 5.0)
+                            } else if phase.error != nil {
+                                Color.red
+                            } else {
+                                ProgressView()
+                                    .foregroundColor(Color("MainColor"))
+                                    .frame(width: 25, height: 25)
                             }
                         }
                     }
@@ -67,14 +63,15 @@ struct MessageThread: View {
                     colorScheme == .dark ? Color.gray.opacity(0.5) : Color.white
                 )
                 .onAppear() {
-                    // load the other user's URL
-                    self.otherUsersName = getOtherUsersUsername()
+                    
+                    // get all chats for this thread
+                    viewModel.getAllMessagesInThread(viewingUser: viewingUser.accountId, otherUserAccount: receiverId)
                 }
                 
                 ScrollViewReader { scroller in
                     VStack {
                             ScrollView {
-                                ForEach(viewModel.allChats[String(receiverId)]!, id: \.id) { x in
+                                ForEach(viewModel.currentlyActiveChat, id: \.id) { x in
                                     if x.senderUsername != viewingUser.username {
                                         // messages coming from the other user will have the gold bg color
                                         Text(x.message)
@@ -100,16 +97,14 @@ struct MessageThread: View {
                                     }
                                 }
                             }.onAppear() {
-                                if let chatHistory = viewModel.allChats[String(receiverId)] {
-                                    if let lastChat = chatHistory.last {
-                                        let lastChatId = lastChat.id
+                                if let lastChat = viewModel.currentlyActiveChat.last {
+                                    let lastChatId = lastChat.id
 
-                                        // scroll to the last chat
-                                        scroller.scrollTo(lastChatId)
-                                    }
+                                    // scroll to the last chat
+                                    scroller.scrollTo(lastChatId)
                                 }
                             }
-                        Group {
+                        HStack {
                             TextField("Enter your message...", text: $newMessage, axis: .vertical)
                                 .padding()
                                 .focused($messageIsFocus)
@@ -121,88 +116,65 @@ struct MessageThread: View {
                                         .frame(maxWidth:.infinity, alignment:.leading)
                                     }
                                 }
-                                .onSubmit {
-                                    if newMessage.count > 200 {
-                                        tooManyChars.toggle()
-                                        return
-                                    }
-                                    
-
-                                    if let chatHistory = viewModel.allChats[String(receiverId)] {
-                                        if let lastChat = chatHistory.last {
-                                            if lastChat.senderUsername == viewingUser.username {
-                                                let recUsername = lastChat.receiverUsername
-                                                let newChatId = viewModel.sendMessageToUser(newMessage: newMessage, receiverId: receiverId, receiverUsername: recUsername, senderUsername: viewingUser.username, senderId: viewingUser.accountId)
-                                                newMessage = ""
-                                                // scroll to the last chat
-                                                scroller.scrollTo(newChatId, anchor: .top)
-                                            } else {
-                                                let recUsername = lastChat.senderUsername
-                                                let newChatId = viewModel.sendMessageToUser(newMessage: newMessage, receiverId: receiverId, receiverUsername: recUsername, senderUsername: viewingUser.username, senderId: viewingUser.accountId)
-                                                newMessage = ""
-                                                // scroll to the last chat
-                                                scroller.scrollTo(newChatId, anchor: .top)
-                                            }
-                                        }
-                                    }
-                                }
                                 .onChange(of: newMessage) {
                                     // limit to 200 characters
                                     newMessage = String($0.prefix(200))
                                 }
                                 .modifier(CustomTextBubble(isActive: messageIsFocus == true, accentColor: .blue))
-                                .padding([.leading, .trailing])
-                                .alert(isPresented: $tooManyChars) {
-                                    Alert(title: Text("Over Character Limit"), message: Text("200 Characters Or Less"), dismissButton: .default(Text("OK")))
+                                .padding(.trailing)
+                            Spacer()
+                            Button(
+                                action: {
+                                    guard newMessage.count <= 200 else {
+                                        tooManyChars.toggle()
+                                        return
+                                    }
+                                },
+                                label: {
+                                    Text("Send")
                                 }
-                                .lineLimit(5)
-                            
-                            Text("Character Limit: \(charCount - newMessage.count)")
-                                .fontWeight(.light)
-                                .font(.caption)
-                                .frame(maxWidth: .infinity,alignment:.leading)
-                                .padding([.leading, .bottom])
-                                .foregroundColor(accent)
+                            )
                         }
+                        .padding([.leading, .trailing])
+                        .alert(isPresented: $tooManyChars) {
+                            Alert(title: Text("Over Character Limit"), message: Text("200 Characters Or Less"), dismissButton: .default(Text("OK")))
+                        }
+                            
+                        Text("Character Limit: \(charCount - newMessage.count)")
+                            .fontWeight(.light)
+                            .font(.caption)
+                            .frame(maxWidth: .infinity, alignment:.leading)
+                            .padding(.leading)
+                            .foregroundColor(accent)
                         
                     }
-                    .onChange(of: viewModel.allChats[String(receiverId)]!) { _ in
-                        if let chatHistory = viewModel.allChats[String(receiverId)] {
-                            if let lastChat = chatHistory.last {
-                                let lastChatId = lastChat.id
+                    .onChange(of: viewModel.currentlyActiveChat) { _ in
+                        if let lastChat = viewModel.currentlyActiveChat.last {
+                            let lastChatId = lastChat.id
 
-                                // scroll to the last chat
-                                scroller.scrollTo(lastChatId)
-                            }
+                            // scroll to the last chat
+                            scroller.scrollTo(lastChatId)
                         }
                     }
                     
                 }
                 .onDisappear() {
-                    viewModel.listOfChats = viewModel.buildUniqueChatList()
+                    viewModel.currentlyActiveChat = []
                 }
-            }.navigationBarHidden(true)
-            Spacer()
-        }.navigationViewStyle(.stack)
-        
-    }
-    
-    func getOtherUsersUsername() -> String {
-        guard let allChats = viewModel.allChats[String(receiverId)] else {
-            return ""
-        }
-        guard let firstChatInThisThread = allChats.first else {
-            return ""
-        }
-        let otherUsersUsername = firstChatInThisThread.receiverUsername == viewingUser.username ? firstChatInThisThread.senderUsername : firstChatInThisThread.receiverUsername
-        return otherUsersUsername
+            }
+            .navigationBarHidden(true)
+            .onAppear() {
+                viewModel.getAllMessagesInThread(viewingUser: viewingUser.accountId, otherUserAccount: receiverId)
+            }
     }
 }
 
 struct MessageThread_Previews: PreviewProvider {
     static let messenger = MessagingViewModel.shared
+    static let previewUser = UserModel.shared
     static var previews: some View {
-        MessageThread(receiverId: 15, receiverUsername: "test3")
+        MessageThread(receiverId: 16, receiverUsername: "admin")
             .environmentObject(messenger)
+            .environmentObject(previewUser)
     }
 }

@@ -59,11 +59,10 @@ struct ContentView: View {
         }
         .accentColor(Color("AccentColor"))
         .onAppear() {
-            messenger.getAllMessages(user: user)
-//            if firstAppear {
-//                messenger.getAllMessages(user: user)
-//                firstAppear = false
-//            }
+            if firstAppear {
+                messenger.getLatestMessages(viewingUser: user.accountId)
+                firstAppear = false
+            }
         }
         .environmentObject(messenger)
         .environmentObject(context)
