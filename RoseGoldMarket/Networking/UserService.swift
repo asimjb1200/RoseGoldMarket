@@ -519,8 +519,8 @@ final class UserNetworking {
     }
     
     func loginWithEmail(email:String, pw:String, completion: @escaping (Result<ResponseFromServer<ServiceUser>, UserErrors>) -> ()) {
-        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/login", post: true)
-        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/login", post: true)
+        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/login", post: true)
+        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://192.168.1.65:4000/api/users/login", post: true)
         
         let session = URLSession.shared
         let body = ["email": email, "password": pw]

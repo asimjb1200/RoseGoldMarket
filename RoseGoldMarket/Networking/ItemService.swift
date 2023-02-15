@@ -67,6 +67,7 @@ struct ItemService {
     func retrieveItems(categoryIdFilters: [UInt], limit: UInt, offset: UInt, longAndLat: String, miles: UInt, searchTerm: String, token: String, completion: @escaping (Result<ResponseFromServer<[Item]>, ItemErrors>) -> ()) {
         let networker = Networker()
         let urlRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/item-handler/fetch-filtered-items",token: token , post: true)
+        //let urlRequest = networker.constructRequest(uri: "http://192.168.1.65:4000/api/item-handler/fetch-filtered-items", token: token, post: true)
         
         let body: [String:Any] = [
             "categories": categoryIdFilters,

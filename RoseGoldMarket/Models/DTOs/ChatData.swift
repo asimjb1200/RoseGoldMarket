@@ -25,6 +25,27 @@ struct ChatFromBackend: Codable, Hashable, Identifiable {
     let timestamp: Date
 }
 
+struct ChatDataForPreview: Codable, Hashable, Identifiable {
+    var id: UUID
+    var senderid: UInt
+    var recid: UInt
+    var message: String
+    var timestamp: Date
+    let nonViewingUsersUsername: String
+    
+    /// to convert from the chat data object
+    static func make(from chatData: ChatData) -> ChatDataForPreview {
+        return ChatDataForPreview(
+            id: chatData.id,
+            senderid: chatData.senderid,
+            recid: chatData.recid,
+            message: chatData.message,
+            timestamp: chatData.timestamp,
+            nonViewingUsersUsername: chatData.senderUsername
+        )
+    }
+}
+
 struct ChatForSocketTransfer: Codable, Identifiable {
     let id: UUID
     let senderid: UInt

@@ -25,7 +25,7 @@ struct ContentView: View {
 
     init() {
         let appearance = UITabBar.appearance()
-        appearance.backgroundColor = colorScheme == .light ? UIColor(Color.white.opacity(0.5)) : UIColor(Color.gray)
+        // appearance.backgroundColor = colorScheme == .light ? UIColor(Color.white.opacity(0.5)) : UIColor(Color.gray)
     }
 
     var body: some View {
@@ -41,6 +41,7 @@ struct ContentView: View {
                 }.tag(1)
 
             MessageList(tab: $context.selectedTab)
+                .edgesIgnoringSafeArea(.top)
                 .tabItem {
                     Label("Messages", systemImage: "envelope.fill")
                 }
@@ -59,19 +60,18 @@ struct ContentView: View {
         }
         .accentColor(Color("AccentColor"))
         .onAppear() {
-            messenger.getAllMessages(user: user)
-//            if firstAppear {
-//                messenger.getAllMessages(user: user)
-//                firstAppear = false
-//            }
+            if firstAppear {
+                messenger.getLatestMessages(viewingUser: user.accountId, user: user)
+                firstAppear = false
+            }
         }
         .environmentObject(messenger)
         .environmentObject(context)
         .onChange(of: scenePhase) { newPhase in
-            if newPhase == .active {
+            if newPhase == .active { // for when the user comes back to the app
                 if !firstAppear && user.accountId != 0 {
                     socket.connectToServer(withId: user.accountId)
-                    messenger.getAllMessages(user: user)
+                    messenger.getLatestMessages(viewingUser: user.accountId, user: user)
                 }
             } else if newPhase == .inactive {
                 print("Inactive")

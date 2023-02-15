@@ -228,6 +228,7 @@ struct LogIn: View {
             
         }
         .edgesIgnoringSafeArea(.top)
+        .ignoresSafeArea(.keyboard, edges: .bottom)
         .frame(maxHeight: .infinity, alignment: .topLeading)
     }
     

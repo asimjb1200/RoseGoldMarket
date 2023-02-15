@@ -10,6 +10,8 @@ import SwiftUI
 struct ItemDetails: View {
     let item: Item
     let viewingFromAccountDetails: Bool
+    @State var showMessageBubble = false
+    @State var messageForOwner = ""
     @State var inquirySent = false
     @EnvironmentObject var messenger:MessagingViewModel
     @EnvironmentObject var user:UserModel
@@ -55,39 +57,51 @@ struct ItemDetails: View {
                     Alert(title: Text("Your Inquiry Was Sent"), message: Text("Give the owner some time to get back to you."), dismissButton: .default(Text("OK!"), action: {inquirySent = true}))
                 }
                 
-                Text("Date Posted: \(self.formatDate(date: item.dateposted))").font(.footnote).fontWeight(.medium).foregroundColor(Color("AccentColor")).frame(maxWidth: .infinity, alignment: .leading)
                 Text(item.name)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .font(.largeTitle)
                     .fontWeight(.heavy)
                     .foregroundColor(Color("MainColor"))
                 
+                Text("Date Posted: \(self.formatDate(date: item.dateposted))").font(.footnote).fontWeight(.medium).foregroundColor(Color("AccentColor")).frame(maxWidth: .infinity, alignment: .leading)
+                
                 ScrollView {
                     Text(item.description)
                         .frame(maxWidth: .infinity, maxHeight: 220, alignment: .leading)
-                        .padding()
-                        .background(RoundedRectangle(cornerRadius: 25.0).fill(Color(.systemGray6)))
-                        .padding([.leading, .trailing, .bottom])
-
-                    if viewingFromAccountDetails == false && inquirySent == false && item.owner != user.accountId {
-                        Button(
-                            action: {
-                                // if not coming from the account details view, then I know that the product's owner will be inside item object
-                                let newMessage = "Hello, I am contacting you about the plant you own named \(item.name). I wanted to know if it is still available?"
-                                
-                                if let itemOwnersUsername = item.ownerUsername {
-                                    _ = messenger.sendMessageToUser(newMessage: newMessage, receiverId: item.owner, receiverUsername: itemOwnersUsername, senderUsername: user.username, senderId: user.accountId)
-                                    inquirySent = true
+                        .padding(.bottom)
+                    
+                    VStack {
+                        Text("Send owner a message").fontWeight(.medium).frame(maxWidth: .infinity, alignment: .leading)
+                        HStack {
+                            TextField("", text: $messageForOwner, axis: .vertical)
+                                .onChange(of: messageForOwner) {
+                                    // limit the inquiry to 100 characters
+                                    messageForOwner = String($0.prefix(100))
                                 }
-                            },
-                            label: {
-                                Text("Contact Owner")
-                                    .padding()
-                                    .frame(height: 50)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.white)
-                                    .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(height: 50))
+                                .padding()
+                                .background(RoundedRectangle(cornerRadius: 25).fill(Color(.systemGray6)))
+                            Button(
+                                action: {
+                                    
+                                    // send the message to the owner
+                                    let _ = messenger.sendMessageToUserV2(newMessage: messageForOwner, receiverId: item.owner, receiverUsername: item.ownerUsername ?? getOwnerUsername(imageLink: item.image1), senderUsername: user.username, senderId: user.accountId)
+                                    self.inquirySent.toggle()
+                                },
+                                label: {
+                                    Text("Send")
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(.white)
+                                        .padding()
+                                        .frame(height: 50)
+                                        .background(RoundedRectangle(cornerRadius: 15).fill(Color.blue))
+                                }
+                            ).onAppear() {
+                                self.messageForOwner = "Hello, is \(self.item.name) still available?"
                             }
-                        )
+                        }
+                    }
+                    .alert(isPresented: $inquirySent) {
+                        Alert(title: Text("Your message was sent"))
                     }
                 }
                 Spacer()
@@ -116,6 +130,18 @@ extension ItemDetails {
         return linkArray[1].replacingOccurrences(of: " ", with: "%20")
     }
     
+    func getOwnerUsername(imageLink: String) -> String {
+        // split string on the /images/ portion
+        let stringArrayContainingName = imageLink.components(separatedBy: "/images/")
+        
+        // now split based on the / character
+        let sectionsInImageURL = stringArrayContainingName[1].components(separatedBy: "/")
+        
+        let ownerUsername = sectionsInImageURL[0]
+        
+        return ownerUsername
+    }
+    
     func formatDate(date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MM/dd/yyyy"
@@ -124,8 +150,18 @@ extension ItemDetails {
 }
 
 struct ItemDetails_Previews: PreviewProvider {
+    static let messenger = MessagingViewModel.shared
+    static let previewUser = UserModel.shared
+    static let imageLink = "/Users/asimbrown/Desktop/Dev/Projects/RoseGold/build/images/braxton97/Oak Tree/image1.jpg"
+    static let imageLink2 = "/Users/asimbrown/Desktop/Dev/Projects/RoseGold/build/images/braxton97/Oak Tree/image2.jpg"
+    static let imageLink3 = "/Users/asimbrown/Desktop/Dev/Projects/RoseGold/build/images/braxton97/Oak Tree/image3.jpg"
+    static let context = PopToRoot()
+    static let item = Item(id: 5, name: "Weed", description: "weed for you and me", owner: 6, isavailable: true, pickedup: false, dateposted: Date(), categories: ["indoor", "tropical"], image1: imageLink, image2: imageLink2, image3: imageLink3, ownerUsername: nil)
+    
     static var previews: some View {
-        let item = Item(id: 5, name: "Weed", description: "weed for you and me", owner: 6, isavailable: true, pickedup: false, dateposted: Date(), categories: ["indoor", "tropical"], image1: "/image1.jpg", image2: "/image2.jpg", image3: "/image3.jpg", ownerUsername: nil)
         ItemDetails(item: item, viewingFromAccountDetails: false)
+            .environmentObject(messenger)
+            .environmentObject(previewUser)
+            .environmentObject(context)
     }
 }
