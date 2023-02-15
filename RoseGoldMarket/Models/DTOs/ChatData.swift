@@ -26,11 +26,11 @@ struct ChatFromBackend: Codable, Hashable, Identifiable {
 }
 
 struct ChatDataForPreview: Codable, Hashable, Identifiable {
-    let id: UUID
-    let senderid: UInt
-    let recid: UInt
-    let message: String
-    let timestamp: Date
+    var id: UUID
+    var senderid: UInt
+    var recid: UInt
+    var message: String
+    var timestamp: Date
     let nonViewingUsersUsername: String
     
     /// to convert from the chat data object

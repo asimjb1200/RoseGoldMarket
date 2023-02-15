@@ -299,7 +299,7 @@
 		684867932798BB720033969D /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				68E083D927ACAFD000DA0110 /* Messenger */,
+				68E083DA27ACB02300DA0110 /* MessagingViewModel.swift */,
 				6823B7D527991322008F2CB7 /* AddItemsViewModel.swift */,
 				68C489FE27A4ADBC00AEF0F5 /* HomeMarketViewModel.swift */,
 				68E9193227D02AD800154DBB /* EmailSupportViewModel.swift */,
@@ -394,14 +394,6 @@
 				68E083D527ACAFA600DA0110 /* MessageList.swift */,
 			);
 			name = Messenger;
-			sourceTree = "<group>";
-		};
-		68E083D927ACAFD000DA0110 /* Messenger */ = {
-			isa = PBXGroup;
-			children = (
-				68E083DA27ACB02300DA0110 /* MessagingViewModel.swift */,
-			);
-			path = Messenger;
 			sourceTree = "<group>";
 		};
 		68E9192727D025B000154DBB /* AccountOptions */ = {

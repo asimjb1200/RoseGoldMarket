@@ -11,6 +11,7 @@ import SocketIO
 final class SocketUtils: ObservableObject {
     static let shared = SocketUtils()
     let manager = SocketManager(socketURL: URL(string: "https://rosegoldgardens.com/api")!, config: [.log(true), .compress])
+    // let manager = SocketManager(socketURL: URL(string: "http://192.168.1.65:4000/api")!, config: [.log(true), .compress])
     let decoder = JSONDecoder()
     let dateFormatter = DateFormatter()
     let userService:UserNetworking = .shared
