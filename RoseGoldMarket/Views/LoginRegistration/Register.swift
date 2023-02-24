@@ -218,7 +218,7 @@ struct Register: View {
                             Alert(title: Text("Wait!"), message: Text("Please choose an address from the list of options"), dismissButton: .default(Text("OK")) { focusedField = .address })
                         }
                         
-                        if !mapSearch.locationResults.isEmpty{
+                        if !mapSearch.locationResults.isEmpty {
                             ScrollView {
                                 ForEach(mapSearch.locationResults, id: \.self) { location in
                                     VStack(alignment: .center, spacing: 0.0) {

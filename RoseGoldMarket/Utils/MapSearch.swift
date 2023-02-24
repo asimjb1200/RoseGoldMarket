@@ -16,7 +16,6 @@ class MapSearch : NSObject, ObservableObject {
     @Published var addressFound = false
     @Published private var coordinates:CLLocationCoordinate2D? //long and lat of a location
 
-    
     private var cancellables : Set<AnyCancellable> = []
     
     private var searchCompleter = MKLocalSearchCompleter() // this is what the query fragment will feed into
@@ -35,7 +34,9 @@ class MapSearch : NSObject, ObservableObject {
             .sink(receiveCompletion: { (completion) in // we subscribe to the values from the publisher here
                 //handle error
             }, receiveValue: { (results) in // this receives the values from the publisher that flat map creates, the published stream "sinks" into this method
-                self.locationResults = results.filter { $0.subtitle.contains("United States") }
+                if self.addressFound == false {
+                    self.locationResults = results.filter { $0.subtitle.contains("United States") }
+                }
             })
             .store(in: &cancellables)
     }

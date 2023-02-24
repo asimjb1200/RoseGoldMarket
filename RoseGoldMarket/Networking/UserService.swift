@@ -40,7 +40,7 @@ final class UserNetworking {
                 completion(.failure(.dataConversionError))
                 return
             }
-
+            
             do {
                 let usrGeolocation = try JSONDecoder().decode(ResponseFromServer<String>.self, from: data)
                 completion(.success(usrGeolocation))
@@ -48,7 +48,43 @@ final class UserNetworking {
                 print("[UserNetworking] tried to fetch user's geolocation \(decodingError)")
                 completion(.failure(.failure))
             }
-
+            
+        }.resume()
+    }
+    
+    func checkUsernameAvailability(newUsername:String, completion: @escaping (Result<String, UserErrors>) -> ()) {
+        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/check-username?newUsername=\(newUsername)", post: false)
+        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/check-username?newUsername=\(newUsername)", post: false)
+        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://192.168.1.65:4000/api/users/check-username?newUsername=\(newUsername)", post: false)
+        
+        URLSession.shared.dataTask(with: reqWithoutBody) { (data, response, err) in
+            guard err == nil else {
+                completion(.failure(.failure))
+                return
+            }
+            
+            guard let response = response as? HTTPURLResponse else {
+                completion(.failure(.responseConversionError))
+                return
+            }
+            
+            guard response.statusCode == 200 else {
+                completion(.failure(.serverError))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(.dataConversionError))
+                return
+            }
+            
+            do {
+                let usernameFound = try JSONDecoder().decode(String.self, from: data)
+                completion(.success(usernameFound))
+            } catch let secCodeError {
+                print(secCodeError.localizedDescription)
+                completion(.failure(.dataConversionError))
+            }
         }.resume()
     }
     

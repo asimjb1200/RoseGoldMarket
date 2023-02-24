@@ -72,6 +72,7 @@
 		68E083D827ACAFC400DA0110 /* MessageThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E083D727ACAFC400DA0110 /* MessageThread.swift */; };
 		68E083DB27ACB02300DA0110 /* MessagingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E083DA27ACB02300DA0110 /* MessagingViewModel.swift */; };
 		68E083DF27ACBE4000DA0110 /* MessagingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E083DE27ACBE4000DA0110 /* MessagingService.swift */; };
+		68E0FF3029A04CDF002ED6BB /* ChangeUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E0FF2F29A04CDF002ED6BB /* ChangeUsername.swift */; };
 		68E9192627D01AA000154DBB /* AccountOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E9192527D01AA000154DBB /* AccountOptions.swift */; };
 		68E9192927D025CD00154DBB /* EmailSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E9192827D025CD00154DBB /* EmailSupport.swift */; };
 		68E9192B27D025DC00154DBB /* ChangeLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E9192A27D025DC00154DBB /* ChangeLocation.swift */; };
@@ -151,6 +152,7 @@
 		68E083D727ACAFC400DA0110 /* MessageThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageThread.swift; sourceTree = "<group>"; };
 		68E083DA27ACB02300DA0110 /* MessagingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagingViewModel.swift; sourceTree = "<group>"; };
 		68E083DE27ACBE4000DA0110 /* MessagingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagingService.swift; sourceTree = "<group>"; };
+		68E0FF2F29A04CDF002ED6BB /* ChangeUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeUsername.swift; sourceTree = "<group>"; };
 		68E9192527D01AA000154DBB /* AccountOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOptions.swift; sourceTree = "<group>"; };
 		68E9192827D025CD00154DBB /* EmailSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSupport.swift; sourceTree = "<group>"; };
 		68E9192A27D025DC00154DBB /* ChangeLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeLocation.swift; sourceTree = "<group>"; };
@@ -406,6 +408,7 @@
 				68E9192E27D0276F00154DBB /* ChangeAvatar.swift */,
 				68E9193027D027AD00154DBB /* MyListings.swift */,
 				684B923127D2BA7B00CF25D9 /* EditItem.swift */,
+				68E0FF2F29A04CDF002ED6BB /* ChangeUsername.swift */,
 			);
 			name = AccountOptions;
 			sourceTree = "<group>";
@@ -492,6 +495,7 @@
 				68E9193327D02AD800154DBB /* EmailSupportViewModel.swift in Sources */,
 				684219DE28DC2ED400936369 /* RegistrationFormEnum.swift in Sources */,
 				68E083DF27ACBE4000DA0110 /* MessagingService.swift in Sources */,
+				68E0FF3029A04CDF002ED6BB /* ChangeUsername.swift in Sources */,
 				68A90D7927A2560100CD3768 /* EnumsForAddItemsView.swift in Sources */,
 				684872A6295D2230004DA1D8 /* CameraAccessor.swift in Sources */,
 				684B923227D2BA7B00CF25D9 /* EditItem.swift in Sources */,

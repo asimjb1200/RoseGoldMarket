@@ -18,41 +18,56 @@ struct AccountOptions: View {
         NavigationView {
             VStack {
                 List {
-                    NavigationLink(destination: ChangeLocation(), label: {Text("Change Your Location")})
-                    
-                    NavigationLink(destination: ChangeAvatar(), label: {Text("Change Your Avatar")})
+                    Section(
+                        content: {
+                            NavigationLink(destination: ChangeLocation(), label: {Text("Change Your Location")})
+                            
+                            NavigationLink(destination: ChangeAvatar(), label: {Text("Change Your Profile Picture")})
 
-//                    NavigationLink(destination: FavoriteItems(), label: {Text("Favorite Items")})
-
-                    NavigationLink(destination: MyListings(), label: {Text("My Listings")})
-
-                    NavigationLink(destination: EmailSupport(), label: {Text("Email Support")})
+                            NavigationLink(destination: MyListings(), label: {Text("My Listings")})
+                            
+                            NavigationLink(destination: ChangeUsername(), label: {Text("\(user.username)")})
+                        },
+                        header: {
+                            Text("My Account").font(.title).fontWeight(.bold)
+                        }
+                    )
                     
-                    Button("Log Out") {
-                        confirmLogout.toggle()
-                    }
-                    .alert(isPresented: $confirmLogout){
-                        Alert(title: Text("Are You Sure?"), primaryButton: .default(Text("Yes"), action: {
-                            user.logout()
-                        }),
-                              secondaryButton: .cancel())
-                    }
-                    
-                    Button("Delete Account") {
-                        confirmDeletion.toggle()
-                    }
-                    .foregroundColor(.red)
-                    .alert(isPresented: $confirmDeletion) {
-                        Alert(
-                            title: Text("Are You Sure?"),
-                            message: Text("Your account can't be recovered if you move forward."),
-                            primaryButton:
-                                    .default(Text("Delete").foregroundColor(.red),
-                                    action: {
-                                        self.deleteAccount()
-                                    }),
-                            secondaryButton: .cancel())
-                    }
+                    Section(
+                        content: {
+                            NavigationLink(destination: EmailSupport(), label: {Text("Email Support")})
+                            
+                            Button("Log Out") {
+                                confirmLogout.toggle()
+                            }
+                            .alert(isPresented: $confirmLogout){
+                                Alert(title: Text("Are You Sure?"), primaryButton: .default(Text("Yes"), action: {
+                                    user.logout()
+                                }),
+                                      secondaryButton: .cancel()
+                                )
+                            }
+                            
+                            Button("Delete Account") {
+                                confirmDeletion.toggle()
+                            }
+                            .foregroundColor(.red)
+                            .alert(isPresented: $confirmDeletion) {
+                                Alert(
+                                    title: Text("Are You Sure?"),
+                                    message: Text("Your account can't be recovered if you move forward."),
+                                    primaryButton:
+                                            .default(Text("Delete").foregroundColor(.red),
+                                            action: {
+                                                self.deleteAccount()
+                                            }),
+                                    secondaryButton: .cancel())
+                            }
+                        },
+                        header: {
+                            Text("Account Actions").font(.title).fontWeight(.bold)
+                        }
+                    )
                 }.alert(isPresented: $deletetionErrorOccurred) {
                     Alert(title:Text("An Error Occurred"), message: Text("Try again later."))
                 }
