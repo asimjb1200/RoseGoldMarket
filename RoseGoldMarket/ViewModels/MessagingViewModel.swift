@@ -93,7 +93,7 @@ final class MessagingViewModel: ObservableObject {
     }
     
     func getAllMessagesInThread(viewingUser:UInt, otherUserAccount:UInt, user:UserModel) {
-        MessagingService().fetchMessageThreadBetweenUsers(viewingAccountId: viewingUser, otherUserAccountId: otherUserAccount) { threadDataResponse in
+        MessagingService().fetchMessageThreadBetweenUsers(viewingAccountId: viewingUser, otherUserAccountId: otherUserAccount, token: user.accessToken) { threadDataResponse in
             switch threadDataResponse {
                 case .success(let threadData):
                     if threadData.newToken != nil {
@@ -109,7 +109,7 @@ final class MessagingViewModel: ObservableObject {
     }
     
     func getLatestMessages(viewingUser:UInt, user:UserModel) {
-        MessagingService().fetchLatestMessageInEachChat(userId: viewingUser) { chatData in
+        MessagingService().fetchLatestMessageInEachChat(userId: viewingUser, token: user.accessToken) { chatData in
             switch chatData {
                 case .success(let latestChats) :
                     if latestChats.newToken != nil {

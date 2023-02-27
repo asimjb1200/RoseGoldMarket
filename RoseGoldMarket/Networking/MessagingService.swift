@@ -10,10 +10,10 @@ import Foundation
 struct MessagingService {
     let networker = Networker()
     
-    func fetchLatestMessageInEachChat(userId: UInt, completion: @escaping (Result<ResponseFromServer<[ChatDataForPreview]>, MessageErrors>) -> ()) {
+    func fetchLatestMessageInEachChat(userId: UInt, token:String, completion: @escaping (Result<ResponseFromServer<[ChatDataForPreview]>, MessageErrors>) -> ()) {
         //let url = "http://192.168.1.65:4000/api/chat-handler/latest-messages?accountId=\(userId)"
         let url = "https://rosegoldgardens.com/api/chat-handler/latest-messages?accountId=\(userId)"
-        let request = networker.constructRequest(uri: url)
+        let request = networker.constructRequest(uri: url, token: token)
         
         URLSession.shared.dataTask(with: request) { (data, response, err) in
             guard err == nil else {
@@ -44,9 +44,9 @@ struct MessagingService {
         }.resume()
     }
     
-    func fetchMessageThreadBetweenUsers(viewingAccountId:UInt, otherUserAccountId:UInt, completion: @escaping (Result<ResponseFromServer<[ChatData]>, MessageErrors>) -> ()) {
+    func fetchMessageThreadBetweenUsers(viewingAccountId:UInt, otherUserAccountId:UInt, token: String, completion: @escaping (Result<ResponseFromServer<[ChatData]>, MessageErrors>) -> ()) {
         let url = "https://rosegoldgardens.com/api/chat-handler/get-chat-thread?viewingAccount=\(viewingAccountId)&otherUserAccount=\(otherUserAccountId)"
-        let request = networker.constructRequest(uri: url)
+        let request = networker.constructRequest(uri: url, token: token)
         
         URLSession.shared.dataTask(with: request) { (data, response, err) in
             guard err == nil else {
@@ -77,9 +77,9 @@ struct MessagingService {
         }.resume()
     }
     
-    func getOtherChatParticipantName(accountId: UInt, completion: @escaping (Result<String, UserErrors>) -> ()) {
+    func getOtherChatParticipantName(accountId: UInt, token: String, completion: @escaping (Result<String, UserErrors>) -> ()) {
         let url = "https://rosegoldgardens.com/api/chat-handler/get-username"
-        let request = networker.constructRequest(uri: url)
+        let request = networker.constructRequest(uri: url, token: token)
         
         URLSession.shared.dataTask(with: request) { (data, response, err) in
             guard err == nil else {
@@ -102,6 +102,6 @@ struct MessagingService {
                 print(error)
                 completion(.failure(.serverError))
             }
-        }
+        }.resume()
     }
 }

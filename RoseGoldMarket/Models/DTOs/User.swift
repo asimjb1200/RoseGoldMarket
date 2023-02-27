@@ -48,6 +48,10 @@ class UserModel: ObservableObject, UserProtocol {
         self.isLoggedIn = false
         print("[UserModel] logout complete")
     }
+    
+    func updateUserName(newUsername: String) {
+        self.username = newUsername
+    }
 }
 
 protocol UserProtocol {

@@ -52,10 +52,10 @@ final class UserNetworking {
         }.resume()
     }
     
-    func checkUsernameAvailability(newUsername:String, completion: @escaping (Result<String, UserErrors>) -> ()) {
-        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/check-username?newUsername=\(newUsername)", post: false)
-        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/check-username?newUsername=\(newUsername)", post: false)
-        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://192.168.1.65:4000/api/users/check-username?newUsername=\(newUsername)", post: false)
+    func checkUsernameAvailability(newUsername:String, token: String, completion: @escaping (Result<String, UserErrors>) -> ()) {
+        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/check-username?newUsername=\(newUsername)", token: token, post: false)
+        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/check-username?newUsername=\(newUsername)", token: accessToken, post: false)
+        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://192.168.1.65:4000/api/users/check-username?newUsername=\(newUsername)", token: accessToken, post: false)
         
         URLSession.shared.dataTask(with: reqWithoutBody) { (data, response, err) in
             guard err == nil else {
@@ -83,6 +83,41 @@ final class UserNetworking {
                 completion(.success(usernameFound))
             } catch let secCodeError {
                 print(secCodeError.localizedDescription)
+                completion(.failure(.dataConversionError))
+            }
+        }.resume()
+    }
+    
+    func saveNewUsername(newUsername:String, oldUsername:String, accessToken:String, completion: @escaping (Result<ResponseFromServer<Bool>, UserErrors>) -> ()) {
+        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/change-username?newUsername=\(newUsername)&oldUsername=\(oldUsername)", token: accessToken, post: false)
+        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/change-username?newUsername=\(newUsername)&oldUsername=\(oldUsername)", token: accessToken, post: false)
+        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://192.168.1.65:4000/api/users/change-username?newUsername=\(newUsername)&oldUsername=\(oldUsername)", post: false)
+        
+        let session = URLSession.shared
+        session.dataTask(with: reqWithoutBody) {(data, response, error) in
+            if error != nil {
+                completion(.failure(.phoneFailure))
+            }
+            
+            guard let data = data else {
+                completion(.failure(.dataConversionError))
+                return
+            }
+            
+            guard let response = response as? HTTPURLResponse else {
+                completion(.failure(.responseConversionError))
+                return
+            }
+            
+            let isOK = self.networker.checkOkStatus(res: response)
+            if isOK {
+                do {
+                    let serverResponse = try JSONDecoder().decode(ResponseFromServer<Bool>.self, from: data)
+                    completion(.success(serverResponse))
+                } catch let convErr {
+                    print(convErr.localizedDescription)
+                }
+            } else {
                 completion(.failure(.dataConversionError))
             }
         }.resume()
@@ -555,8 +590,8 @@ final class UserNetworking {
     }
     
     func loginWithEmail(email:String, pw:String, completion: @escaping (Result<ResponseFromServer<ServiceUser>, UserErrors>) -> ()) {
-        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/login", post: true)
-        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://192.168.1.65:4000/api/users/login", post: true)
+        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/login", post: true)
+        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://192.168.1.65:4000/api/users/login", post: true)
         
         let session = URLSession.shared
         let body = ["email": email, "password": pw]

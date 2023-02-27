@@ -26,7 +26,7 @@ struct AccountOptions: View {
 
                             NavigationLink(destination: MyListings(), label: {Text("My Listings")})
                             
-                            NavigationLink(destination: ChangeUsername(), label: {Text("\(user.username)")})
+                            NavigationLink(destination: ChangeUsername(), label: {Text("Change Display Name")})
                         },
                         header: {
                             Text("My Account").font(.title).fontWeight(.bold)

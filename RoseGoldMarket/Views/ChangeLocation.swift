@@ -32,7 +32,7 @@ struct ChangeLocation: View {
                 .fontWeight(.semibold)
                 .foregroundColor(Color("AccentColor"))
                 .alert(isPresented: $addressNotFound) {
-                    Alert(title: Text("Select your address from the list"), message: Text("We need you to select your address from the list to validate it."))
+                    Alert(title: Text("Select your address from the list"), message: Text("We need you to select your address to validate it."))
                 }
                 
             if addressData.isEmpty {
@@ -110,9 +110,13 @@ struct ChangeLocation: View {
                         return
                     }
                     
-                    guard let addyInformation = addressInformation else {
+                    guard var addyInformation = addressInformation else {
                         addressNotFound.toggle()
                         return
+                    }
+                    
+                    if !addressLineTwo.isEmpty {
+                        addyInformation.address += " #\(addressLineTwo)"
                     }
                     
                     saveNewUserLocation(addressObject: addyInformation)
@@ -158,7 +162,6 @@ struct ChangeLocation: View {
     }
     
     func fetchCurrentAddress(user:UserModel) {
-        print("fetching the address")
         UserNetworking.shared.fetchCurrentAddress(accountId: user.accountId, token: user.accessToken, completion: {addressData in
             switch addressData {
                 case .success(let addressData):
