@@ -125,7 +125,6 @@ struct HomeMarket: View {
                         }
                     }
                 }.navigationBarTitle(Text("Market"), displayMode: .inline).navigationBarHidden(true)
-    //            .toolbar { ToolbarItem(placement: .principal) {Image(uiImage: banner!).resizable().scaledToFit()}}
             }
         }
     }

@@ -115,9 +115,9 @@ struct ItemDetails: View {
     
     func determinePhotoDimensions(viewHeight: CGFloat) -> CGFloat {
         if viewHeight < 600 {
-            return 250
+            return 200
         } else {
-            return 350
+            return 250
         }
     }
 }

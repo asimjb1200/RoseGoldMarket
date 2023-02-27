@@ -25,7 +25,7 @@ struct MessagingService {
                 completion(.failure(.decodingError))
                 return
             }
-            
+
             do {
                 let decoder = JSONDecoder()
                 let dateFormatter = DateFormatter()

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AccountOptions: View {
     @EnvironmentObject var user:UserModel
+    @EnvironmentObject var messenger:MessagingViewModel
     @State var confirmLogout = false
     @State var confirmDeletion = false
     @State var deletetionErrorOccurred = false
@@ -42,6 +43,10 @@ struct AccountOptions: View {
                             }
                             .alert(isPresented: $confirmLogout){
                                 Alert(title: Text("Are You Sure?"), primaryButton: .default(Text("Yes"), action: {
+                                    // clear out the chat stuff
+                                    messenger.currentlyActiveChat = []
+                                    messenger.latestMessages = []
+                                    
                                     user.logout()
                                 }),
                                       secondaryButton: .cancel()
@@ -97,5 +102,6 @@ struct AccountOptions_Previews: PreviewProvider {
     static var previews: some View {
         AccountOptions()
             .environmentObject(UserModel.shared)
+            .environmentObject(MessagingViewModel.shared)
     }
 }

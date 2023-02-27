@@ -137,7 +137,7 @@ struct MessageThread: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 NavigationLink(destination: AccountDetailsView(username: receiverUsername, accountid: receiverId)) {
-                    AsyncImage(url: URL(string: "http://192.168.1.65:4000/api/images/avatars/\(receiverUsername).jpg")) { phase in
+                    AsyncImage(url: URL(string: "https://www.rosegoldgardens.com/api/images/avatars/\(receiverUsername).jpg")) { phase in
                         if let image = phase.image {
                             image
                             .resizable()
