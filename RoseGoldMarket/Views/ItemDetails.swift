@@ -13,6 +13,7 @@ struct ItemDetails: View {
     @State var showMessageBubble = false
     @State var messageForOwner = ""
     @State var inquirySent = false
+    @FocusState var sendingMessage:Bool
     @EnvironmentObject var messenger:MessagingViewModel
     @EnvironmentObject var user:UserModel
     @EnvironmentObject var context:PopToRoot // detect when usr hits home tab btn
@@ -21,89 +22,102 @@ struct ItemDetails: View {
     var body: some View {
         GeometryReader { geo in
             VStack (alignment: .center, spacing: 15) {
-                ScrollView(.horizontal, showsIndicators: true) {
-                    HStack {
-                        AsyncImage(url: URL(string: "https://rosegoldgardens.com/api\(self.getImageLink(imageLink: item.image1))")) { imagePhase in
-                            if let image = imagePhase.image {
-                                image.resizable().scaledToFill().frame(width: determinePhotoDimensions(viewHeight: geo.size.height), height: determinePhotoDimensions(viewHeight: geo.size.height)).cornerRadius(25).shadow(radius: 5)
-                            } else if imagePhase.error != nil {
-                                Text("Problem loading image")
-                            } else {
-                                ProgressView()
+                if sendingMessage == false {
+                    ScrollView(.horizontal, showsIndicators: true) {
+                        HStack {
+                            AsyncImage(url: URL(string: "https://rosegoldgardens.com/api\(self.getImageLink(imageLink: item.image1))")) { imagePhase in
+                                if let image = imagePhase.image {
+                                    image.resizable().scaledToFill().frame(width: determinePhotoDimensions(viewHeight: geo.size.height), height: determinePhotoDimensions(viewHeight: geo.size.height)).cornerRadius(25).shadow(radius: 5)
+                                } else if imagePhase.error != nil {
+                                    Text("Problem loading image")
+                                } else {
+                                    ProgressView()
+                                }
                             }
-                        }
 
-                        AsyncImage(url: URL(string: "https://rosegoldgardens.com/api\(self.getImageLink(imageLink: item.image2))")) { imagePhase in
-                            if let image = imagePhase.image {
-                                image.resizable().scaledToFill().frame(width: determinePhotoDimensions(viewHeight: geo.size.height), height: determinePhotoDimensions(viewHeight: geo.size.height)).cornerRadius(25).shadow(radius: 5)
-                            } else if imagePhase.error != nil {
-                                Text("Problem loading image")
-                            } else {
-                                ProgressView()
+                            AsyncImage(url: URL(string: "https://rosegoldgardens.com/api\(self.getImageLink(imageLink: item.image2))")) { imagePhase in
+                                if let image = imagePhase.image {
+                                    image.resizable().scaledToFill().frame(width: determinePhotoDimensions(viewHeight: geo.size.height), height: determinePhotoDimensions(viewHeight: geo.size.height)).cornerRadius(25).shadow(radius: 5)
+                                } else if imagePhase.error != nil {
+                                    Text("Problem loading image")
+                                } else {
+                                    ProgressView()
+                                }
                             }
-                        }
 
-                        AsyncImage(url: URL(string: "https://rosegoldgardens.com/api\(self.getImageLink(imageLink: item.image3))")) { imagePhase in
-                            if let image = imagePhase.image {
-                                image.resizable().scaledToFill().frame(width: determinePhotoDimensions(viewHeight: geo.size.height), height: determinePhotoDimensions(viewHeight: geo.size.height)).cornerRadius(25).shadow(radius: 5)
-                            } else if imagePhase.error != nil {
-                                Text("Problem loading image")
-                            } else {
-                                ProgressView()
+                            AsyncImage(url: URL(string: "https://rosegoldgardens.com/api\(self.getImageLink(imageLink: item.image3))")) { imagePhase in
+                                if let image = imagePhase.image {
+                                    image.resizable().scaledToFill().frame(width: determinePhotoDimensions(viewHeight: geo.size.height), height: determinePhotoDimensions(viewHeight: geo.size.height)).cornerRadius(25).shadow(radius: 5)
+                                } else if imagePhase.error != nil {
+                                    Text("Problem loading image")
+                                } else {
+                                    ProgressView()
+                                }
                             }
-                        }
-                    }.frame(height: determinePhotoDimensions(viewHeight: geo.size.height))
-                }.alert(isPresented: $inquirySent) {
-                    Alert(title: Text("Your Inquiry Was Sent"), message: Text("Give the owner some time to get back to you."), dismissButton: .default(Text("OK!"), action: {inquirySent = true}))
+                        }.frame(height: determinePhotoDimensions(viewHeight: geo.size.height))
+                    }.alert(isPresented: $inquirySent) {
+                        Alert(title: Text("Your Inquiry Was Sent"), message: Text("Give the owner some time to get back to you."), dismissButton: .default(Text("OK!"), action: {inquirySent = true}))
                 }
                 
-                Text(item.name)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .font(.largeTitle)
-                    .fontWeight(.heavy)
-                    .foregroundColor(Color("MainColor"))
-                
-                Text("Date Posted: \(self.formatDate(date: item.dateposted))").font(.footnote).fontWeight(.medium).foregroundColor(Color("AccentColor")).frame(maxWidth: .infinity, alignment: .leading)
-                
-                ScrollView {
+                }
+                //ScrollView {
+                    Text(item.name)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .font(.largeTitle)
+                        .fontWeight(.heavy)
+                        .foregroundColor(Color("MainColor"))
+                    
+                    Text("Date Posted: \(self.formatDate(date: item.dateposted))").font(.footnote).fontWeight(.medium).foregroundColor(Color("AccentColor")).frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    
                     Text(item.description)
-                        .frame(maxWidth: .infinity, maxHeight: 220, alignment: .leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.bottom)
                     
-                    VStack {
-                        Text("Send owner a message").fontWeight(.medium).frame(maxWidth: .infinity, alignment: .leading)
-                        HStack {
-                            TextField("", text: $messageForOwner, axis: .vertical)
-                                .onChange(of: messageForOwner) {
-                                    // limit the inquiry to 100 characters
-                                    messageForOwner = String($0.prefix(100))
-                                }
-                                .padding()
-                                .background(RoundedRectangle(cornerRadius: 25).fill(Color(.systemGray6)))
-                            Button(
-                                action: {
-                                    
-                                    // send the message to the owner
-                                    let _ = messenger.sendMessageToUserV2(newMessage: messageForOwner, receiverId: item.owner, receiverUsername: item.ownerUsername ?? getOwnerUsername(imageLink: item.image1), senderUsername: user.username, senderId: user.accountId)
-                                    self.inquirySent.toggle()
-                                },
-                                label: {
-                                    Text("Send")
-                                        .fontWeight(.semibold)
-                                        .foregroundColor(.white)
-                                        .padding()
-                                        .frame(height: 50)
-                                        .background(RoundedRectangle(cornerRadius: 15).fill(Color.blue))
-                                }
-                            ).onAppear() {
-                                self.messageForOwner = "Hello, is \(self.item.name) still available?"
+                
+                    Text("Send owner a message").fontWeight(.medium).frame(maxWidth: .infinity, alignment: .leading)
+                    HStack {
+                        TextField("", text: $messageForOwner, axis: .vertical)
+                            .focused($sendingMessage, equals: true)
+                            .onChange(of: messageForOwner) {
+                                // limit the inquiry to 100 characters
+                                messageForOwner = String($0.prefix(100))
                             }
+                            .toolbar {
+                                ToolbarItemGroup(placement: .keyboard) {
+                                    Button("Done") {
+                                        withAnimation {
+                                            sendingMessage = false
+                                        }
+                                        
+                                        
+                                    }.foregroundColor(.blue)
+                                    Spacer()
+                                }
+                            }
+                            .padding()
+                            .background(RoundedRectangle(cornerRadius: 25).fill(Color(.systemGray6)))
+                        Button(
+                            action: {
+                                // send the message to the owner
+                                let _ = messenger.sendMessageToUserV2(newMessage: messageForOwner, receiverId: item.owner, receiverUsername: item.ownerUsername ?? getOwnerUsername(imageLink: item.image1), senderUsername: user.username, senderId: user.accountId)
+                                self.inquirySent.toggle()
+                            },
+                            label: {
+                                Text("Send")
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.white)
+                                    .padding()
+                                    .frame(height: 50)
+                                    .background(RoundedRectangle(cornerRadius: 15).fill(Color.blue))
+                            }
+                        ).onAppear() {
+                            self.messageForOwner = "Hello, is \(self.item.name) still available?"
                         }
-                    }
-                    .alert(isPresented: $inquirySent) {
+                    }.alert(isPresented: $inquirySent) {
                         Alert(title: Text("Your message was sent"))
                     }
-                }
+                //}
                 Spacer()
             }
             .padding([.leading, .trailing])

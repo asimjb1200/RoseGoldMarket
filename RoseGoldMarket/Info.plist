@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSCameraUsageDescription</key>
-	<string>We need to use the camera to allow you to upload your profile picture</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -23,15 +21,6 @@
 			</array>
 		</dict>
 	</array>
-	<key>UILaunchScreen</key>
-	<dict>
-		<key>UIColorName</key>
-		<string>AccentColor</string>
-		<key>UIImageName</key>
-		<string>LaunchScreen</string>
-		<key>UIImageRespectsSafeAreaInsets</key>
-		<false/>
-	</dict>
 	<key>FacebookAppID</key>
 	<string>436637955105906</string>
 	<key>FacebookClientToken</key>
@@ -45,5 +34,14 @@
 		<string>fb-messenger-share-api</string>
 		<string>instagram-stories</string>
 	</array>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>AccentColor</string>
+		<key>UIImageName</key>
+		<string>LaunchScreen</string>
+		<key>UIImageRespectsSafeAreaInsets</key>
+		<false/>
+	</dict>
 </dict>
 </plist>
