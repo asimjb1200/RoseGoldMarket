@@ -11,11 +11,13 @@ import MessageUI
 struct AccountOptions: View {
     @EnvironmentObject var user:UserModel
     @EnvironmentObject var messenger:MessagingViewModel
+    @StateObject var emailer = EmailService()
     @Environment(\.openURL) var openURL
     @State var confirmLogout = false
     @State var confirmDeletion = false
     @State var deletetionErrorOccurred = false
     @State var emailSent = false
+    @State var showSheet = false
     var service:UserNetworking = .shared
     
     var body: some View {
@@ -24,9 +26,9 @@ struct AccountOptions: View {
                 List {
                     Section(
                         content: {
-                            NavigationLink(destination: ChangeLocation(), label: {Text("Change Your Location")})
+                            NavigationLink(destination: ChangeLocation(), label: {Text("Change Address")})
                             
-                            NavigationLink(destination: ChangeAvatar(), label: {Text("Change Your Profile Picture")})
+                            NavigationLink(destination: ChangeAvatar(), label: {Text("Change Profile Picture")})
 
                             NavigationLink(destination: MyListings(), label: {Text("My Listings")})
                             
@@ -41,16 +43,14 @@ struct AccountOptions: View {
                         content: {
                             Button("Email Support") {
                                 if MFMailComposeViewController.canSendMail() {
-                                    EmailService.shared.sendEmail(subject: "Inquiry From \(user.username)", body: "", to: "support@rosegoldgardens.com") { (mailRes) in
-                                        if mailRes {
-                                            emailSent.toggle()
-                                        }
+                                    emailer.sendEmail(subject: "Inquiry From \(user.username)", body: "", to: "support@rosegoldgardens.com") { _ in
+                                        
                                     }
                                 } else { // if they don't have the apple mail app on their phone
                                     openURL(URL(string: "mailto:support@rosegoldgardens.com?subject=Inquiry%20From%20\(user.username)")!)
                                 }
                             }
-                            .alert(isPresented: $emailSent) {
+                            .alert(isPresented: $emailer.emailSent) {
                                 Alert(title: Text("Your Message Was Delivered"))
                             }
                             

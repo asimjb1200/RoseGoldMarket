@@ -40,6 +40,12 @@ struct ImageSelector: UIViewControllerRepresentable {
     
     // respond to interaction from the user while they're using the picker. Acts as the picker's delegate
     final class Coordinator: NSObject, PHPickerViewControllerDelegate {
+        var parent: ImageSelector
+        
+        init(_ parent: ImageSelector) {
+            self.parent = parent
+        }
+        
         func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
             
             picker.dismiss(animated: true) // tell the picker to go away
@@ -80,11 +86,6 @@ struct ImageSelector: UIViewControllerRepresentable {
                     }
                 }
             }
-        }
-        
-        var parent: ImageSelector
-        init(_ parent: ImageSelector) {
-            self.parent = parent
         }
     }
 }

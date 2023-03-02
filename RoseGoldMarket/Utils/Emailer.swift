@@ -56,8 +56,9 @@ import MessageUI
 //    }
 //}
 
-class EmailService: NSObject, MFMailComposeViewControllerDelegate {
-    public static let shared = EmailService()
+class EmailService: NSObject, MFMailComposeViewControllerDelegate, ObservableObject {
+    //public static let shared = EmailService()
+    @Published var emailSent = false
 
     func sendEmail(subject:String, body:String, to:String, completion: @escaping (Bool) -> Void){
      if MFMailComposeViewController.canSendMail(){
@@ -67,12 +68,35 @@ class EmailService: NSObject, MFMailComposeViewControllerDelegate {
         picker.setToRecipients([to])
         picker.mailComposeDelegate = self
         
-       UIApplication.shared.windows.first?.rootViewController?.present(picker,  animated: true, completion: nil)
+         UIApplication.shared.windows.first(where: \.isKeyWindow)?.rootViewController?.present(picker, animated: true, completion: nil)
+       //UIApplication.shared.windows.last?.rootViewController?.present(picker,  animated: true, completion: nil)
+//         UIApplication
+//             .shared
+//             .connectedScenes
+//             .compactMap { ($0 as? UIWindowScene)?.keyWindow }
+//             .last?
+//             .rootViewController?.present(picker, animated: true, completion: nil)
     }
       completion(MFMailComposeViewController.canSendMail())
     }
 
     func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        // detect what the user did
+        switch result.rawValue {
+            case MFMailComposeResult.cancelled.rawValue:
+                print("Mail cancelled")
+            case MFMailComposeResult.saved.rawValue:
+                print("Mail saved")
+            case MFMailComposeResult.sent.rawValue:
+                print("Mail sent")
+                DispatchQueue.main.async {
+                    self.emailSent = true
+                }
+            case MFMailComposeResult.failed.rawValue:
+                print("Mail sent failure: %@", [error!.localizedDescription])
+            default:
+                break
+        }
         controller.dismiss(animated: true, completion: nil)
          }
 }

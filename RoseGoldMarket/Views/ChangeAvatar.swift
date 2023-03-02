@@ -68,11 +68,13 @@ struct ChangeAvatar: View {
                 }
                 .padding()
                 .alert(isPresented: $dataPosted) {
-                    Alert(title: Text("Avatar Updated!"), dismissButton: .destructive(Text("OK!"), action: { dismiss() }))
+                    Alert(title: Text("Profile Picture Updated!"), dismissButton: .destructive(Text("OK!"), action: { dismiss() }))
                 }
                 Spacer()
             }
-        }.sheet(isPresented: $isShowingPhotoPicker) {
+        }
+        .navigationBarTitle(Text("Change Profile Picture"), displayMode: .inline)
+        .sheet(isPresented: $isShowingPhotoPicker) {
             if useCamera {
                 CameraAccessor(selectedImage: $userImage)
             } else {

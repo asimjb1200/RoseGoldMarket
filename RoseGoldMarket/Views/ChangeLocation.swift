@@ -136,7 +136,9 @@ struct ChangeLocation: View {
             
             Spacer()
             
-        }.onAppear() {
+        }
+        .navigationBarTitle(Text("Change Address"), displayMode: .inline)
+        .onAppear() {
             // load in the user's current data
              fetchCurrentAddress(user: user)
         }
