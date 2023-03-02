@@ -21,7 +21,7 @@ struct ChangeUsername: View {
     
     let searchTextPublisher = PassthroughSubject<String, Never>()
     let userService = UserNetworking.shared
-    var buttonWidth = UIScreen.main.bounds.width * 0.85
+    let buttonWidth = UIScreen.main.bounds.width * 0.85
     
     var body: some View {
         VStack(spacing: 0) {
@@ -96,7 +96,7 @@ struct ChangeUsername: View {
             ).alert(isPresented: $problemOccurred) {
                 Alert(title: Text("Name Change Unsuccessful"), message: Text("Try again later"), dismissButton: .default(Text("OK")) )
             }
-        }.navigationBarTitle(Text("Change Username"), displayMode: .inline)
+        }.navigationBarTitle(Text("Change Display Name"), displayMode: .inline)
     }
     
     func checkAvailability(usernameToCheck: String) {

@@ -15,8 +15,8 @@ final class EmailSupportViewModel: ObservableObject {
     @Published var deliveryMessage: String = ""
     @Published var deliveryHeading: String = ""
     
-    func sendEmail() {
-        userService.emailSupport(subject: self.subjectLine, message: self.message, token: "user.accessToken,", completion: {[weak self] (emailSentResponse) in
+    func sendEmail(user: UserModel) {
+        userService.emailSupport(subject: self.subjectLine, message: self.message, token: user.accessToken, completion: {[weak self] (emailSentResponse) in
             switch (emailSentResponse) {
                 case .success(_):
                     DispatchQueue.main.async {
@@ -27,7 +27,7 @@ final class EmailSupportViewModel: ObservableObject {
                 case .failure(let err):
                     if err == .tokenExpired {
                         DispatchQueue.main.async {
-//                            user.logout()
+                            user.logout()
                         }
                     } else {
                         DispatchQueue.main.async {

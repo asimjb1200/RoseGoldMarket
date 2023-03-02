@@ -7,8 +7,6 @@
 
 import Foundation
 
-
-
 final class UserNetworking {
     private let networker: Networker = Networker()
     static let shared: UserNetworking = UserNetworking()
@@ -190,34 +188,6 @@ final class UserNetworking {
                 completion(.success(true))
             } else {
                 completion(.success(false))
-            }
-        }.resume()
-    }
-    
-    func emailSupport(subject: String, message: String, token: String, completion: @escaping (Result<ResponseFromServer<Bool>, SupportErrors>) -> ()) {
-        let reqWithoutBody: URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/email-support", token: token, post: true)
-        let session = URLSession.shared
-        let body = ["subject": subject, "message": message]
-        
-        let request = networker.buildReqBody(req: reqWithoutBody, body: body)
-        session.dataTask(with: request) {(_, response, error) in
-            if error != nil {
-                print("there was an error with the request")
-            }
-            
-            guard let response = response as? HTTPURLResponse else {
-                completion(.failure(.responseConversionError))
-                return
-            }
-            
-            let isOK = self.networker.checkOkStatus(res: response)
-            if isOK {
-                let resFromServer = ResponseFromServer<Bool>(data: true, error: [], newToken: nil)
-                completion(.success(resFromServer))
-            } else if response.statusCode ~= 403 {
-                completion(.failure(.tokenExpired))
-            } else {
-                completion(.failure(.serverError))
             }
         }.resume()
     }

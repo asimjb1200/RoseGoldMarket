@@ -6,13 +6,16 @@
 //
 
 import SwiftUI
+import MessageUI
 
 struct AccountOptions: View {
     @EnvironmentObject var user:UserModel
     @EnvironmentObject var messenger:MessagingViewModel
+    @Environment(\.openURL) var openURL
     @State var confirmLogout = false
     @State var confirmDeletion = false
     @State var deletetionErrorOccurred = false
+    @State var emailSent = false
     var service:UserNetworking = .shared
     
     var body: some View {
@@ -36,7 +39,20 @@ struct AccountOptions: View {
                     
                     Section(
                         content: {
-                            NavigationLink(destination: EmailSupport(), label: {Text("Email Support")})
+                            Button("Email Support") {
+                                if MFMailComposeViewController.canSendMail() {
+                                    EmailService.shared.sendEmail(subject: "Inquiry From \(user.username)", body: "", to: "support@rosegoldgardens.com") { (mailRes) in
+                                        if mailRes {
+                                            emailSent.toggle()
+                                        }
+                                    }
+                                } else { // if they don't have the apple mail app on their phone
+                                    openURL(URL(string: "mailto:support@rosegoldgardens.com?subject=Inquiry%20From%20\(user.username)")!)
+                                }
+                            }
+                            .alert(isPresented: $emailSent) {
+                                Alert(title: Text("Your Message Was Delivered"))
+                            }
                             
                             Button("Log Out") {
                                 confirmLogout.toggle()
@@ -73,7 +89,8 @@ struct AccountOptions: View {
                             Text("Account Actions").font(.title).fontWeight(.bold)
                         }
                     )
-                }.alert(isPresented: $deletetionErrorOccurred) {
+                }
+                .alert(isPresented: $deletetionErrorOccurred) {
                     Alert(title:Text("An Error Occurred"), message: Text("Try again later."))
                 }
             }
