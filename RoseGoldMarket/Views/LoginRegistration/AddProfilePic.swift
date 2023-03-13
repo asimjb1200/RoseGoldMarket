@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct AddProfilePic: View {
     @Environment(\.colorScheme) var colorScheme
@@ -16,10 +17,15 @@ struct AddProfilePic: View {
     @State var errorOccurred = false
     @State var mustAcceptTerms = false
     @Environment(\.dismiss) private var dismiss
+    @State var newUsernamePublisher = PassthroughSubject<String, Never>()
+    @State var debouncedText = ""
+    @State var isAvailable = false
+    @State var loading = false
     
     @State var acceptedTerms = false
     @EnvironmentObject var appViewState: CurrentAppView
-
+    
+    let userService = UserNetworking.shared
     let accent = Color.blue
     private let nonActiveField: some View = RoundedRectangle(cornerRadius: 30).stroke(.gray, lineWidth: 1)
     private let activeField: some View = RoundedRectangle(cornerRadius: 30).stroke(Color.blue, lineWidth:3)
@@ -38,10 +44,10 @@ struct AddProfilePic: View {
                 
                 // MARK: Avatar
                 ZStack {
-                        Circle()
-                            .frame(width: 160, height: 160)
-                            .foregroundColor(accent)
-                            .shadow(radius: 25)
+                    Circle()
+                        .frame(width: 160, height: 160)
+                        .foregroundColor(accent)
+                        .shadow(radius: 25)
                     if registerViewModel.avatar == nil {
                         Menu("Add a Photo") {
                             Button("Take Photo") {
@@ -86,6 +92,16 @@ struct AddProfilePic: View {
                                 }.frame(maxWidth: .infinity, alignment: .leading)
                             }
                         }
+                        .onChange(of: registerViewModel.username) {
+                            registerViewModel.username = String($0.prefix(16))
+                            newUsernamePublisher.send(registerViewModel.username)
+                        }
+                        .onReceive(newUsernamePublisher.debounce(for: .milliseconds(500), scheduler: DispatchQueue.main)) { debouncedUsername in
+                            debouncedText = debouncedUsername
+                            if debouncedText.count > 5 {
+                                checkAvailability(usernameToCheck: debouncedText.lowercased())
+                            }
+                        }
                         .onSubmit {
                             focusedField = nil
                         }
@@ -98,15 +114,34 @@ struct AddProfilePic: View {
                     Alert(title: Text("That display name isn't available."))
                 }
                 
-                Text("Character Limit: \(charCount)")
-                    .fontWeight(.light)
-                    .font(.caption)
-                    .frame(maxWidth: .infinity,alignment:.leading)
-                    .padding(.leading)
-                    .foregroundColor(focusedField == FormFields.username ? accent : Color.gray)
-                    .alert(isPresented: $registerViewModel.usernameLengthIsInvalid) {
-                        Alert(title: Text("Display name must be between 5 and 16 characters."))
+                if debouncedText.count > 5 {
+                    if loading {
+                        ProgressView("Working...")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.leading)
+                    } else {
+                        Text(isAvailable ? "Available" : "Unavailable")
+                            .foregroundColor(isAvailable ? .green : .red)
+                            .font(.caption)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.leading)
                     }
+                } else {
+                    Text("6 or more characters")
+                        .foregroundColor(.red)
+                        .font(.caption)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading)
+                }
+//                Text("Character Limit: \(charCount)")
+//                    .fontWeight(.light)
+//                    .font(.caption)
+//                    .frame(maxWidth: .infinity,alignment:.leading)
+//                    .padding(.leading)
+//                    .foregroundColor(focusedField == FormFields.username ? accent : Color.gray)
+//                    .alert(isPresented: $registerViewModel.usernameLengthIsInvalid) {
+//                        Alert(title: Text("Display name must be between 5 and 16 characters."))
+//                    }
                 
                 HStack(alignment: .top) {
                     Rectangle()
@@ -117,7 +152,7 @@ struct AddProfilePic: View {
                             acceptedTerms.toggle()
                         }
                     
-                    Text("Tap here to accept our [Terms and Conditions](https://www.rosegoldgardens.com/privacy.html) of app usage.")
+                    Text("Tap here to accept our [Terms and Conditions](https://www.rosegoldgardens.com/terms.html) of app usage.")
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.leading)
                 }
@@ -134,61 +169,63 @@ struct AddProfilePic: View {
                     }
                 
                 
-                    Button("Confirm Account") {
-                        guard registerViewModel.dataPosted == false else {
-                            return
-                        }
-                        
-                        guard registerViewModel.avatar != nil else {
-                            registerViewModel.avatarNotUploaded = true
-                            return
-                        }
-
-                        guard
-                            registerViewModel.username.count <= 16,
-                            registerViewModel.username.count > 5
-                        else {
-                            registerViewModel.usernameLengthIsInvalid = true
-                            focusedField = .username
-                            return
-                        }
-
-                        guard
-                            let addyInfo = registerViewModel.addressInfo
-                        else {
-                            print("Couldn't get their address information.")
-                            errorOccurred = true
-                            return
-                        }
-                        
-                        guard
-                            acceptedTerms == true
-                        else {
-                            mustAcceptTerms.toggle()
-                            return
-                        }
-                        
-                        let sanitizedPhone = registerViewModel.phone.replacingOccurrences(of: "-", with: "")
-                        
-                        registerViewModel.loading = true
-                        registerViewModel.registerUserV2(address: addyInfo.address, phone: sanitizedPhone, city: addyInfo.city, state: addyInfo.state, zipCode: addyInfo.zipCode, geolocation: addyInfo.geolocation)
-                        
+                Button("Confirm Account") {
+                    guard registerViewModel.dataPosted == false else {
+                        return
                     }
-                    .foregroundColor(Color.white)
-                    .font(.system(size: 16, weight: Font.Weight.bold))
-                    .padding()
-                    .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue).frame(width: 190))
-                    .padding(.top, 100.0)
-                    .alert(isPresented: $registerViewModel.dataPosted) {
-                        Alert(title: Text("Verify Account"), message: Text("You've completed the first registration step. Go to your email and check for a message from us (support@rosegoldgardens.com) to complete the verification process. Make sure to check your spam/junk folders if you don't see it."), dismissButton: .default(Text("Log In")) {
-                            registerViewModel.canLoginNow = true
-                            //dismiss()
-                            withAnimation {
-                                appViewState.currentView = .LoginView
-                            }
-                        })
-                    }.shadow(radius: 5)
-
+                    
+                    guard registerViewModel.avatar != nil else {
+                        registerViewModel.avatarNotUploaded = true
+                        return
+                    }
+                    
+                    guard
+                        registerViewModel.username.count <= 16,
+                        registerViewModel.username.count > 5
+                    else {
+                        registerViewModel.usernameLengthIsInvalid = true
+                        focusedField = .username
+                        return
+                    }
+                    
+                    guard
+                        let addyInfo = registerViewModel.addressInfo
+                    else {
+                        print("Couldn't get their address information.")
+                        errorOccurred = true
+                        return
+                    }
+                    
+                    guard
+                        acceptedTerms == true
+                    else {
+                        mustAcceptTerms.toggle()
+                        return
+                    }
+                    
+                    guard isAvailable else { return }
+                    
+                    let sanitizedPhone = registerViewModel.phone.replacingOccurrences(of: "-", with: "")
+                    
+                    registerViewModel.loading = true
+                    registerViewModel.registerUserV2(address: addyInfo.address, phone: sanitizedPhone, city: addyInfo.city, state: addyInfo.state, zipCode: addyInfo.zipCode, geolocation: addyInfo.geolocation)
+                    
+                }
+                .foregroundColor(Color.white)
+                .font(.system(size: 16, weight: Font.Weight.bold))
+                .padding()
+                .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue).frame(width: 190))
+                .padding(.top, 100.0)
+                .alert(isPresented: $registerViewModel.dataPosted) {
+                    Alert(title: Text("Verify Account"), message: Text("You've completed the first registration step. Go to your email and check for a message from us (support@rosegoldgardens.com) to complete the verification process. Make sure to check your spam/junk folders if you don't see it."), dismissButton: .default(Text("Log In")) {
+                        registerViewModel.canLoginNow = true
+                        //dismiss()
+                        withAnimation {
+                            appViewState.currentView = .LoginView
+                        }
+                    })
+                }.shadow(radius: 5)
+                
                 Spacer()
             }
             .tint(accent)
@@ -198,6 +235,28 @@ struct AddProfilePic: View {
                 } else {
                     ImageSelector(image: $registerViewModel.avatar, canSelectMultipleImages: false, images: Binding.constant([]))
                 }
+            }
+        }
+    }
+    
+    func checkAvailability(usernameToCheck: String) {
+        self.loading = true
+        userService.checkUsernameAvailability(newUsername: debouncedText, token: "") { isAvailableResponse in
+            switch isAvailableResponse {
+                case .success(let usernameFound):
+                    DispatchQueue.main.async {
+                        if usernameFound == "0" {
+                            isAvailable = true
+                        } else {
+                            isAvailable = false
+                        }
+                        self.loading = false
+                    }
+            case .failure(let err):
+                    DispatchQueue.main.async {
+                        print(err)
+                        isAvailable = false
+                    }
             }
         }
     }
