@@ -53,7 +53,17 @@ final class HomeMarketViewModel: ObservableObject {
                         
                         if !itemData.data.isEmpty {
                             self?.currentOffset += 10
-                            self?.items.append(contentsOf: itemData.data) // add new items to the end of array for infinite scroll
+                            
+                            // make sure the items aren't already in the array
+                            for newItem in itemData.data {
+                                if let itemIsPresent = self?.items.contains(where: { $0.id == newItem.id }) {
+                                    if !itemIsPresent {
+                                        self?.items.append(newItem)
+                                    }
+                                }
+                            }
+                            
+                            //self?.items.append(contentsOf: itemData.data) // add new items to the end of array for infinite scroll
                             self?.isLoadingPage = false
                         } else {
                             self?.currentOffset = 0

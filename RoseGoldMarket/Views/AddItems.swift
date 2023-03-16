@@ -14,7 +14,7 @@ struct AddItems: View {
     @FocusState var descriptionFieldIsFocus:Bool
     @FocusState var nameFieldIsFocus:Bool
     @Binding var tab: Int
-    @State var profanityFound = false
+    //@State var profanityFound = false
     @State var tooManyChars = false
     @State var descriptionLengthInvalid = false
     @State var imagesMissing = false
@@ -25,10 +25,10 @@ struct AddItems: View {
     @State var image1: UIImage?
     @State var image2: UIImage?
     @State var image3: UIImage?
-    @State var typing = false
+    @State var sendingData = false
+    @State var buttonHeight:CGFloat = 50
     
     var buttonWidth = UIScreen.main.bounds.width * 0.85
-    @State var buttonHeight:CGFloat = 50
     var submitButtonWidth = UIScreen.main.bounds.width * 0.70
     var leadingLabelPadding = UIScreen.main.bounds.width * 0.1
     var categoryMapper = CategoryMapper()
@@ -205,7 +205,11 @@ struct AddItems: View {
                         .onChange(of: viewModel.plantDescription) {
                             viewModel.plantDescription = String($0.prefix(200)) // limit to 200 characters
                         }
-                }.offset(y: descOffset)
+                }
+                .offset(y: descOffset)
+                .alert(isPresented: $viewModel.itemPosted) {
+                    return Alert(title: Text("Success"), message: Text("Your plant is now live on the market!"), dismissButton: .default(Text("OK!")))
+                }
                
                 Button(
                     action: {viewModel.isShowingCategoryPicker = true},
@@ -230,91 +234,87 @@ struct AddItems: View {
                                 Spacer()
                             }
                             .padding(.top)
-                            .alert(isPresented: $categoriesMissing) {
-                                Alert(title: Text("Missing Categories"), message: Text("Add categories to your plant."), dismissButton: .default(Text("OK!")))
-                            }
+                            
                     }
-                )
+                ).alert(isPresented: $categoriesMissing) {
+                    Alert(title: Text("Missing Categories"), message: Text("Add categories to your plant."), dismissButton: .default(Text("OK!")))
+                }
                 
-                Button(
-                    action: {
-                        guard viewModel.itemPosted == false else {return}
-                        guard plantImagesAdded() == true else {
-                            imagesMissing = true
-                            return
-                        }
-                        
-                        guard !viewModel.plantName.isEmpty else {
-                            nameFieldIsFocus = true
-                            return
-                        }
-                        
-                        guard !viewModel.plantDescription.isEmpty else {
-                            descriptionFieldIsFocus = true
-                            return
-                        }
-                        
-                        guard viewModel.categoryChosen == true else {
-                            categoriesMissing = true
-                            return
-                        }
-                        
-                        guard
-                            viewModel.plantName.count <= 20
-                        else {
-                            nameFieldIsFocus = true
-                            tooManyChars = true
-                            return
-                        }
-                        
-                        guard viewModel.plantDescription.count <= 200
-                        else {
-                            descriptionFieldIsFocus = true
-                            descriptionLengthInvalid = true
-                            return
-                        }
-                        
-                        guard
-                            let plantImage = image1?.jpegData(compressionQuality: 0.5),
-                            let plantImage2 = image2?.jpegData(compressionQuality: 0.5),
-                            let plantImage3 = image3?.jpegData(compressionQuality: 0.5)
-                        else {
-                            print("couldn't get the images and compress them")
-                            return
-                        }
-                        
-                        // viewModel.savePlant(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, user: user)
-                        
-                        viewModel.savePlantV2(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, user: user) { itemPosted in
-                            if itemPosted {
-                                // reset everything now
-                                viewModel.plantName = ""
-                                viewModel.plantDescription = ""
-                                descriptionFieldIsFocus = false
-                                nameFieldIsFocus = false
-                                image1 = nil
-                                image2 = nil
-                                image3 = nil
+                if !sendingData {
+                    Button(
+                        action: {
+                            guard viewModel.itemPosted == false else {return}
+                            guard plantImagesAdded() == true else {
+                                imagesMissing = true
+                                return
                             }
-                        }
-                        
-                        
-                    },
-                    label: {
-                        Text("Submit")
-                            .fontWeight(.bold)
-                            .frame(maxWidth: .infinity, maxHeight: buttonHeight, alignment: .center)
-                            .foregroundColor(.white)
-                            .background(RoundedRectangle(cornerRadius: 25).fill(viewModel.itemPosted ? .blue : Color("AccentColor")).frame(width: submitButtonWidth, height: buttonHeight))
-                            .padding(.top)
-                            .offset(y: descOffset)
-                            .alert(isPresented: $viewModel.itemPosted) {
-                                return Alert(title: Text("Success"), message: Text("Your plant is now live on the market!"), dismissButton: .default(Text("OK!"), action: {
-                                    self.tab = 0
-                                }))
+                            
+                            guard !viewModel.plantName.isEmpty else {
+                                nameFieldIsFocus = true
+                                return
                             }
-                    }
-                )
+                            
+                            guard !viewModel.plantDescription.isEmpty else {
+                                descriptionFieldIsFocus = true
+                                return
+                            }
+                            
+                            guard viewModel.categoryChosen == true else {
+                                categoriesMissing = true
+                                return
+                            }
+                            
+                            guard
+                                viewModel.plantName.count <= 20
+                            else {
+                                nameFieldIsFocus = true
+                                tooManyChars = true
+                                return
+                            }
+                            
+                            guard viewModel.plantDescription.count <= 200
+                            else {
+                                descriptionFieldIsFocus = true
+                                descriptionLengthInvalid = true
+                                return
+                            }
+                            
+                            guard
+                                let plantImage = image1?.jpegData(compressionQuality: 0.5),
+                                let plantImage2 = image2?.jpegData(compressionQuality: 0.5),
+                                let plantImage3 = image3?.jpegData(compressionQuality: 0.5)
+                            else {
+                                print("couldn't get the images and compress them")
+                                return
+                            }
+                            sendingData = true
+                            viewModel.savePlantV2(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, user: user) { itemPosted in
+                                if itemPosted {
+                                    // reset everything now
+                                    viewModel.plantName = ""
+                                    viewModel.plantDescription = ""
+                                    descriptionFieldIsFocus = false
+                                    nameFieldIsFocus = false
+                                    image1 = nil
+                                    image2 = nil
+                                    image3 = nil
+                                }
+                                sendingData = false
+                            }
+                        },
+                        label: {
+                            Text("Submit")
+                                .fontWeight(.bold)
+                                .frame(maxWidth: .infinity, maxHeight: buttonHeight, alignment: .center)
+                                .foregroundColor(.white)
+                                .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(width: submitButtonWidth, height: buttonHeight))
+                                .padding(.top)
+                                .offset(y: descOffset)
+                        }
+                    )
+                } else {
+                    ProgressView()
+                }
             }
             .padding([.leading, .trailing])
             .ignoresSafeArea(.keyboard, edges: .bottom)

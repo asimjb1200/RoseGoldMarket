@@ -67,7 +67,14 @@ struct ItemDetails: View {
                         .fontWeight(.heavy)
                         .foregroundColor(Color("MainColor"))
                     
-                    Text("Date Posted: \(self.formatDate(date: item.dateposted))").font(.footnote).fontWeight(.medium).foregroundColor(Color("AccentColor")).frame(maxWidth: .infinity, alignment: .leading)
+                HStack {
+                    Text("Date Posted: \(self.formatDate(date: item.dateposted))").font(.footnote).fontWeight(.medium).foregroundColor(Color("AccentColor"))
+                    Spacer()
+                    if item.ownerUsername != nil {
+                        Text("Owner: \(item.ownerUsername!)").font(.footnote).fontWeight(.medium).foregroundColor(Color("AccentColor"))
+                    }
+                }
+                    //.frame(maxWidth: .infinity, alignment: .leading)
                     
                     
                     Text(item.description)

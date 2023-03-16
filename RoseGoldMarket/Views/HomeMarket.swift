@@ -91,7 +91,9 @@ struct HomeMarket: View {
                         }
                         .padding(.horizontal)
                         .onAppear() {
-                            determineUserLocation()
+                            if firstAppear {
+                                determineUserLocation()
+                            }
                         }
                     }
                     .padding(.bottom, 2.0)
@@ -130,6 +132,9 @@ struct HomeMarket: View {
     }
     
     func determineUserLocation() {
+        if firstAppear {
+            firstAppear = false
+        }
         if locationManager.lastLocation != nil {
             viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
         } else {
