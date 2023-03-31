@@ -86,6 +86,34 @@ final class UserNetworking {
         }.resume()
     }
     
+    func reportAUser(userToReport: UInt, reportingUser:UInt, reason: String, token: String, completion: @escaping (Result<Bool, UserErrors>) -> ()) {
+        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/report-user", token: token, post: true)
+        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/report-user", token: token, post: true)
+        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://192.168.1.65:4000/api/users/report-user", token: token, post: true)
+        
+        let body: [String:Any] = ["reportingUserId": reportingUser, "reportedUserId":userToReport, "reason":reason]
+        let request = networker.buildReqBody(req: reqWithoutBody, body: body)
+        
+        let session = URLSession.shared
+        session.dataTask(with: request) { ( _, response, error) in
+            if error != nil {
+                completion(.failure(.serverError))
+            }
+            
+            guard let response = response as? HTTPURLResponse else {
+                completion(.failure(.responseConversionError))
+                return
+            }
+            
+            let isOk = self.networker.checkOkStatus(res: response)
+            if isOk {
+                completion(.success(true))
+            } else {
+                completion(.success(false))
+            }
+        }.resume()
+    }
+    
     func saveNewUsername(newUsername:String, oldUsername:String, accessToken:String, completion: @escaping (Result<ResponseFromServer<Bool>, UserErrors>) -> ()) {
         let reqWithoutBody:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/change-username?newUsername=\(newUsername)&oldUsername=\(oldUsername)", token: accessToken, post: false)
         //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/change-username?newUsername=\(newUsername)&oldUsername=\(oldUsername)", token: accessToken, post: false)
