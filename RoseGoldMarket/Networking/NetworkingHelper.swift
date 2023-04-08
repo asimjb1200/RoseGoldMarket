@@ -7,12 +7,19 @@
 
 import Foundation
 import UIKit
+import Alamofire
 
 struct Networker {
     // static let shared = Networker()
     init() {}
-    func constructRequest(uri: String, token: String = "", post: Bool = false) -> URLRequest {
-        let url = URL(string: uri)!
+    func constructRequest(uri: String, token: String = "", post: Bool = false, queryItems: [URLQueryItem]? = nil) -> URLRequest {
+        var url = URL(string: uri)!
+        
+        if queryItems != nil {
+            if let queryItems = queryItems {
+                url.append(queryItems: queryItems)
+            }
+        }
 
         var request: URLRequest = URLRequest(url: url)
         
@@ -62,22 +69,6 @@ struct Networker {
     func buildMultipartImageRequest(boundary: String, item: ItemForBackend, itemId:UInt = 0) -> Data {
         var data = Data()
         
-        // add the image data to the raw http request data
-        data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
-        data.append("Content-Disposition: form-data; name=\"images\"; filename=\"\(item.filename1)\"\r\n".data(using: .utf8)!)
-        data.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
-        data.append(item.image1)
-        
-        data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
-        data.append("Content-Disposition: form-data; name=\"images\"; filename=\"\(item.filename2)\"\r\n".data(using: .utf8)!)
-        data.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
-        data.append(item.image2)
-        
-        data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
-        data.append("Content-Disposition: form-data; name=\"images\"; filename=\"\(item.filename3)\"\r\n".data(using: .utf8)!)
-        data.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
-        data.append(item.image3)
-        
         // add the rest of the item's info to the multipart form data
         let paramObj:[String: Any] = item.getParams()
         
@@ -92,6 +83,25 @@ struct Networker {
             data.append("Content-Disposition: form-data; name=\"itemId\"\r\n\r\n".data(using: .utf8)!)
             data.append("\(itemId)\r\n".data(using: .utf8)!)
         }
+        
+        // add the image data to the raw http request data
+        data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+        data.append("Content-Disposition: form-data; name=\"images\"; filename=\"\(item.filename1)\"\r\n".data(using: .utf8)!)
+        data.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+        data.append(item.image1)
+        data.append("\r\n".data(using: .utf8)!)
+        
+        data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+        data.append("Content-Disposition: form-data; name=\"images\"; filename=\"\(item.filename2)\"\r\n".data(using: .utf8)!)
+        data.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+        data.append(item.image2)
+        data.append("\r\n".data(using: .utf8)!)
+        
+        data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+        data.append("Content-Disposition: form-data; name=\"images\"; filename=\"\(item.filename3)\"\r\n".data(using: .utf8)!)
+        data.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+        data.append(item.image3)
+        data.append("\r\n".data(using: .utf8)!)
         
         data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
         

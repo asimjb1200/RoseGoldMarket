@@ -241,7 +241,7 @@ struct AddProfilePic: View {
     
     func checkAvailability(usernameToCheck: String) {
         self.loading = true
-        userService.checkUsernameAvailability(newUsername: debouncedText, token: "") { isAvailableResponse in
+        userService.checkUsernameAvailability(newUsername: debouncedText) { isAvailableResponse in
             switch isAvailableResponse {
                 case .success(let usernameFound):
                     DispatchQueue.main.async {

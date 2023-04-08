@@ -101,7 +101,7 @@ struct ChangeUsername: View {
     
     func checkAvailability(usernameToCheck: String) {
         self.loading = true
-        userService.checkUsernameAvailability(newUsername: usernameToCheck, token: user.accessToken) { isAvailableResponse in
+        userService.checkUsernameAvailability(newUsername: usernameToCheck) { isAvailableResponse in
             switch isAvailableResponse {
                 case .success(let usernameFound):
                     DispatchQueue.main.async {

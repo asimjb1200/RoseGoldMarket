@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Alamofire
 
 struct ItemService {
     func postItem(itemData items: ItemForBackend, token: String, completion: @escaping (Result<ResponseFromServer<String>, ItemErrors>) -> ()) {
@@ -18,39 +19,40 @@ struct ItemService {
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        
+          
         let requestData = networker.buildMultipartImageRequest(boundary: boundary, item: items)
+        urlRequest.httpBody = requestData
         
-        URLSession.shared.uploadTask(with: urlRequest, from: requestData) {(data, response, error) in
+        URLSession.shared.dataTask(with: urlRequest) {(data, response, error) in
             guard error == nil else {
                 completion(.failure(.genError))
                 return
             }
-            
+
             guard let response = response as? HTTPURLResponse else {
                 print("error unwrapping response")
                 completion(.failure(.genError))
                 return
             }
-            
+
             guard response.statusCode != 403 else {
                 completion(.failure(.tokenExpired))
                 return
             }
-            
+
             guard response.statusCode == 201 else {
                 print("the request failed")
                 completion(.failure(.genError))
                 return
             }
 
-            
+
             guard let data = data else {
                 print("problem decoding data")
                 completion(.failure(.genError))
                 return
             }
-            
+
             do {
                 let decoded = try JSONDecoder().decode(ResponseFromServer<String>.self, from: data)
                 print("Data posted")
@@ -134,7 +136,8 @@ struct ItemService {
     
     func retrieveItemsForAccount(accountId: UInt, token: String, completion: @escaping (Result<ResponseFromServer<[Item]>, ItemErrors>) -> ()) {
         let networker = Networker()
-        let req = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/items?accountId=\(accountId)", token: token)
+        let queryItem = [URLQueryItem(name: "accountId", value: "\(accountId)")]
+        let req = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/items", token: token, queryItems: queryItem)
         
         URLSession.shared.dataTask(with: req) {(data, response, err) in
             guard err == nil else {
@@ -180,7 +183,8 @@ struct ItemService {
     }
     
     func retrieveItemById(itemId:UInt, token: String, completion: @escaping (Result<ResponseFromServer<Item>, ItemErrors>) -> ()) {
-        let req = Networker().constructRequest(uri: "https://rosegoldgardens.com/api/item-handler/item-details-for-edit?itemId=\(itemId)", token: token, post: false)
+        let queryItem = [URLQueryItem(name: "itemId", value: "\(itemId)")]
+        let req = Networker().constructRequest(uri: "https://rosegoldgardens.com/api/item-handler/item-details-for-edit", token: token, queryItems: queryItem)
         
         URLSession.shared.dataTask(with: req) { (data, response, err) in
             if err != nil {
@@ -220,8 +224,10 @@ struct ItemService {
     }
     
     func deleteItem(itemId:UInt, itemName:String, token: String, completion: @escaping (Result<ResponseFromServer<Bool>, ItemErrors>) -> ()) {
-        let url = URL(string: "https://rosegoldgardens.com/api/item-handler/delete-item?itemId=\(itemId)&itemName=\(itemName.replacingOccurrences(of: " ", with: "%20"))")!
-        var request = URLRequest(url: url)
+        let queryItems = [URLQueryItem(name: "itemId", value: "\(itemId)"), URLQueryItem(name: "itemName", value: "\(itemName.replacingOccurrences(of: " ", with: "%20"))")]
+        let url = URL(string: "https://rosegoldgardens.com/api/item-handler/delete-item")!
+        let finalURL = url.appending(queryItems: queryItems)
+        var request = URLRequest(url: finalURL)
         
         request.httpMethod = "DELETE"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")

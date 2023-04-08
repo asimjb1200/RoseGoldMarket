@@ -50,6 +50,7 @@
 		684B923027D27DD800CF25D9 /* ItemNameAndId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684B922F27D27DD800CF25D9 /* ItemNameAndId.swift */; };
 		684B923227D2BA7B00CF25D9 /* EditItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684B923127D2BA7B00CF25D9 /* EditItem.swift */; };
 		684F3EDD29496DBD00D1D40A /* SecurityCodeFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684F3EDC29496DBD00D1D40A /* SecurityCodeFields.swift */; };
+		684F792F29DD26620038389C /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 684F792E29DD26620038389C /* Alamofire */; };
 		6866FA2427B345880052B8A5 /* SocketStuff.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6866FA2327B345880052B8A5 /* SocketStuff.swift */; };
 		6878BCCB27F270C700CD071A /* badwords.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6878BCCA27F270C700CD071A /* badwords.txt */; };
 		687A0BCB28602E23003B76D1 /* UnderlineTextFieldModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687A0BCA28602E23003B76D1 /* UnderlineTextFieldModifier.swift */; };
@@ -172,6 +173,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				684F792F29DD26620038389C /* Alamofire in Frameworks */,
 				68D1FC0E291B7CF9000EC54D /* FacebookShare in Frameworks */,
 				68DFE8A327B4230F00190CD7 /* SocketIO in Frameworks */,
 			);
@@ -435,6 +437,7 @@
 			packageProductDependencies = (
 				68DFE8A227B4230F00190CD7 /* SocketIO */,
 				68D1FC0D291B7CF9000EC54D /* FacebookShare */,
+				684F792E29DD26620038389C /* Alamofire */,
 			);
 			productName = RoseGoldMarket;
 			productReference = 6848677F2798BAC70033969D /* RoseGoldMarket.app */;
@@ -467,6 +470,7 @@
 			packageReferences = (
 				68DFE8A127B4230F00190CD7 /* XCRemoteSwiftPackageReference "socket" */,
 				68D1FC0C291B7CF9000EC54D /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */,
+				684F792D29DD26620038389C /* XCRemoteSwiftPackageReference "Alamofire" */,
 			);
 			productRefGroup = 684867802798BAC70033969D /* Products */;
 			projectDirPath = "";
@@ -697,7 +701,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = RoseGoldMarket/RoseGoldMarket.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"RoseGoldMarket/Preview Content\"";
 				DEVELOPMENT_TEAM = P2B946HD8M;
 				ENABLE_PREVIEWS = YES;
@@ -733,7 +737,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = RoseGoldMarket/RoseGoldMarket.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"RoseGoldMarket/Preview Content\"";
 				DEVELOPMENT_TEAM = P2B946HD8M;
 				ENABLE_PREVIEWS = YES;
@@ -786,6 +790,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		684F792D29DD26620038389C /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
 		68D1FC0C291B7CF9000EC54D /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/facebook/facebook-ios-sdk";
@@ -805,6 +817,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		684F792E29DD26620038389C /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 684F792D29DD26620038389C /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
 		68D1FC0D291B7CF9000EC54D /* FacebookShare */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 68D1FC0C291B7CF9000EC54D /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;

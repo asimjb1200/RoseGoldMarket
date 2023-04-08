@@ -12,8 +12,9 @@ struct MessagingService {
     
     func fetchLatestMessageInEachChat(userId: UInt, token:String, completion: @escaping (Result<ResponseFromServer<[ChatDataForPreview]>, MessageErrors>) -> ()) {
         //let url = "http://192.168.1.65:4000/api/chat-handler/latest-messages?accountId=\(userId)"
-        let url = "https://rosegoldgardens.com/api/chat-handler/latest-messages?accountId=\(userId)"
-        let request = networker.constructRequest(uri: url, token: token)
+        let queryItem = [URLQueryItem(name: "accountId", value: "\(userId)")]
+        let url = "https://rosegoldgardens.com/api/chat-handler/latest-messages"
+        let request = networker.constructRequest(uri: url, token: token, queryItems: queryItem)
         
         URLSession.shared.dataTask(with: request) { (data, response, err) in
             guard err == nil else {
@@ -45,8 +46,12 @@ struct MessagingService {
     }
     
     func fetchMessageThreadBetweenUsers(viewingAccountId:UInt, otherUserAccountId:UInt, token: String, completion: @escaping (Result<ResponseFromServer<[ChatData]>, MessageErrors>) -> ()) {
-        let url = "https://rosegoldgardens.com/api/chat-handler/get-chat-thread?viewingAccount=\(viewingAccountId)&otherUserAccount=\(otherUserAccountId)"
-        let request = networker.constructRequest(uri: url, token: token)
+        let queryItems = [
+            URLQueryItem(name: "viewingAccount", value: "\(viewingAccountId)"),
+            URLQueryItem(name: "otherUserAccount", value: "\(otherUserAccountId)")
+        ]
+        let url = "https://rosegoldgardens.com/api/chat-handler/get-chat-thread"
+        let request = networker.constructRequest(uri: url, token: token, queryItems: queryItems)
         
         URLSession.shared.dataTask(with: request) { (data, response, err) in
             guard err == nil else {

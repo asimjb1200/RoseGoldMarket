@@ -50,8 +50,10 @@ final class UserNetworking {
         }.resume()
     }
     
-    func checkUsernameAvailability(newUsername:String, token: String, completion: @escaping (Result<String, UserErrors>) -> ()) {
-        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/check-username?newUsername=\(newUsername)", token: token, post: false)
+    func checkUsernameAvailability(newUsername:String, completion: @escaping (Result<String, UserErrors>) -> ()) {
+        let queryItem: [URLQueryItem] = [URLQueryItem(name: "newUsername", value: newUsername)]
+        
+        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/check-username", queryItems: queryItem)
         //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/check-username?newUsername=\(newUsername)", token: accessToken, post: false)
         //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://192.168.1.65:4000/api/users/check-username?newUsername=\(newUsername)", token: accessToken, post: false)
         
@@ -115,9 +117,13 @@ final class UserNetworking {
     }
     
     func saveNewUsername(newUsername:String, oldUsername:String, accessToken:String, completion: @escaping (Result<ResponseFromServer<Bool>, UserErrors>) -> ()) {
-        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/change-username?newUsername=\(newUsername)&oldUsername=\(oldUsername)", token: accessToken, post: false)
-        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/change-username?newUsername=\(newUsername)&oldUsername=\(oldUsername)", token: accessToken, post: false)
-        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://192.168.1.65:4000/api/users/change-username?newUsername=\(newUsername)&oldUsername=\(oldUsername)", post: false)
+        let queryItems = [
+        URLQueryItem(name: "newUsername", value: newUsername),
+        URLQueryItem(name: "oldUsername", value: oldUsername)
+        ]
+        let reqWithoutBody:URLRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/change-username", token: accessToken, queryItems: queryItems)
+        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://localhost:4000/api/users/change-username", token: accessToken, post: false)
+        //let reqWithoutBody:URLRequest = networker.constructRequest(uri: "http://192.168.1.65:4000/api/users/change-username", queryItems: queryItems)
         
         let session = URLSession.shared
         session.dataTask(with: reqWithoutBody) {(data, response, error) in
@@ -281,7 +287,8 @@ final class UserNetworking {
     }
     
     func fetchCurrentAddress(accountId: UInt, token: String, completion: @escaping (Result<ResponseFromServer<AddressInfo>, AccountDetailsErrors>) -> ()) {
-        let request = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/address-details?accountId=\(accountId)", token: token, post: false)
+        let queryItem = [URLQueryItem(name: "accountId", value: "\(accountId)")]
+        let request = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/address-details", token: token, queryItems: queryItem)
         
         URLSession.shared.dataTask(with: request) {(data, response, err) in
             if err != nil {
@@ -317,7 +324,8 @@ final class UserNetworking {
     }
     
     func fetchUsersItems(accountId: UInt, token: String, completion: @escaping (Result<ResponseFromServer<[ItemNameAndId]>, AccountDetailsErrors>) -> ()) {
-        let req = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/user-items?accountId=\(accountId)", token: token, post: false)
+        let queryItem = [URLQueryItem(name: "accountId", value: "\(accountId)")]
+        let req = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/user-items", token: token, queryItems: queryItem)
         
         URLSession.shared.dataTask(with: req) { (data, response, error) in
             if error != nil {
