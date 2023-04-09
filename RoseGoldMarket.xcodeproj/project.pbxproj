@@ -707,6 +707,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = RoseGoldMarket/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Rose Gold Gardens";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.shopping";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need to use the camera to allow you to upload your profile picture";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "We want to make it easier to log you into your account.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "To locate other plant dealers in your area.";
@@ -743,6 +745,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = RoseGoldMarket/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Rose Gold Gardens";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.shopping";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need to use the camera to allow you to upload your profile picture";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "We want to make it easier to log you into your account.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "To locate other plant dealers in your area.";

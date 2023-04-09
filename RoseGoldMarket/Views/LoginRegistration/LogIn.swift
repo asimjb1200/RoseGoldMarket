@@ -48,7 +48,7 @@ struct LogIn: View {
                     .font(.title)
                     .fontWeight(.bold)
                 
-                Text("Log in to your Rose Gold Markets account")
+                Text("Log in to your Rose Gold Gardens account")
                     .font(.footnote)
                     .foregroundColor(.gray)
                     .padding(.bottom, 25)
