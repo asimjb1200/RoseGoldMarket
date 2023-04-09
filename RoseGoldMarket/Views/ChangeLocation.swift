@@ -10,6 +10,7 @@ import CoreLocation
 
 struct ChangeLocation: View {
     @EnvironmentObject var user:UserModel
+    @Environment(\.dismiss) private var dismiss
     @StateObject var mapService:MapSearch = MapSearch()
     @State var address = ""
     @State var addressLineTwo = ""
@@ -18,6 +19,7 @@ struct ChangeLocation: View {
     @State var addressData = ""
     @State var addressNotFound = false
     @State var addressInformation:AddressInformation? = nil
+    @State var sendingData = false
     @FocusState private var focusedField: LocationFields?
     var buttonWidth = UIScreen.main.bounds.width * 0.85
     private enum LocationFields: Int, CaseIterable {
@@ -105,7 +107,7 @@ struct ChangeLocation: View {
 
             Button(
                 action: {
-                    guard !address.isEmpty else {
+                    guard addressInformation != nil else {
                         focusedField = .address
                         return
                     }
@@ -122,16 +124,22 @@ struct ChangeLocation: View {
                     saveNewUserLocation(addressObject: addyInformation)
                 },
                 label: {
-                    Text("Submit")
-                        .fontWeight(.bold)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .foregroundColor(.white)
-                        .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(width: buttonWidth, height: 50))
-                        .padding()
+                    if sendingData {
+                        ProgressView()
+                    } else {
+                        Text("Submit")
+                            .fontWeight(.bold)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .foregroundColor(.white)
+                            .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(width: buttonWidth, height: 50))
+                            .padding()
+                    }
                 }
             )
             .alert(isPresented: $dataSaved) {
-                Alert(title: Text("Address Updated"), dismissButton: .default(Text("OK")))
+                Alert(title: Text("Address Updated"), dismissButton: .default(Text("OK")) {
+                    dismiss()
+                })
             }
             
             Spacer()
@@ -145,10 +153,12 @@ struct ChangeLocation: View {
     }
     
     func saveNewUserLocation(addressObject:AddressInformation) {
+        self.sendingData = true
         UserNetworking.shared.saveNewAddress(newAddress: addressObject.address, newCity: addressObject.city, newState: addressObject.state, newZipCode: UInt(addressObject.zipCode)!, newGeoLocation: addressObject.geolocation, token: user.accessToken, completion: { response in
             switch(response) {
                 case .success(let isSaved):
                     DispatchQueue.main.async {
+                        self.sendingData = false
                         if isSaved.data {
                             self.dataSaved.toggle()
                         } else {
@@ -157,6 +167,7 @@ struct ChangeLocation: View {
                     }
                 case .failure(let err):
                     DispatchQueue.main.async {
+                        self.sendingData = false
                         print(err.localizedDescription)
                     }
             }
