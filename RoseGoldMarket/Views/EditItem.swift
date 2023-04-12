@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine // for access to the publisher
+import _PhotosUI_SwiftUI
 
 struct EditItem: View {
     @Environment(\.dismiss) private var dismiss
@@ -16,11 +17,12 @@ struct EditItem: View {
     @State var descOffset: CGFloat = 0
     @State var typing = false
     @State var areYouSure = false
-    @State var currentPhotoChoice: WhichPhoto = .image1
-    @State var image1: UIImage?
-    @State var image2: UIImage?
-    @State var image3: UIImage?
+    
     @State var typingDesc = false
+    @State var firstAppear = true
+    
+    @State private var plantImages: [UIImage?] = [nil, nil, nil]
+    @State private var selectedPlantImages: [PhotosPickerItem?] = [nil, nil, nil]
     
     @State var buttonHeight:CGFloat = 50
     var buttonWidth = UIScreen.main.bounds.width * 0.85
@@ -33,97 +35,41 @@ struct EditItem: View {
     
     var body: some View {
         VStack(alignment: .center, spacing: 15) {
-            if !typingDesc {
-                Text("Tap to change your photos")
-                    .fontWeight(.bold)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .foregroundColor(Color("AccentColor"))
-            }
-            
+//            if !typingDesc {
+//                Text("Tap to change your photos")
+//                    .fontWeight(.bold)
+//                    .frame(maxWidth: .infinity, alignment: .leading)
+//                    .foregroundColor(Color("AccentColor"))
+//            }
+
             // MARK: Plant Photos
-            HStack {
-                ZStack {
-                    Circle() // outer rim
-                        .frame(width: 100, height: 100)
-                        .foregroundColor(Color(.lightGray))
-                        .shadow(radius: 25)
-                        .task {
-                            getImage(owner: ownerName, itemName: itemName, imageNumber: 1)
+            LazyHStack {
+                ForEach(selectedPlantImages.indices, id: \.self) { selectedImageIndex in
+                    PhotosPicker(selection: $selectedPlantImages[selectedImageIndex], matching: .images) {
+                        ZStack {
+                            Circle() // outer rim
+                                .frame(width: 100, height: 100)
+                                .foregroundColor(Color(.lightGray))
+                            //.shadow(radius: 25)
+                            
+                            if let plantImage = plantImages[selectedImageIndex] {
+                                Image(uiImage: plantImage)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .clipShape(Circle())
+                                    .frame(width: 90, height: 90)
+                            }
+                        }.onChange(of: selectedPlantImages[selectedImageIndex]) { _ in
+                            Task {
+                                if let data = try? await selectedPlantImages[selectedImageIndex]?.loadTransferable(type: Data.self) {
+                                    if let uiImage = UIImage(data: data) {
+                                        plantImages[selectedImageIndex] = uiImage
+                                        return
+                                    }
+                                }
+                            }
                         }
-                    
-                    if image1 != nil {
-                        Image(uiImage: image1!)
-                            .resizable()
-                            .scaledToFill()
-                            .clipShape(Circle())
-                            .frame(width: 90, height: 90)
-                    } else {
-                        Circle()
-                            .frame(width: 90, height: 90)
-                            .foregroundColor(Color(.systemGray6))
-                            .padding()
-                            .shadow(radius: 25)
                     }
-                }
-                .onTapGesture {
-                    currentPhotoChoice = .image1
-                    viewModel.isShowingPhotoPicker = true
-                }
-                
-                ZStack {
-                    Circle() // outer rim
-                        .frame(width: 100, height: 100)
-                        .foregroundColor(Color(.lightGray))
-                        .shadow(radius: 25)
-                        .task {
-                            getImage(owner: ownerName, itemName: itemName, imageNumber: 2)
-                        }
-                    
-                    if image2 != nil {
-                        Image(uiImage: image2!)
-                            .resizable()
-                            .scaledToFill()
-                            .clipShape(Circle())
-                            .frame(width: 90, height: 90)
-                    } else {
-                        Circle()
-                            .frame(width: 90, height: 90)
-                            .foregroundColor(Color(.systemGray6))
-                            .padding()
-                            .shadow(radius: 25)
-                    }
-                }
-                .onTapGesture {
-                    currentPhotoChoice = .image2
-                    viewModel.isShowingPhotoPicker = true
-                }
-                
-                ZStack {
-                    Circle() // outer rim
-                        .frame(width: 100, height: 100)
-                        .foregroundColor(Color(.lightGray))
-                        .shadow(radius: 25)
-                        .task {
-                            getImage(owner: ownerName, itemName: itemName, imageNumber: 3)
-                        }
-                    
-                    if image3 != nil {
-                        Image(uiImage: image3!)
-                            .resizable()
-                            .scaledToFill()
-                            .clipShape(Circle())
-                            .frame(width: 90, height: 90)
-                    } else {
-                        Circle()
-                            .frame(width: 90, height: 90)
-                            .foregroundColor(Color(.systemGray6))
-                            .padding()
-                            .shadow(radius: 25)
-                    }
-                }
-                .onTapGesture {
-                    currentPhotoChoice = .image3
-                    viewModel.isShowingPhotoPicker = true
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: 100)
@@ -152,12 +98,22 @@ struct EditItem: View {
                     .onSubmit {
                         focusedField = .description
                     }
-                    .onAppear(){
-                        viewModel.getItemData(itemId: itemId, user: user)
-                    }
             }
-            .alert(isPresented: $viewModel.tooManyChars) {
-                Alert(title: Text("Too Many Characters"), message: Text("Enter no more than 20 characters for Name."), dismissButton: .default(Text("OK")))
+            .onAppear() {
+                if firstAppear {
+                    firstAppear = false
+                    viewModel.getItemData(itemId: itemId, user: user)
+                    CategoryIds.allCases.forEach {
+                        // create a category object for each of the categories ids
+                        viewModel.categoryHolder.append(Category(category: $0.rawValue, isActive: false))
+                    }
+                    for num in 1...3 {
+                        getImage(owner: ownerName, itemName: itemName, imageNumber: num)
+                    }
+                }
+            }
+            .alert(isPresented: $viewModel.plantUpdated) {
+                Alert(title: Text("Success"), message: Text("Your plant was updated"), dismissButton: .default(Text("OK")) { dismiss() })
             }.offset(y: descOffset * -1)
             
             // MARK: Description
@@ -233,123 +189,168 @@ struct EditItem: View {
             
 
             // MARK: Choose categories
-            Button(
-                action: {
-                    viewModel.isShowingCategoryPicker = true
-                },
-                label: {
-                    Text("Choose Categories")
-                        .fontWeight(.bold)
-                        .frame(maxWidth: .infinity, maxHeight: buttonHeight, alignment: .center)
-                        .foregroundColor(.white)
-                        .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(maxWidth: .infinity, maxHeight: buttonHeight))
-                        .padding(.top)
-                }
-            )
-            .onAppear() {
-                if viewModel.firstAppear {
-                    viewModel.firstAppear = false
-                    CategoryIds.allCases.forEach {
-                        // create a category object for each of the categories ids
-                        viewModel.categoryHolder.append(Category(category: $0.rawValue, isActive: false))
+//            Button(
+//                action: {
+//                    viewModel.isShowingCategoryPicker = true
+//                },
+//                label: {
+//                    Text("Choose Categories")
+//                        .fontWeight(.bold)
+//                        .frame(maxWidth: .infinity, maxHeight: buttonHeight, alignment: .center)
+//                        .foregroundColor(.white)
+//                        .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(maxWidth: .infinity, maxHeight: buttonHeight))
+//                        .padding(.top)
+//                }
+//            )
+//            .alert(isPresented: $viewModel.missingCategories) {
+//                Alert(title: Text("Missing Categories"), message: Text("Make sure to pick some categories for your plant"), dismissButton: .default(Text("OK")))
+//            }
+//            .sheet(isPresented: $viewModel.isShowingCategoryPicker) {
+//                Text("Choose Your Categories")
+//                    .fontWeight(.bold)
+//                    .foregroundColor(Color("MainColor"))
+//                    .padding([.top, .bottom])
+//
+//                ForEach($viewModel.categoryHolder) { $cat in
+//                    Toggle("\(categoryMapper.categories[cat.category]!)", isOn: $cat.isActive)
+//                        .tint(Color("MainColor"))
+//                        .padding([.leading, .trailing])
+//                }
+//                Spacer()
+//            }
+//            .offset(y: descOffset)
+            
+            // MARK: Update Button
+//            Button(
+//                action:{
+//                    // figure out if the images have been changed etc
+//                    guard plantImagesAdded() else {
+//                        viewModel.addPhotos = true
+//                        return
+//                    }
+//                    guard !viewModel.plantName.isEmpty else {
+//                        focusedField = .name
+//                        return
+//                    }
+//                    guard !viewModel.plantDescription.isEmpty else {
+//                        focusedField = .description
+//                        return
+//                    }
+//                    guard viewModel.categoryChosen == true else {
+//                        viewModel.missingCategories = true
+//                        return
+//                    }
+//
+//                    guard
+//                        viewModel.plantDescription.count <= 200
+//                    else {
+//                        focusedField = .description
+//                        viewModel.tooManyChars = true
+//                        return
+//                    }
+//
+//                    guard viewModel.plantName.count <= 20 else {
+//                        focusedField = .name
+//                        return
+//                    }
+//
+//
+//                    guard
+//                        let plantImage = plantImages[0]?.jpegData(compressionQuality: 0.5),
+//                        let plantImage2 = plantImages[1]?.jpegData(compressionQuality: 0.5),
+//                        let plantImage3 = plantImages[2]?.jpegData(compressionQuality: 0.5)
+//                    else {
+//                        return
+//                    }
+//
+//                    viewModel.savePlant(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, itemId: itemId, user:user)
+//                },
+//                label: {
+//                    Text("Update")
+//                        .fontWeight(.bold)
+//                        .frame(maxWidth: .infinity, maxHeight: buttonHeight, alignment: .center)
+//                        .foregroundColor(.white)
+//                        .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(maxWidth: .infinity, maxHeight: buttonHeight))
+//                        .padding(.top)
+//
+//                }
+//            )
+//            .offset(y: descOffset)
+            
+            Menu("Actions") {
+                Button("Delete") {areYouSure.toggle()}
+                Button("Change Categories") { viewModel.isShowingCategoryPicker = true}
+                Button("Save Changes") {
+                        // figure out if the images have been changed etc
+                        guard plantImagesAdded() else {
+                            viewModel.addPhotos = true
+                            return
+                        }
+                        guard !viewModel.plantName.isEmpty else {
+                            focusedField = .name
+                            return
+                        }
+                        guard !viewModel.plantDescription.isEmpty else {
+                            focusedField = .description
+                            return
+                        }
+                        guard viewModel.categoryChosen == true else {
+                            viewModel.missingCategories = true
+                            return
+                        }
+                        
+                        guard
+                            viewModel.plantDescription.count <= 200
+                        else {
+                            focusedField = .description
+                            viewModel.tooManyChars = true
+                            return
+                        }
+                        
+                        guard viewModel.plantName.count <= 20 else {
+                            focusedField = .name
+                            return
+                        }
+                        
+                        
+                        guard
+                            let plantImage = plantImages[0]?.jpegData(compressionQuality: 0.5),
+                            let plantImage2 = plantImages[1]?.jpegData(compressionQuality: 0.5),
+                            let plantImage3 = plantImages[2]?.jpegData(compressionQuality: 0.5)
+                        else {
+                            return
+                        }
+                        
+                        viewModel.savePlant(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, itemId: itemId, user:user)
                     }
-                }
             }
             .alert(isPresented: $viewModel.missingCategories) {
                 Alert(title: Text("Missing Categories"), message: Text("Make sure to pick some categories for your plant"), dismissButton: .default(Text("OK")))
             }
-            .sheet(isPresented: $viewModel.isShowingCategoryPicker) {
-                Text("Choose Your Categories")
-                    .fontWeight(.bold)
-                    .foregroundColor(Color("MainColor"))
-                    .padding([.top, .bottom])
-                
-                ForEach($viewModel.categoryHolder) { $cat in
-                    Toggle("\(categoryMapper.categories[cat.category]!)", isOn: $cat.isActive)
-                        .tint(Color("MainColor"))
-                        .padding([.leading, .trailing])
-                }
-                Spacer()
-            }
-            .offset(y: descOffset)
             
-            // MARK: Update Button
-            Button(
-                action:{
-                    // figure out if the images have been changed etc
-                    guard plantImagesAdded() else {
-                        viewModel.addPhotos = true
-                        return
-                    }
-                    guard !viewModel.plantName.isEmpty else {
-                        focusedField = .name
-                        return
-                    }
-                    guard !viewModel.plantDescription.isEmpty else {
-                        focusedField = .description
-                        return
-                    }
-                    guard viewModel.categoryChosen == true else {
-                        viewModel.missingCategories = true
-                        return
-                    }
-                    
-                    guard
-                        viewModel.plantDescription.count <= 200
-                    else {
-                        focusedField = .description
-                        viewModel.tooManyChars = true
-                        return
-                    }
-                    
-                    guard viewModel.plantName.count <= 20 else {
-                        focusedField = .name
-                        return
-                    }
-                    
-                    guard
-                        let plantImage = image1?.jpegData(compressionQuality: 0.5),
-                        let plantImage2 = image2?.jpegData(compressionQuality: 0.5),
-                        let plantImage3 = image3?.jpegData(compressionQuality: 0.5)
-                    else {
-                        return
-                    }
-                    
-                    viewModel.savePlant(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, itemId: itemId, user:user)
-                },
-                label: {
-                    Text("Update")
-                        .fontWeight(.bold)
-                        .frame(maxWidth: .infinity, maxHeight: buttonHeight, alignment: .center)
-                        .foregroundColor(.white)
-                        .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(maxWidth: .infinity, maxHeight: buttonHeight))
-                        .padding(.top)
-                    
-                }
-            )
-            .sheet(isPresented: $viewModel.isShowingPhotoPicker){
-                switch currentPhotoChoice {
-                case .image1:
-                    ImageSelector(image: $image1, canSelectMultipleImages: false, images: Binding.constant([]))
-                case .image2:
-                    ImageSelector(image: $image2, canSelectMultipleImages: false, images: Binding.constant([]))
-                case .image3:
-                    ImageSelector(image: $image3, canSelectMultipleImages: false, images: Binding.constant([]))
-                }
-            }
-            .offset(y: descOffset)
+//            Button(
+//                action: { areYouSure = true },
+//                label: {
+//                    Text("Delete")
+//                        .fontWeight(.bold)
+//                        .frame(maxWidth: .infinity, maxHeight: buttonHeight)
+//                        .foregroundColor(.white)
+//                        .background(RoundedRectangle(cornerRadius: 25).fill(Color.red).frame(maxWidth: .infinity, maxHeight: buttonHeight))
+//                        .padding(.top)
+//                }
+//            )
+//            .alert(isPresented: $areYouSure) {
+//                Alert(
+//                    title: Text("Are You Sure?"),
+//                    message: Text("You're about to delete your item. You can't undo this."),
+//                    primaryButton: .destructive(Text("Delete")) {
+//                        viewModel.deleteItem(itemId: itemId, user:user)
+//                    },
+//                    secondaryButton: .cancel()
+//                )
+//            }
             
-            Button(
-                action: { areYouSure = true },
-                label: {
-                    Text("Delete")
-                        .fontWeight(.bold)
-                        .frame(maxWidth: .infinity, maxHeight: buttonHeight)
-                        .foregroundColor(.white)
-                        .background(RoundedRectangle(cornerRadius: 25).fill(Color.red).frame(maxWidth: .infinity, maxHeight: buttonHeight))
-                        .padding(.top)
-                }
-            )
+            Spacer()
             .alert(isPresented: $areYouSure) {
                 Alert(
                     title: Text("Are You Sure?"),
@@ -360,7 +361,18 @@ struct EditItem: View {
                     secondaryButton: .cancel()
                 )
             }
-            
+        }
+        .sheet(isPresented: $viewModel.isShowingCategoryPicker) {
+            Text("Choose Your Categories")
+                .fontWeight(.bold)
+                .foregroundColor(Color("MainColor"))
+                .padding([.top, .bottom])
+
+            ForEach($viewModel.categoryHolder) { $cat in
+                Toggle("\(categoryMapper.categories[cat.category]!)", isOn: $cat.isActive)
+                    .tint(Color("MainColor"))
+                    .padding([.leading, .trailing])
+            }
             Spacer()
         }
         .ignoresSafeArea(.keyboard, edges: .bottom)
@@ -369,35 +381,6 @@ struct EditItem: View {
 }
 
 extension EditItem {
-    func getImage(owner: String, itemName: String, plantID: UUID) {
-        let itemNameWithoutSpaces: String = itemName.replacingOccurrences(of: " ", with: "%20")
-        let imageIndex: Int? = viewModel.plantImages.firstIndex { $0.id == plantID }
-        guard let imageIndex = imageIndex else {
-            print("that image doesnt exist")
-            return
-        }
-        let imageNumber = imageIndex + 1
-        
-        // for each plant the images are stored as "image1", "image2", "image3"
-        if let url: URL = URL(string: "https://rosegoldgardens.com/api/images/\(ownerName)/\(itemNameWithoutSpaces)/image\(imageNumber).jpg") {
-            URLSession.shared.dataTask(with: url) { (data, response, err) in
-                guard err == nil else {
-                    print("an error occurred")
-                    return
-                }
-                
-                guard let imageData: Data = data else {
-                    print("couldnt decode data")
-                    return
-                }
-                
-                DispatchQueue.main.async {
-                    viewModel.plantImages[imageIndex] = PlantImage(id: UUID(), image: UIImage(data: imageData))
-                }
-            }.resume()
-        }
-    }
-    
     func getImage(owner: String, itemName: String, imageNumber: Int) {
         let itemNameWithoutSpaces: String = itemName.replacingOccurrences(of: " ", with: "%20")
         
@@ -413,14 +396,9 @@ extension EditItem {
                     print("couldnt decode data")
                     return
                 }
-                
-                DispatchQueue.main.async {
-                    if imageNumber == 1 {
-                        self.image1 = UIImage(data: imageData)
-                    } else if imageNumber == 2 {
-                        self.image2 = UIImage(data: imageData)
-                    } else if imageNumber == 3 {
-                        self.image3 = UIImage(data: imageData)
+                if let uiImage = UIImage(data: imageData) {
+                    DispatchQueue.main.async {
+                        self.plantImages[imageNumber - 1] = uiImage
                     }
                 }
             }.resume()
@@ -428,7 +406,7 @@ extension EditItem {
     }
     
     func plantImagesAdded() -> Bool {
-        for plant in [image1, image2, image3] {
+        for plant in plantImages {
             guard plant != nil else {
                 return false
             }
@@ -439,6 +417,6 @@ extension EditItem {
 
 struct EditItem_Previews: PreviewProvider {
     static var previews: some View {
-        EditItem(itemName: "Shrubs", ownerName: "dee", itemId: 25)
+        EditItem(itemName: "Shrubs", ownerName: "dee", itemId: 25).environmentObject(UserModel.shared)
     }
 }

@@ -15,7 +15,7 @@ struct ItemPreview: View {
         VStack {
             AsyncImage(url: URL(string: "https://rosegoldgardens.com/api\(self.getImageLink(imageLink: itemImageLink))")) { phase in
                 if let image = phase.image {
-                    image.resizable().frame(maxWidth: 200, maxHeight: 200).cornerRadius(15)
+                    image.resizable().frame(maxWidth: 200, maxHeight: 200).cornerRadius(15).shadow(radius: 5)
                 } else if phase.error != nil {
                     Color.red // an error occurred
                 } else {

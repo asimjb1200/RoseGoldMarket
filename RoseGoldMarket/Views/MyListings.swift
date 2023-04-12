@@ -24,7 +24,7 @@ struct MyListings: View {
                 }
             }
         }
-        .navigationBarTitle(Text("My Listings"), displayMode: .inline)
+        .navigationBarTitle(Text("My Current Listings"), displayMode: .inline)
         .onAppear {
             self.getUsersItems()
         }

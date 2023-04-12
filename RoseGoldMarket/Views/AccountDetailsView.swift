@@ -64,7 +64,7 @@ struct AccountDetailsView: View {
                 )
                 
                 
-                Text("Their Items").font(.title3).padding([.top, .bottom])
+                Text("Current Listings").font(.title3).fontWeight(.bold).padding([.top, .bottom])
                 ScrollView {
                     if self.items.isEmpty {
                         Text("No Items Available").font(.largeTitle)

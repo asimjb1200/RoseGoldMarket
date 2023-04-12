@@ -46,7 +46,10 @@ struct HomeMarket: View {
                                 viewModel.showFilterSheet = true
                             }
                             .padding()
-                            .sheet(isPresented: $viewModel.showFilterSheet) {
+                            .sheet(isPresented: $viewModel.showFilterSheet, onDismiss: {
+                                viewModel.searchButtonPressed = true
+                                viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
+                            }) {
                                 Text("Choose Your Filters")
                                     .fontWeight(.bold)
                                     .foregroundColor(Color("MainColor"))
@@ -81,20 +84,30 @@ struct HomeMarket: View {
                                         .frame(maxWidth:.infinity, alignment:.leading)
                                     }
                                 }
+                                .onSubmit {
+                                    viewModel.searchButtonPressed = true
+                                    viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
+                                }
+                                .submitLabel(.search)
                         }
                         .modifier(CustomTextBubble(isActive: searchBarIsFocus == true, accentColor: .blue))
                         .padding()
-                        
-                        Button("Search") {
-                            viewModel.searchButtonPressed = true
-                            viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
-                        }
-                        .padding(.horizontal)
                         .onAppear() {
                             if firstAppear {
                                 determineUserLocation()
                             }
                         }
+                        
+//                        Button("Search") {
+//                            viewModel.searchButtonPressed = true
+//                            viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
+//                        }
+//                        .padding(.horizontal)
+//                        .onAppear() {
+//                            if firstAppear {
+//                                determineUserLocation()
+//                            }
+//                        }
                     }
                     .padding(.bottom, 2.0)
                     .background(
@@ -112,7 +125,6 @@ struct HomeMarket: View {
                                 ForEach(viewModel.items, id: \.self) { x in
                                     NavigationLink(destination: ItemDetails(item: x, viewingFromAccountDetails: false)) {
                                         ItemPreview(itemId: x.id, itemTitle: x.name, itemImageLink: x.image1)
-                                        .shadow(radius: 5)
                                         .onAppear() {
                                             if x == viewModel.items.last, viewModel.allDataLoaded == false {
                                                 determineUserLocation()

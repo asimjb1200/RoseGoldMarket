@@ -38,7 +38,8 @@ struct MessageThread: View {
                                     .background(RoundedRectangle(cornerRadius: 25).fill(mainColor))
                                     .foregroundColor(.white)
                                     .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding().listRowSeparator(.hidden)
+                                    .padding(.bottom)
+                                    .listRowSeparator(.hidden)
                                     .shadow(radius: 5)
                                     .id(x.id) // this will be used by the scroller to find chats
                                 } else {
@@ -49,7 +50,8 @@ struct MessageThread: View {
                                     .background(RoundedRectangle(cornerRadius: 25).fill(.gray))
                                     .foregroundColor(.white)
                                     .frame(maxWidth: .infinity, alignment: .trailing)
-                                    .padding().listRowSeparator(.hidden)
+                                    .padding(.bottom)
+                                    .listRowSeparator(.hidden)
                                     .shadow(radius: 5)
                                     .id(x.id) // this will be used by the scroller to find chats
                                 }
@@ -97,6 +99,7 @@ struct MessageThread: View {
                             },
                             label: {
                                 Text("Send")
+                                    .fontWeight(.bold)
                             }
                         )
                     }

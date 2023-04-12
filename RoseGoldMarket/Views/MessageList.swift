@@ -59,7 +59,7 @@ struct MessageList: View {
                                     }
                                     .padding([.leading, .trailing])
                                     .frame(maxHeight: 70)
-                                    .shadow(radius: 5)
+                                    
                                 }.isDetailLink(false)
                                 Divider()
                             }

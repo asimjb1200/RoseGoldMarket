@@ -8,11 +8,6 @@
 import Foundation
 import SwiftUI
 final class EditItemVM:ObservableObject {
-    @Published var plantImage:UIImage? = nil // state var because this will change when the user picks their own image and we want to update the view with it
-    @Published var plantImage2:UIImage? = nil
-    @Published var plantImage3:UIImage? = nil
-    @Published var isShowingPhotoPicker = false
-    @Published var plantEnum: PlantOptions = .imageOne
     @Published var categoryHolder: [Category] = []
     @Published var plantName = ""
     @Published var plantDescription = ""
@@ -26,6 +21,7 @@ final class EditItemVM:ObservableObject {
     @Published var showUpdateError = false
     @Published var tooManyChars = false
     @Published var networkError = false
+    @Published var plantUpdated = false
     @Published var plantImages: [PlantImage] = [PlantImage(id: UUID(), image: nil), PlantImage(id: UUID(), image: nil), PlantImage(id: UUID(), image: nil)]
     
     var viewStateErrors: EditItemViewStates = .allGood
@@ -48,7 +44,8 @@ final class EditItemVM:ObservableObject {
                         
                         // go through the category list and set the toggle to true if it is present
                         for cat in itemData.data.categories {
-                            let catId = self?.categoryMapper.categoriesByDescription[cat]
+                            // some characters may have a new line character in there so remove it
+                            let catId = self?.categoryMapper.categoriesByDescription[cat.replacingOccurrences(of: "\n", with: "")]
                             
                             // now find that category id in my array
                             let indexOfCategoryToActivate = self?.categoryHolder.firstIndex(where: {$0.category == catId})
@@ -72,27 +69,6 @@ final class EditItemVM:ObservableObject {
                         self?.networkError = true
                     }
             }
-        }
-    }
-    
-    func getImages(itemName:String, ownerName:String) {
-        let itemNameWithoutSpaces = itemName.replacingOccurrences(of: " ", with: "%20")
-        // hit the server and grab the images for the item
-        do {
-            let imageUrl = URL(string: "https://rosegoldgardens.com/api/images/\(ownerName)/\(itemNameWithoutSpaces)/image1.jpg")!
-            let image2Url = URL(string: "https://rosegoldgardens.com/api/images/\(ownerName)/\(itemNameWithoutSpaces)/image2.jpg")!
-            let image3Url = URL(string: "https://rosegoldgardens.com/api/images/\(ownerName)/\(itemNameWithoutSpaces)/image3.jpg")!
-            
-            let image1 = try Data(contentsOf: imageUrl)
-            let image2 = try Data(contentsOf: image2Url)
-            let image3 = try Data(contentsOf: image3Url)
-            
-            
-            self.plantImage = UIImage(data: image1)
-            self.plantImage2 = UIImage(data: image2)
-            self.plantImage3 = UIImage(data: image3)
-        } catch let requestError {
-            print("[EditItemVM] tried fetching item images: \(requestError.localizedDescription)")
         }
     }
     
@@ -130,8 +106,9 @@ final class EditItemVM:ObservableObject {
                         if resData.newToken != nil {
                             user.accessToken = resData.newToken!
                         }
-                        self?.viewStateErrors = .allGood
-                        self?.showUpdateError = true
+                        self?.plantUpdated = true
+//                        self?.viewStateErrors = .allGood
+//                        self?.showUpdateError = true
                     }
                 case .failure(let err):
                     DispatchQueue.main.async {

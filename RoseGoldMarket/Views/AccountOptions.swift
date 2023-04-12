@@ -94,7 +94,7 @@ struct AccountOptions: View {
                     Alert(title:Text("An Error Occurred"), message: Text("Try again later."))
                 }
             }
-        }.navigationBarHidden(true)
+        }.navigationBarHidden(true).navigationViewStyle(.stack)
     }
 }
 
