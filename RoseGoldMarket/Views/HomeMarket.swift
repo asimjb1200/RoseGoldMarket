@@ -97,17 +97,6 @@ struct HomeMarket: View {
                                 determineUserLocation()
                             }
                         }
-                        
-//                        Button("Search") {
-//                            viewModel.searchButtonPressed = true
-//                            viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
-//                        }
-//                        .padding(.horizontal)
-//                        .onAppear() {
-//                            if firstAppear {
-//                                determineUserLocation()
-//                            }
-//                        }
                     }
                     .padding(.bottom, 2.0)
                     .background(
@@ -115,7 +104,10 @@ struct HomeMarket: View {
                     )
                     .shadow(radius: 5)
                     
-                    if viewModel.items.isEmpty {
+                    if viewModel.isLoadingPage {
+                        ProgressView()
+                        Spacer()
+                    } else if viewModel.items.isEmpty {
                         Text("No items in your area")
                             .padding()
                         Spacer()

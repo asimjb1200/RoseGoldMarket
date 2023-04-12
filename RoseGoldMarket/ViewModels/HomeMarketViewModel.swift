@@ -77,6 +77,7 @@ final class HomeMarketViewModel: ObservableObject {
                         if err == .tokenExpired {
                             user.logout()
                         }
+                        self?.isLoadingPage = false
                         self?.errorOccurred = true
                     }
             }
