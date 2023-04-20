@@ -262,6 +262,56 @@ struct ItemService {
         }.resume()
     }
     
+    func updateCategories(newCategories: [UInt], itemId: UInt, token: String, completion: @escaping (Result<ResponseFromServer<Bool>, ItemErrors>) -> ()) {
+        let networker = Networker()
+        //let serverUrl = URL(string: "https://rosegoldgardens.com/api/item-handler/edit-item-categories")
+        
+        let req = networker.constructRequest(uri: "https://rosegoldgardens.com/api/item-handler/edit-item-categories", token: token, post: true)
+        let body: [String: Any] = ["categories": newCategories, "itemId": itemId]
+        let reqWithBody = networker.buildReqBody(req: req, body: body)
+        
+        URLSession.shared.dataTask(with: reqWithBody) {(data, response, err) in
+            guard err == nil else {
+                completion(.failure(.genError))
+                return
+            }
+            
+            guard let response = response as? HTTPURLResponse else {
+                completion(.failure(.genError))
+                return
+            }
+            
+            guard response.statusCode != 403 else {
+                completion(.failure(.tokenExpired))
+                return
+            }
+            
+            guard response.statusCode == 200 else {
+                print("the request failed")
+                completion(.failure(.genError))
+                return
+            }
+
+            
+            guard let data = data else {
+                print("problem decoding data")
+                completion(.failure(.genError))
+                return
+            }
+            
+            do {
+                let decoded = try JSONDecoder().decode(ResponseFromServer<Bool>.self, from: data)
+                print("Data posted")
+                completion(.success(decoded))
+                return
+            } catch let err {
+                print("\(err.localizedDescription)")
+                completion(.failure(.genError))
+                return
+            }
+        }.resume()
+    }
+    
     func updateItem(itemData items: ItemForBackend, itemId:UInt, token: String, completion: @escaping (Result<ResponseFromServer<String>, ItemErrors>) -> ()) {
         let networker = Networker()
         let serverUrl = URL(string: "https://rosegoldgardens.com/api/item-handler/edit-item")
