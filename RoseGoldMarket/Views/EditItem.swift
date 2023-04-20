@@ -79,7 +79,11 @@ struct EditItem: View {
             
             // MARK: Plant Name
             Group {
-                Text("Name").foregroundColor(Color("AccentColor")).fontWeight(.bold).frame(maxWidth: .infinity, alignment: .leading).padding(.top)
+                Text("Name").foregroundColor(Color("AccentColor"))
+                    .fontWeight(.bold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.top)
+                
                 TextField("", text: $viewModel.plantName)
                     .padding()
                     .focused($focusedField, equals: .name)
@@ -170,6 +174,9 @@ struct EditItem: View {
                     .onSubmit {
                         focusedField = nil
                     }
+                    .alert(isPresented: $viewModel.categoriesUpdated) {
+                        Alert(title: Text("Categories Saved"), dismissButton: .default(Text("OK")))
+                    }
             }.offset(y: descOffset * -1)
             
             // MARK: Still Available
@@ -182,7 +189,7 @@ struct EditItem: View {
                 }
             
             if !viewModel.isAvailable {
-                Toggle("Has it been picked up?", isOn: $viewModel.pickedUp).padding(.top)
+                Toggle("Plant was picked up", isOn: $viewModel.pickedUp).padding(.top)
                     .tint(Color("MainColor"))
                     .offset(y: descOffset)
             }
@@ -324,6 +331,7 @@ struct EditItem: View {
                         viewModel.savePlant(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, itemId: itemId, user:user)
                     }
             }
+            .font(.system(size: 20, weight: .heavy, design: .default))
             .alert(isPresented: $viewModel.missingCategories) {
                 Alert(title: Text("Missing Categories"), message: Text("Make sure to pick some categories for your plant"), dismissButton: .default(Text("OK")))
             }
@@ -362,7 +370,12 @@ struct EditItem: View {
                 )
             }
         }
-        .sheet(isPresented: $viewModel.isShowingCategoryPicker) {
+        .sheet(
+            isPresented: $viewModel.isShowingCategoryPicker,
+            onDismiss: {
+                viewModel.saveNewCategories(itemId: itemId, user: user)
+            }
+        ) {
             Text("Choose Your Categories")
                 .fontWeight(.bold)
                 .foregroundColor(Color("MainColor"))
@@ -417,6 +430,6 @@ extension EditItem {
 
 struct EditItem_Previews: PreviewProvider {
     static var previews: some View {
-        EditItem(itemName: "Shrubs", ownerName: "dee", itemId: 25).environmentObject(UserModel.shared)
+        EditItem(itemName: "Shrubs", ownerName: "dee", itemId: 29).environmentObject(UserModel.shared)
     }
 }

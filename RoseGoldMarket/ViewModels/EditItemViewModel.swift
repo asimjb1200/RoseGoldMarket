@@ -18,6 +18,7 @@ final class EditItemVM:ObservableObject {
     @Published var itemIsDeleted = false
     @Published var addPhotos = false
     @Published var missingCategories = false
+    @Published var categoriesUpdated = false
     @Published var showUpdateError = false
     @Published var tooManyChars = false
     @Published var networkError = false
@@ -90,6 +91,28 @@ final class EditItemVM:ObservableObject {
                         }
                         print("[EditItemVM] tried deleting item: \(error)")
                         self?.networkError = true
+                    }
+            }
+        }
+    }
+    
+    func saveNewCategories(itemId: UInt, user:UserModel) {
+        let categoryIdList: [UInt] = self.categoryHolder.filter{ $0.isActive == true}.map{ $0.category }
+        
+        service.updateCategories(newCategories: categoryIdList, itemId: itemId, token: user.accessToken) { [weak self] apiRes in
+            switch apiRes {
+                case .success(let resData):
+                    DispatchQueue.main.async {
+                        if resData.newToken != nil {
+                            user.accessToken = resData.newToken!
+                        }
+                        if resData.data {
+                            self?.categoriesUpdated = true
+                        }
+                    }
+                case .failure(let err):
+                    DispatchQueue.main.async {
+                        print(err.localizedDescription)
                     }
             }
         }
