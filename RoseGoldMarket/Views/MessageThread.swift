@@ -57,6 +57,7 @@ struct MessageThread: View {
                                 }
                             }
                         }
+                        .padding([.leading, .trailing])
                         .onAppear() {
                             if let lastChat = viewModel.currentlyActiveChat.last {
                                 let lastChatId = lastChat.id

@@ -52,6 +52,9 @@
 		684F3EDD29496DBD00D1D40A /* SecurityCodeFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684F3EDC29496DBD00D1D40A /* SecurityCodeFields.swift */; };
 		684F792F29DD26620038389C /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 684F792E29DD26620038389C /* Alamofire */; };
 		6866FA2427B345880052B8A5 /* SocketStuff.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6866FA2327B345880052B8A5 /* SocketStuff.swift */; };
+		6870B8BD29F1EA6300D8E2AB /* UnreadMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6870B8BC29F1EA6300D8E2AB /* UnreadMessage.swift */; };
+		6870B8BF29F2069300D8E2AB /* URLHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6870B8BE29F2069300D8E2AB /* URLHolder.swift */; };
+		6870B8C129F2141700D8E2AB /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6870B8C029F2141700D8E2AB /* AppEnvironment.swift */; };
 		6878BCCB27F270C700CD071A /* badwords.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6878BCCA27F270C700CD071A /* badwords.txt */; };
 		687A0BCB28602E23003B76D1 /* UnderlineTextFieldModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687A0BCA28602E23003B76D1 /* UnderlineTextFieldModifier.swift */; };
 		688591BB29077FF1006CE699 /* AccountVerificationErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688591BA29077FF1006CE699 /* AccountVerificationErrors.swift */; };
@@ -134,6 +137,9 @@
 		684B923127D2BA7B00CF25D9 /* EditItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditItem.swift; sourceTree = "<group>"; };
 		684F3EDC29496DBD00D1D40A /* SecurityCodeFields.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityCodeFields.swift; sourceTree = "<group>"; };
 		6866FA2327B345880052B8A5 /* SocketStuff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketStuff.swift; sourceTree = "<group>"; };
+		6870B8BC29F1EA6300D8E2AB /* UnreadMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadMessage.swift; sourceTree = "<group>"; };
+		6870B8BE29F2069300D8E2AB /* URLHolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLHolder.swift; sourceTree = "<group>"; };
+		6870B8C029F2141700D8E2AB /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
 		68722E2A28F3C41600E214A0 /* RoseGoldMarket.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RoseGoldMarket.entitlements; sourceTree = "<group>"; };
 		6878BCCA27F270C700CD071A /* badwords.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = badwords.txt; sourceTree = "<group>"; };
 		687A0BCA28602E23003B76D1 /* UnderlineTextFieldModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnderlineTextFieldModifier.swift; sourceTree = "<group>"; };
@@ -330,6 +336,7 @@
 				680A3B4428CEB2F500E784E8 /* AddressInformation.swift */,
 				68AB6813296D0CD2009F5558 /* PlantImage.swift */,
 				681DDD6229726CD6004923CB /* CurrentAppView.swift */,
+				6870B8BE29F2069300D8E2AB /* URLHolder.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -344,6 +351,7 @@
 				684B922F27D27DD800CF25D9 /* ItemNameAndId.swift */,
 				682E194427DD423E00C304DA /* RegisterUser.swift */,
 				682E194627DD426C00C304DA /* User.swift */,
+				6870B8BC29F1EA6300D8E2AB /* UnreadMessage.swift */,
 			);
 			path = DTOs;
 			sourceTree = "<group>";
@@ -372,6 +380,7 @@
 				6848A665296F9BE50027310E /* AppViewStates.swift */,
 				68BF1DCA2974FB3700028FEB /* WhichPhoto.swift */,
 				68BF1DCC297503E200028FEB /* EditPlantFields.swift */,
+				6870B8C029F2141700D8E2AB /* AppEnvironment.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -519,6 +528,7 @@
 				6800EDD827B06C3600461643 /* ChatData.swift in Sources */,
 				68A73B0127D6874900DC2C04 /* EditItemViewModel.swift in Sources */,
 				684867982798CCF20033969D /* CategoryMapper.swift in Sources */,
+				6870B8C129F2141700D8E2AB /* AppEnvironment.swift in Sources */,
 				68C305FD28DA60070041EEB2 /* AddProfilePic.swift in Sources */,
 				680A3B4528CEB2F500E784E8 /* AddressInformation.swift in Sources */,
 				68E9193127D027AD00154DBB /* MyListings.swift in Sources */,
@@ -558,6 +568,7 @@
 				684872A4295D0533004DA1D8 /* ImageSelector.swift in Sources */,
 				688591BB29077FF1006CE699 /* AccountVerificationErrors.swift in Sources */,
 				684867852798BAC70033969D /* ContentView.swift in Sources */,
+				6870B8BF29F2069300D8E2AB /* URLHolder.swift in Sources */,
 				684867922798BB060033969D /* HomeMarket.swift in Sources */,
 				684867832798BAC70033969D /* RoseGoldMarketApp.swift in Sources */,
 				6823B7D627991322008F2CB7 /* AddItemsViewModel.swift in Sources */,
@@ -569,6 +580,7 @@
 				68A4296427D1C15600CC8DF2 /* AddressInfo.swift in Sources */,
 				68AB6814296D0CD2009F5558 /* PlantImage.swift in Sources */,
 				68E083D827ACAFC400DA0110 /* MessageThread.swift in Sources */,
+				6870B8BD29F1EA6300D8E2AB /* UnreadMessage.swift in Sources */,
 				68F6188F27F1F5F3001BEF70 /* LocationManager.swift in Sources */,
 				684452D428406F8E0019DF7F /* ForgotPassword.swift in Sources */,
 			);

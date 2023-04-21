@@ -62,6 +62,7 @@ struct ContentView: View {
         .onAppear() {
             if firstAppear {
                 messenger.getLatestMessages(viewingUser: user.accountId, user: user)
+                messenger.getUnreadMessagesForUser(user: user)
                 firstAppear = false
             }
         }

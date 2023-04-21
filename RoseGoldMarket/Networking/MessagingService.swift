@@ -11,14 +11,17 @@ struct MessagingService {
     let networker = Networker()
     
     func fetchLatestMessageInEachChat(userId: UInt, token:String, completion: @escaping (Result<ResponseFromServer<[ChatDataForPreview]>, MessageErrors>) -> ()) {
-        //let url = "http://192.168.1.65:4000/api/chat-handler/latest-messages?accountId=\(userId)"
         let queryItem = [URLQueryItem(name: "accountId", value: "\(userId)")]
-        let url = "https://rosegoldgardens.com/api/chat-handler/latest-messages"
+        guard let urlBase = networker.getUrlForEnv(appEnvironment: .Prod) else {
+            print("not able to get url base")
+            return
+        }
+        let url = "\(urlBase)/api/chat-handler/latest-messages"
         let request = networker.constructRequest(uri: url, token: token, queryItems: queryItem)
         
         URLSession.shared.dataTask(with: request) { (data, response, err) in
             guard err == nil else {
-                print(err)
+                print(err?.localizedDescription ?? "couldn't get the error")
                 return
             }
             
@@ -45,12 +48,50 @@ struct MessagingService {
         }.resume()
     }
     
+    func fetchUnreadMessagesForUser(viewingUserId: UInt, token: String, completion: @escaping (Result<ResponseFromServer<[UnreadMessage]>, MessageErrors>) -> ()) {
+        guard let urlBase = networker.getUrlForEnv(appEnvironment: .Prod) else {
+            print("not able to get url base")
+            return
+        }
+        let url = "\(urlBase)/api/chat-handler/get-unread-messages"
+        
+        let request = networker.constructRequest(uri: url, token: token)
+        
+        URLSession.shared.dataTask(with: request) {(data, response, error) in
+            guard error == nil else {
+                print(error?.localizedDescription ?? "couldn't get the error")
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(.decodingError))
+                return
+            }
+
+            do {
+                let chatData = try JSONDecoder().decode(ResponseFromServer<[UnreadMessage]>.self, from: data)
+                completion(.success(chatData))
+            } catch let error {
+                print(error)
+                completion(.failure(.decodingError))
+            }
+        }.resume()
+    }
+    
+    func deleteUnreadMessageRecordsForChat(viewingUserId: UInt, senderId: UInt) {
+        
+    }
+    
     func fetchMessageThreadBetweenUsers(viewingAccountId:UInt, otherUserAccountId:UInt, token: String, completion: @escaping (Result<ResponseFromServer<[ChatData]>, MessageErrors>) -> ()) {
         let queryItems = [
             URLQueryItem(name: "viewingAccount", value: "\(viewingAccountId)"),
             URLQueryItem(name: "otherUserAccount", value: "\(otherUserAccountId)")
         ]
-        let url = "https://rosegoldgardens.com/api/chat-handler/get-chat-thread"
+        guard let urlBase = networker.getUrlForEnv(appEnvironment: .Prod) else {
+            print("not able to get url base")
+            return
+        }
+        let url = "\(urlBase)/api/chat-handler/get-chat-thread"
         let request = networker.constructRequest(uri: url, token: token, queryItems: queryItems)
         
         URLSession.shared.dataTask(with: request) { (data, response, err) in
@@ -83,7 +124,11 @@ struct MessagingService {
     }
     
     func getOtherChatParticipantName(accountId: UInt, token: String, completion: @escaping (Result<String, UserErrors>) -> ()) {
-        let url = "https://rosegoldgardens.com/api/chat-handler/get-username"
+        guard let urlBase = networker.getUrlForEnv(appEnvironment: .Prod) else {
+            print("not able to get url base")
+            return
+        }
+        let url = "\(urlBase)/api/chat-handler/get-username"
         let request = networker.constructRequest(uri: url, token: token)
         
         URLSession.shared.dataTask(with: request) { (data, response, err) in

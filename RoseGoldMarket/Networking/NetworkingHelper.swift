@@ -12,6 +12,13 @@ import Alamofire
 struct Networker {
     // static let shared = Networker()
     init() {}
+    func getUrlForEnv(appEnvironment: AppEnvironment) -> String? {
+        guard let plist = Bundle.main.infoDictionary else {return nil}
+        guard let endpoints = plist["URL Endpoints"] as? [String: String] else {return nil}
+        guard let urlBase = endpoints[appEnvironment.rawValue] else {return nil}
+        return urlBase
+    }
+    
     func constructRequest(uri: String, token: String = "", post: Bool = false, queryItems: [URLQueryItem]? = nil) -> URLRequest {
         var url = URL(string: uri)!
         

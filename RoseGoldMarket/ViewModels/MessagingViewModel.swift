@@ -11,6 +11,7 @@ import SocketIO
 final class MessagingViewModel: ObservableObject {
     @Published var firstAppear = true
     @Published var newMsgCount = 0
+    var unreadMessages: [UnreadMessage] = []
     /// Contains unique chats only. it is intended to be used to show a list to the user of each chat they are involved in. For example, if the user has chatted with 'John' and 'Tony' the
     /// list will contain the latest message in each of their respective threads (and ONLY the latest message).
     @Published var listOfChats:[ChatData] = []
@@ -92,6 +93,22 @@ final class MessagingViewModel: ObservableObject {
         self.latestMessages.sort { $0.timestamp > $1.timestamp }
     }
     
+    /// fetches all of the messages that the user missed while their socket was disconnected
+    func getUnreadMessagesForUser(user:UserModel) {
+        MessagingService().fetchUnreadMessagesForUser(viewingUserId: user.accountId, token: user.accessToken) { unreadMessagesRes in
+            switch unreadMessagesRes {
+                case .success(let unreadMessages):
+                    DispatchQueue.main.async {
+                        print(unreadMessages.data)
+                    }
+                case .failure(let err):
+                    DispatchQueue.main.async {
+                        print(err.localizedDescription)
+                    }
+            }
+        }
+    }
+    
     func getAllMessagesInThread(viewingUser:UInt, otherUserAccount:UInt, user:UserModel) {
         MessagingService().fetchMessageThreadBetweenUsers(viewingAccountId: viewingUser, otherUserAccountId: otherUserAccount, token: user.accessToken) { threadDataResponse in
             switch threadDataResponse {
@@ -123,11 +140,6 @@ final class MessagingViewModel: ObservableObject {
                     print(err)
             }
         }
-    }
-    
-    /// used to start the initial conversation with the owner about their plant
-    func sendInquiryToUser(sendingUser: UserModel, otherUserAccountId:UInt) {
-        
     }
 
     /// sends a message to the user via a socket connection
