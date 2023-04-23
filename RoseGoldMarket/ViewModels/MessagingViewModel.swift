@@ -100,6 +100,11 @@ final class MessagingViewModel: ObservableObject {
                 case .success(let unreadMessages):
                     DispatchQueue.main.async {
                         print(unreadMessages.data)
+                        self.unreadMessages = unreadMessages.data
+                        
+                        // split the unread messages out by their sender id so that the count can be broken up on a chat by chat basis
+                        
+                        self.newMsgCount += self.unreadMessages.count
                     }
                 case .failure(let err):
                     DispatchQueue.main.async {

@@ -44,8 +44,12 @@ struct MessageList: View {
                                         }
                                         
                                         VStack(alignment: .leading) {
-                                            Text(chatPreview.nonViewingUsersUsername).fontWeight(.bold)
-                                            HStack{
+                                            if isUnreadMessage(chatPreview: chatPreview) {
+                                                Text(chatPreview.nonViewingUsersUsername).fontWeight(.bold)
+                                            } else {
+                                                Text(chatPreview.nonViewingUsersUsername)
+                                            }
+                                            HStack {
                                                 Text(chatPreview.message)
                                                 Spacer()
                                                 Text(chatPreview.timestamp.formatted(date: .numeric, time: .omitted))
@@ -73,8 +77,26 @@ struct MessageList: View {
             viewModel.getLatestMessages(viewingUser: currentUser.accountId, user: currentUser)
         }
         .onDisappear() {
-            viewModel.newMsgCount = 0
+            //viewModel.newMsgCount = 0
         }
+    }
+}
+
+extension MessageList {
+    func isUnreadMessage(chatPreview: ChatDataForPreview) -> Bool {
+        let otherUsersId = chatPreview.senderid == currentUser.accountId ? chatPreview.recid : chatPreview.senderid
+        
+        if let _ = viewModel.unreadMessages.first(where: {$0.senderid == otherUsersId}) {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func getUnreadCountForChat(chatPreview: ChatDataForPreview) -> Int {
+        let otherUsersId = chatPreview.senderid == currentUser.accountId ? chatPreview.recid : chatPreview.senderid
+        let allUnreadMessagesFromUser = viewModel.unreadMessages.filter {$0.senderid == otherUsersId}
+        return allUnreadMessagesFromUser.count
     }
 }
 

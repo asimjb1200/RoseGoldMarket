@@ -135,6 +135,7 @@ struct MessageThread: View {
                 }
                 // clear out the active array to get ready for the next load
                 viewModel.currentlyActiveChat = []
+                //viewModel.newMsgCount -= 1
             }
         }
         .navigationTitle(receiverUsername)
@@ -162,6 +163,12 @@ struct MessageThread: View {
         }
         .onAppear() {
             viewModel.getAllMessagesInThread(viewingUser: viewingUser.accountId, otherUserAccount: receiverId, user: viewingUser)
+            
+            // remove all messages from unread messages array that have the other user as the sender. This chat has been opened so no need to keep them there
+            viewModel.unreadMessages = viewModel.unreadMessages.filter { $0.senderid != receiverId }
+            
+            // delete the unreads from the other user on the back end
+            
         }
     }
 }
