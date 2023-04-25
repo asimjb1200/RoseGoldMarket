@@ -20,4 +20,7 @@ struct Item: Codable, Hashable {
     let image2: String
     let image3: String
     let ownerUsername: String?
+    var itemImageFolderPath: String {
+        return "\(ownerUsername ?? "")/\(name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
+    }
 }

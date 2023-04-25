@@ -13,7 +13,7 @@ struct ItemPreview: View {
     let itemImageLink: String
     var body: some View {
         VStack {
-            AsyncImage(url: URL(string: "https://rosegoldgardens.com/api\(self.getImageLink(imageLink: itemImageLink))")) { phase in
+            AsyncImage(url: URL(string: "https://rosegoldgardens.com/api/images/\(itemImageLink)/image1.jpg")) { phase in
                 if let image = phase.image {
                     image.resizable().frame(maxWidth: 200, maxHeight: 200).cornerRadius(15).shadow(radius: 5)
                 } else if phase.error != nil {
