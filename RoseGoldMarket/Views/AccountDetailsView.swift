@@ -72,7 +72,7 @@ struct AccountDetailsView: View {
                         LazyVGrid (columns: columns) {
                             ForEach(self.items, id: \.id) { x in
                                 NavigationLink(destination: ItemDetails(item: x, viewingFromAccountDetails: true)) {
-                                    ItemPreview(itemId: x.id, itemTitle: x.name, itemImageLink: x.image1)
+                                    ItemPreview(itemId: x.id, itemTitle: x.name, itemImageLink: x.itemImageFolderPath)
                                 }
                             }
                         }
