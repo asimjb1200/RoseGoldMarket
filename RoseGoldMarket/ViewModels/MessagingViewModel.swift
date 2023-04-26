@@ -47,37 +47,52 @@ final class MessagingViewModel: ObservableObject {
                 
                 // first let's check to see if the user is currently viewing a convo, if so let's grab the oldest message in it
                 if let lastMessageInActiveChat:ChatData = self.currentlyActiveChat.last {
-                    let senderOfLastMsgInActiveChat = lastMessageInActiveChat.senderid
+                    let otherUserInActiveChat = lastMessageInActiveChat.senderid == newChatBlock.recid ? lastMessageInActiveChat.recid : lastMessageInActiveChat.senderid
                     
-                    // if the sender of this chat matches the sender or receiver of the last message in the currently active chat..
-                    if senderOfLastMsgInActiveChat == newChatBlock.senderid || senderOfLastMsgInActiveChat == newChatBlock.recid {
+                    // if the sender of this chat matches the other id that's in the currently active chat..
+                    if otherUserInActiveChat == newChatBlock.senderid {
                         DispatchQueue.main.async {
-                            self.currentlyActiveChat.append(newChatBlock)
-                        }
-                    }
-                } else {
-                    /// in this case I know that they dont have a chat open, so just add this new chat block to the chat preview list
-                    // check for the sender's id in the current preview list
-                    if let sendingUsersIndex = self.latestMessages.firstIndex(where: {$0.senderid == newChatBlock.senderid || $0.recid == newChatBlock.senderid}) {
-                        // now remove that chat from the list
-                        DispatchQueue.main.async {
-                            self.addNewestMessageToChatPreviews(latestChatBlock: newChatBlock, otherUsersIndexInPreviewArray: sendingUsersIndex)
-                            self.newMsgCount += 1
+                            self.currentlyActiveChat.append(newChatBlock) // add it to the active chat
                         }
                     } else {
-                        // in this case I know that they haven't received a message from this user, so lets just build a chat preview
-                        let latestChat = ChatDataForPreview.make(from: newChatBlock)
-                        
-                        DispatchQueue.main.async {
-                            // now add it to the front of the latest messages array
-                            self.latestMessages.insert(latestChat, at: 0)
-                            self.newMsgCount += 1
-                        }
+                        self.determineIfChatIsANewThread(newChatBlock: newChatBlock)
                     }
+                } else {
+                    // in this case I know that they dont have a chat open, so determine if this chat is from an existing thread or not
+                    self.determineIfChatIsANewThread(newChatBlock: newChatBlock)
                 }
             } catch let err {
                 print("[MessagingVM] tried to set up private message listener for user: \(err)")
             }
+        }
+    }
+    
+    func buildChatPreviewForNewConvo(newChatBlock: ChatData) {
+        let latestChat = ChatDataForPreview.make(from: newChatBlock)
+        
+        DispatchQueue.main.async {
+            // now add it to the front of the latest messages array
+            self.latestMessages.insert(latestChat, at: 0)
+            // and let's add it to the unread messages array so that the unread count from each user can be built
+            self.unreadMessages.append(UnreadMessage(message_id: newChatBlock.id, senderid: newChatBlock.senderid, recid: newChatBlock.recid))
+            self.newMsgCount += 1
+        }
+    }
+    
+    /// this method looks inside of the chat previews and sees if a thread with the viewing user and the other user is already present. If yes, it will use the newChatBlock as the latest message preview between those users. If not, it will create a new thread for the two users to communicate in
+    func determineIfChatIsANewThread(newChatBlock: ChatData) {
+        if let sendingUsersIndex = self.latestMessages.firstIndex(where: {$0.senderid == newChatBlock.senderid || $0.recid == newChatBlock.senderid}) {
+            // now remove that chat from the list
+            DispatchQueue.main.async {
+                self.addNewestMessageToChatPreviews(latestChatBlock: newChatBlock, otherUsersIndexInPreviewArray: sendingUsersIndex)
+                
+                // and let's add it to the unread messages array so that the unread count from each user can be built
+                self.unreadMessages.append(UnreadMessage(message_id: newChatBlock.id, senderid: newChatBlock.senderid, recid: newChatBlock.recid))
+                self.newMsgCount += 1
+            }
+        } else {
+            // in this case I know that they haven't received a message from this user, so lets just build a chat preview
+            self.buildChatPreviewForNewConvo(newChatBlock: newChatBlock)
         }
     }
     
@@ -99,10 +114,7 @@ final class MessagingViewModel: ObservableObject {
             switch unreadMessagesRes {
                 case .success(let unreadMessages):
                     DispatchQueue.main.async {
-                        print(unreadMessages.data)
                         self.unreadMessages = unreadMessages.data
-                        
-                        // split the unread messages out by their sender id so that the count can be broken up on a chat by chat basis
                         
                         self.newMsgCount += self.unreadMessages.count
                     }
@@ -110,6 +122,26 @@ final class MessagingViewModel: ObservableObject {
                     DispatchQueue.main.async {
                         print(err.localizedDescription)
                     }
+            }
+        }
+    }
+    
+    func deleteFromUnreadTable(otherUserId: UInt, viewingUser:UserModel) {
+        MessagingService().deleteUnreadMessageRecordsForChat(senderId: otherUserId, token: viewingUser.accessToken) { deletionResponse in
+            switch deletionResponse {
+                case .success(let responseObj):
+                    DispatchQueue.main.async {
+                        if responseObj.newToken != nil {
+                            viewingUser.accessToken = responseObj.newToken!
+                        }
+                        if responseObj.data {
+                            print("successfully deleted their messages")
+                        } else {
+                            print("wasn't able to delete their messages. Check your logs on the backend")
+                        }
+                    }
+                case .failure( _):
+                    print("an error occurred while trying to delete the unreads on the back end")
             }
         }
     }

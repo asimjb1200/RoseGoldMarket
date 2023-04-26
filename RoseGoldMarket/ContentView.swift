@@ -23,11 +23,6 @@ struct ContentView: View {
     
     let socket:SocketUtils = .shared
 
-    init() {
-        let appearance = UITabBar.appearance()
-        // appearance.backgroundColor = colorScheme == .light ? UIColor(Color.white.opacity(0.5)) : UIColor(Color.gray)
-    }
-
     var body: some View {
         TabView(selection: $context.selectedTab) {
             HomeMarket(tab: $context.selectedTab).environmentObject(context)
@@ -73,10 +68,12 @@ struct ContentView: View {
                 if !firstAppear && user.accountId != 0 {
                     socket.connectToServer(withId: user.accountId)
                     messenger.getLatestMessages(viewingUser: user.accountId, user: user)
+                    messenger.getUnreadMessagesForUser(user: user)
                 }
             } else if newPhase == .inactive {
                 print("Inactive")
             } else if newPhase == .background {
+                print("background")
                 socket.disconnectFromServer(accountId: user.accountId)
             }
         }

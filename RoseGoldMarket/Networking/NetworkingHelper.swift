@@ -19,7 +19,7 @@ struct Networker {
         return urlBase
     }
     
-    func constructRequest(uri: String, token: String = "", post: Bool = false, queryItems: [URLQueryItem]? = nil) -> URLRequest {
+    func constructRequest(uri: String, token: String = "", post: Bool = false, queryItems: [URLQueryItem]? = nil, deleteReq: Bool = false) -> URLRequest {
         var url = URL(string: uri)!
         
         if queryItems != nil {
@@ -32,6 +32,9 @@ struct Networker {
         
         if post {
             request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        } else if deleteReq {
+            request.httpMethod = "DELETE"
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         } else {
             request.httpMethod = "GET"

@@ -87,16 +87,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "6213A60F-D5F6-4D51-B652-FBCF340ADCA8"
-            shouldBeEnabled = "Yes"
+            uuid = "95B9C2C0-0D1D-4299-8F5A-45F8C822F2DF"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "RoseGoldMarket/Views/AccountDetailsView.swift"
+            filePath = "RoseGoldMarket/ViewModels/MessagingViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "140"
-            endingLineNumber = "140"
-            landmarkName = "fetchUserItems()"
+            startingLineNumber = "49"
+            endingLineNumber = "49"
+            landmarkName = "listenForNewMessagesV2()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

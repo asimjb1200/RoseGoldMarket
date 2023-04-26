@@ -78,7 +78,44 @@ struct MessagingService {
         }.resume()
     }
     
-    func deleteUnreadMessageRecordsForChat(viewingUserId: UInt, senderId: UInt) {
+    func deleteUnreadMessageRecordsForChat(senderId: UInt, token: String, completion: @escaping (Result<ResponseFromServer<Bool>, MessageErrors>) -> ()) {
+        guard let urlBase = networker.getUrlForEnv(appEnvironment: .Prod) else {
+            return
+        }
+        let url = "\(urlBase)/api/chat-handler/delete-from-unread"
+        let requestWithoutBody = networker.constructRequest(uri: url, token: token, deleteReq: true)
+        let request = networker.buildReqBody(req: requestWithoutBody, body: ["senderId": senderId])
+        
+        URLSession.shared.dataTask(with: request) { (data, response, err) in
+            guard err == nil else {
+                print("big error occurred: \(String(describing: err))")
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(.decodingError))
+                return
+            }
+            
+            guard let response = response as? HTTPURLResponse else {
+                completion(.failure(.responseDecodingError))
+                return
+            }
+            
+            if response.statusCode == 200 {
+                do {
+                    let chatDeletion = try JSONDecoder().decode(ResponseFromServer<Bool>.self, from: data)
+                    completion(.success(chatDeletion))
+                } catch let error {
+                    print(error.localizedDescription)
+                    completion(.failure(.decodingError))
+                }
+            } else {
+                let resFromServer = ResponseFromServer<Bool>(data: false, error: [], newToken: nil)
+                completion(.success(resFromServer))
+            }
+            
+        }.resume()
         
     }
     
@@ -96,7 +133,7 @@ struct MessagingService {
         
         URLSession.shared.dataTask(with: request) { (data, response, err) in
             guard err == nil else {
-                print("main err: \(err)")
+                print("main err: \(String(describing: err))")
                 return
             }
             
@@ -133,7 +170,7 @@ struct MessagingService {
         
         URLSession.shared.dataTask(with: request) { (data, response, err) in
             guard err == nil else {
-                print(err)
+                print(String(describing: err))
                 return
             }
             
@@ -144,7 +181,6 @@ struct MessagingService {
             
             do {
                 let decoder = JSONDecoder()
-                let dateFormatter = DateFormatter()
                 
                 let username = try decoder.decode(String.self, from: data)
                 completion(.success(username))
