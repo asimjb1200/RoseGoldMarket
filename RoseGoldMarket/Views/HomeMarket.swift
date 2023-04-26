@@ -116,7 +116,7 @@ struct HomeMarket: View {
                             LazyVGrid(columns: columns) {
                                 ForEach(viewModel.items, id: \.self) { x in
                                     NavigationLink(destination: ItemDetails(item: x, viewingFromAccountDetails: false)) {
-                                        ItemPreview(itemId: x.id, itemTitle: x.name, itemImageLink: x.image1)
+                                        ItemPreview(itemId: x.id, itemTitle: x.name, itemImageLink: x.itemImageFolderPath)
                                         .onAppear() {
                                             if x == viewModel.items.last, viewModel.allDataLoaded == false {
                                                 determineUserLocation()

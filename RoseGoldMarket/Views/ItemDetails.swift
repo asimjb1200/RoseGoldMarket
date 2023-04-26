@@ -25,7 +25,7 @@ struct ItemDetails: View {
                 if sendingMessage == false {
                     ScrollView(.horizontal, showsIndicators: true) {
                         HStack {
-                            AsyncImage(url: URL(string: "https://rosegoldgardens.com/api\(self.getImageLink(imageLink: item.image1))")) { imagePhase in
+                            AsyncImage(url: URL(string: "https://rosegoldgardens.com/api/images/\(item.itemImageFolderPath)/image1.jpg")) { imagePhase in
                                 if let image = imagePhase.image {
                                     image.resizable().scaledToFill().frame(width: determinePhotoDimensions(viewHeight: geo.size.height), height: determinePhotoDimensions(viewHeight: geo.size.height)).cornerRadius(25).shadow(radius: 5)
                                 } else if imagePhase.error != nil {
@@ -35,7 +35,7 @@ struct ItemDetails: View {
                                 }
                             }
 
-                            AsyncImage(url: URL(string: "https://rosegoldgardens.com/api\(self.getImageLink(imageLink: item.image2))")) { imagePhase in
+                            AsyncImage(url: URL(string: "https://rosegoldgardens.com/api/images/\(item.itemImageFolderPath)/image2.jpg")) { imagePhase in
                                 if let image = imagePhase.image {
                                     image.resizable().scaledToFill().frame(width: determinePhotoDimensions(viewHeight: geo.size.height), height: determinePhotoDimensions(viewHeight: geo.size.height)).cornerRadius(25).shadow(radius: 5)
                                 } else if imagePhase.error != nil {
@@ -45,7 +45,7 @@ struct ItemDetails: View {
                                 }
                             }
 
-                            AsyncImage(url: URL(string: "https://rosegoldgardens.com/api\(self.getImageLink(imageLink: item.image3))")) { imagePhase in
+                            AsyncImage(url: URL(string: "https://rosegoldgardens.com/api/images/\(item.itemImageFolderPath)/image3.jpg")) { imagePhase in
                                 if let image = imagePhase.image {
                                     image.resizable().scaledToFill().frame(width: determinePhotoDimensions(viewHeight: geo.size.height), height: determinePhotoDimensions(viewHeight: geo.size.height)).cornerRadius(25).shadow(radius: 5)
                                 } else if imagePhase.error != nil {
@@ -107,7 +107,7 @@ struct ItemDetails: View {
                         Button(
                             action: {
                                 // send the message to the owner
-                                let _ = messenger.sendMessageToUserV2(newMessage: messageForOwner, receiverId: item.owner, receiverUsername: item.ownerUsername ?? getOwnerUsername(imageLink: item.image1), senderUsername: user.username, senderId: user.accountId)
+                                let _ = messenger.sendMessageToUserV2(newMessage: messageForOwner, receiverId: item.owner, receiverUsername: item.ownerUsername ?? "", senderUsername: user.username, senderId: user.accountId)
                                 self.inquirySent.toggle()
                             },
                             label: {
@@ -144,25 +144,6 @@ struct ItemDetails: View {
 }
 
 extension ItemDetails {
-    func getImageLink(imageLink: String) -> String {
-        // chop up the image url
-        let linkArray = imageLink.components(separatedBy: "/build")
-        
-        return linkArray[1].replacingOccurrences(of: " ", with: "%20")
-    }
-    
-    func getOwnerUsername(imageLink: String) -> String {
-        // split string on the /images/ portion
-        let stringArrayContainingName = imageLink.components(separatedBy: "/images/")
-        
-        // now split based on the / character
-        let sectionsInImageURL = stringArrayContainingName[1].components(separatedBy: "/")
-        
-        let ownerUsername = sectionsInImageURL[0]
-        
-        return ownerUsername
-    }
-    
     func formatDate(date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MM/dd/yyyy"

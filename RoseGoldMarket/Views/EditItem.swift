@@ -14,7 +14,6 @@ struct EditItem: View {
     @EnvironmentObject var user:UserModel
     @StateObject var viewModel = EditItemVM()
     @FocusState var focusedField:EditFields?
-    @State var descOffset: CGFloat = 0
     @State var typing = false
     @State var areYouSure = false
     
@@ -35,13 +34,6 @@ struct EditItem: View {
     
     var body: some View {
         VStack(alignment: .center, spacing: 15) {
-//            if !typingDesc {
-//                Text("Tap to change your photos")
-//                    .fontWeight(.bold)
-//                    .frame(maxWidth: .infinity, alignment: .leading)
-//                    .foregroundColor(Color("AccentColor"))
-//            }
-
             // MARK: Plant Photos
             LazyHStack {
                 ForEach(selectedPlantImages.indices, id: \.self) { selectedImageIndex in
@@ -50,7 +42,6 @@ struct EditItem: View {
                             Circle() // outer rim
                                 .frame(width: 100, height: 100)
                                 .foregroundColor(Color(.lightGray))
-                            //.shadow(radius: 25)
                             
                             if let plantImage = plantImages[selectedImageIndex] {
                                 Image(uiImage: plantImage)
@@ -75,7 +66,7 @@ struct EditItem: View {
             .frame(maxWidth: .infinity, maxHeight: 100)
             .alert(isPresented: $viewModel.addPhotos) {
                 Alert(title:Text("Plant Photos"), message: Text("Add 3 unique photos of your plant"))
-            }.offset(y: descOffset * -1)
+            }
             
             // MARK: Plant Name
             Group {
@@ -118,7 +109,7 @@ struct EditItem: View {
             }
             .alert(isPresented: $viewModel.plantUpdated) {
                 Alert(title: Text("Success"), message: Text("Your plant was updated"), dismissButton: .default(Text("OK")) { dismiss() })
-            }.offset(y: descOffset * -1)
+            }
             
             // MARK: Description
             Group {
@@ -132,39 +123,7 @@ struct EditItem: View {
                     }
                 
                 TextField("", text: $viewModel.plantDescription, axis: .vertical)
-                    .lineLimit(5)
                     .focused($focusedField, equals: EditFields.description)
-                    .onReceive(Publishers.keyboardHeight) { keyboardHeight in
-                        if focusedField == .description {
-                            // MARK: Keyboard Height Code
-                            guard keyboardHeight > 0 else {
-                                withAnimation {
-                                    typingDesc = false
-                                    descOffset = 0
-                                    buttonHeight = 30
-                                }
-                                return
-                            }
-                            
-                            //let focusedTextInputBottom = UIResponder.currentFirstResponder?.globalFrame?.maxY ?? 0
-                            
-                            //let screen = UIScreen.main.bounds
-                            //let topOfKeyboard = screen.size.height - keyboardHeight
-                            //let moveUpThisMuch = focusedTextInputBottom - topOfKeyboard + 20
-
-                            withAnimation {
-                                typingDesc = true
-                                self.descOffset = 50
-                                buttonHeight = 0
-                            }
-                        } else {
-                            withAnimation {
-                                typingDesc = false
-                                descOffset = 0
-                                buttonHeight = 30
-                            }
-                        }
-                    }
                     .padding()
                     .modifier(CustomTextBubble(isActive: focusedField == EditFields.description, accentColor: .blue))
                     .shadow(radius: 5)
@@ -177,13 +136,12 @@ struct EditItem: View {
                     .alert(isPresented: $viewModel.categoriesUpdated) {
                         Alert(title: Text("Categories Saved"), dismissButton: .default(Text("OK")))
                     }
-            }.offset(y: descOffset * -1)
+            }
             
             // MARK: Still Available
             Toggle("Still available?", isOn: $viewModel.isAvailable)
                 .padding(.top)
                 .tint(Color("MainColor"))
-                .offset(y: descOffset)
                 .alert(isPresented: $viewModel.itemIsDeleted) {
                     Alert(title: Text("Success"), message: Text("Your item has been deleted"), dismissButton: .default(Text("OK"), action: { dismiss() }))
                 }
@@ -191,98 +149,7 @@ struct EditItem: View {
             if !viewModel.isAvailable {
                 Toggle("Plant was picked up", isOn: $viewModel.pickedUp).padding(.top)
                     .tint(Color("MainColor"))
-                    .offset(y: descOffset)
             }
-            
-
-            // MARK: Choose categories
-//            Button(
-//                action: {
-//                    viewModel.isShowingCategoryPicker = true
-//                },
-//                label: {
-//                    Text("Choose Categories")
-//                        .fontWeight(.bold)
-//                        .frame(maxWidth: .infinity, maxHeight: buttonHeight, alignment: .center)
-//                        .foregroundColor(.white)
-//                        .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(maxWidth: .infinity, maxHeight: buttonHeight))
-//                        .padding(.top)
-//                }
-//            )
-//            .alert(isPresented: $viewModel.missingCategories) {
-//                Alert(title: Text("Missing Categories"), message: Text("Make sure to pick some categories for your plant"), dismissButton: .default(Text("OK")))
-//            }
-//            .sheet(isPresented: $viewModel.isShowingCategoryPicker) {
-//                Text("Choose Your Categories")
-//                    .fontWeight(.bold)
-//                    .foregroundColor(Color("MainColor"))
-//                    .padding([.top, .bottom])
-//
-//                ForEach($viewModel.categoryHolder) { $cat in
-//                    Toggle("\(categoryMapper.categories[cat.category]!)", isOn: $cat.isActive)
-//                        .tint(Color("MainColor"))
-//                        .padding([.leading, .trailing])
-//                }
-//                Spacer()
-//            }
-//            .offset(y: descOffset)
-            
-            // MARK: Update Button
-//            Button(
-//                action:{
-//                    // figure out if the images have been changed etc
-//                    guard plantImagesAdded() else {
-//                        viewModel.addPhotos = true
-//                        return
-//                    }
-//                    guard !viewModel.plantName.isEmpty else {
-//                        focusedField = .name
-//                        return
-//                    }
-//                    guard !viewModel.plantDescription.isEmpty else {
-//                        focusedField = .description
-//                        return
-//                    }
-//                    guard viewModel.categoryChosen == true else {
-//                        viewModel.missingCategories = true
-//                        return
-//                    }
-//
-//                    guard
-//                        viewModel.plantDescription.count <= 200
-//                    else {
-//                        focusedField = .description
-//                        viewModel.tooManyChars = true
-//                        return
-//                    }
-//
-//                    guard viewModel.plantName.count <= 20 else {
-//                        focusedField = .name
-//                        return
-//                    }
-//
-//
-//                    guard
-//                        let plantImage = plantImages[0]?.jpegData(compressionQuality: 0.5),
-//                        let plantImage2 = plantImages[1]?.jpegData(compressionQuality: 0.5),
-//                        let plantImage3 = plantImages[2]?.jpegData(compressionQuality: 0.5)
-//                    else {
-//                        return
-//                    }
-//
-//                    viewModel.savePlant(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, itemId: itemId, user:user)
-//                },
-//                label: {
-//                    Text("Update")
-//                        .fontWeight(.bold)
-//                        .frame(maxWidth: .infinity, maxHeight: buttonHeight, alignment: .center)
-//                        .foregroundColor(.white)
-//                        .background(RoundedRectangle(cornerRadius: 25).fill(Color("AccentColor")).frame(maxWidth: .infinity, maxHeight: buttonHeight))
-//                        .padding(.top)
-//
-//                }
-//            )
-//            .offset(y: descOffset)
             
             Menu("Actions") {
                 Button("Delete") {areYouSure.toggle()}
@@ -336,28 +203,6 @@ struct EditItem: View {
                 Alert(title: Text("Missing Categories"), message: Text("Make sure to pick some categories for your plant"), dismissButton: .default(Text("OK")))
             }
             
-//            Button(
-//                action: { areYouSure = true },
-//                label: {
-//                    Text("Delete")
-//                        .fontWeight(.bold)
-//                        .frame(maxWidth: .infinity, maxHeight: buttonHeight)
-//                        .foregroundColor(.white)
-//                        .background(RoundedRectangle(cornerRadius: 25).fill(Color.red).frame(maxWidth: .infinity, maxHeight: buttonHeight))
-//                        .padding(.top)
-//                }
-//            )
-//            .alert(isPresented: $areYouSure) {
-//                Alert(
-//                    title: Text("Are You Sure?"),
-//                    message: Text("You're about to delete your item. You can't undo this."),
-//                    primaryButton: .destructive(Text("Delete")) {
-//                        viewModel.deleteItem(itemId: itemId, user:user)
-//                    },
-//                    secondaryButton: .cancel()
-//                )
-//            }
-            
             Spacer()
             .alert(isPresented: $areYouSure) {
                 Alert(
@@ -395,26 +240,28 @@ struct EditItem: View {
 
 extension EditItem {
     func getImage(owner: String, itemName: String, imageNumber: Int) {
-        let itemNameWithoutSpaces: String = itemName.replacingOccurrences(of: " ", with: "%20")
-        
-        // for each plant the images are stored as "image1", "image2", "image3"
-        if let url: URL = URL(string: "https://rosegoldgardens.com/api/images/\(ownerName)/\(itemNameWithoutSpaces)/image\(imageNumber).jpg") {
-            URLSession.shared.dataTask(with: url) { (data, response, err) in
-                guard err == nil else {
-                    print("an error occurred")
-                    return
-                }
-                
-                guard let imageData: Data = data else {
-                    print("couldnt decode data")
-                    return
-                }
-                if let uiImage = UIImage(data: imageData) {
-                    DispatchQueue.main.async {
-                        self.plantImages[imageNumber - 1] = uiImage
+        if let encodedString = itemName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+            // Send the encodedString to the backend server
+
+            // for each plant the images are stored as "image1", "image2", "image3"
+            if let url: URL = URL(string: "https://rosegoldgardens.com/api/images/\(ownerName)/\(encodedString)/image\(imageNumber).jpg") {
+                URLSession.shared.dataTask(with: url) { (data, response, err) in
+                    guard err == nil else {
+                        print("an error occurred")
+                        return
                     }
-                }
-            }.resume()
+                    
+                    guard let imageData: Data = data else {
+                        print("couldnt decode data")
+                        return
+                    }
+                    if let uiImage = UIImage(data: imageData) {
+                        DispatchQueue.main.async {
+                            self.plantImages[imageNumber - 1] = uiImage
+                        }
+                    }
+                }.resume()
+            }
         }
     }
     
