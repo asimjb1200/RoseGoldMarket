@@ -46,21 +46,26 @@ struct MessageList: View {
                                         VStack(alignment: .leading) {
                                             if isUnreadMessage(chatPreview: chatPreview) {
                                                 Text(chatPreview.nonViewingUsersUsername)
-                                                    .badge(getUnreadCountForChat(chatPreview: chatPreview))
+                                                    .badge(
+                                                        Text(getUnreadCountForChat(chatPreview: chatPreview))
+                                                            .foregroundColor(Color("AccentColor"))
+                                                            .fontWeight(.bold)
+                                                    )
                                                     .fontWeight(.bold)
                                                     .font(.headline)
+                                                    .foregroundColor(Color("MainColor"))
                                             } else {
-                                                Text(chatPreview.nonViewingUsersUsername)
+                                                Text(chatPreview.nonViewingUsersUsername).foregroundColor(Color("MainColor"))
                                             }
                                             HStack {
                                                 Text(chatPreview.message)
                                                 Spacer()
                                                 Text(chatPreview.timestamp.formatted(date: .numeric, time: .omitted))
                                                     .font(.caption2)
-                                            }
+                                            }.foregroundColor(Color("MainColor"))
                                             .frame(maxWidth: .infinity, alignment: .leading)
                                             
-                                        }.foregroundColor(Color("MainColor"))
+                                        }
                                         Spacer()
                                     }
                                     .padding([.leading, .trailing])
