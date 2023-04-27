@@ -53,23 +53,23 @@ struct MessageList: View {
                                                     )
                                                     .fontWeight(.bold)
                                                     .font(.headline)
-                                                    .foregroundColor(Color("MainColor"))
+                                                    
                                             } else {
-                                                Text(chatPreview.nonViewingUsersUsername).foregroundColor(Color("MainColor"))
+                                                Text(chatPreview.nonViewingUsersUsername)
                                             }
                                             HStack {
                                                 Text(chatPreview.message)
                                                 Spacer()
                                                 Text(chatPreview.timestamp.formatted(date: .numeric, time: .omitted))
                                                     .font(.caption2)
-                                            }.foregroundColor(Color("MainColor"))
+                                            }
                                             .frame(maxWidth: .infinity, alignment: .leading)
                                             
                                         }
                                         Spacer()
                                     }
                                     .padding([.leading, .trailing])
-                                    .frame(maxHeight: 50)
+                                    .frame(maxHeight: 60)
                                     
                                 }.isDetailLink(false)
                             }
