@@ -260,30 +260,6 @@ struct LogIn: View {
             }
         }
     }
-    
-    func scanFaceID() {
-        let context = LAContext()
-        var error: NSError?
-        
-        // check whether biometric authentication is possible
-        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-            // it's possible, so go ahead and use it
-            let reason = "We need to unlock your data."
-            
-            context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, authError in
-                // authentication has now completed
-                if success {
-                    // authenticated successfully
-                    // self.login()
-                    // grab their creds from our web server creds if possible
-                } else {
-                    // there was a problem
-                }
-            }
-        } else {
-            // no biometrics so make them manually press login
-        }
-    }
 }
 
 struct LogIn_Previews: PreviewProvider {
