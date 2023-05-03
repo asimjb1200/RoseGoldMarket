@@ -74,6 +74,7 @@ struct HomeMarket: View {
                         HStack {
                             Image(systemName: "magnifyingglass").foregroundColor(Color("MainColor")).padding(.leading)
                             TextField("", text: $viewModel.searchTerm)
+                                .autocorrectionDisabled()
                                 .padding()
                                 .focused($searchBarIsFocus)
                                 .toolbar {
@@ -98,7 +99,6 @@ struct HomeMarket: View {
                             }
                         }
                     }
-                    .padding(.bottom, 2.0)
                     .background(
                         colorScheme == .dark ? Color.gray.opacity(0.5) : Color.white
                     )

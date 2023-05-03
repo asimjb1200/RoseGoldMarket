@@ -15,6 +15,7 @@ final class EditItemVM:ObservableObject {
     @Published var firstAppear = true
     @Published var isAvailable = true
     @Published var pickedUp = false
+    @Published var updatedAvailability = false
     @Published var itemIsDeleted = false
     @Published var addPhotos = false
     @Published var missingCategories = false
@@ -23,16 +24,36 @@ final class EditItemVM:ObservableObject {
     @Published var tooManyChars = false
     @Published var networkError = false
     @Published var plantUpdated = false
+    @Published var itemDataLoaded = false
     @Published var plantImages: [PlantImage] = [PlantImage(id: UUID(), image: nil), PlantImage(id: UUID(), image: nil), PlantImage(id: UUID(), image: nil)]
     
     var viewStateErrors: EditItemViewStates = .allGood
     var categoryMapper = CategoryMapper()
     var service = ItemService()
+    
     var categoryChosen: Bool {
         return 0 != self.categoryHolder.filter{ $0.isActive == true }.count
     }
     
+    func updateItemAvailability(itemId:UInt, itemIsAvailable: Bool, user:UserModel) {
+        service.updateItemAvailability(itemId: itemId, itemIsAvailable: itemIsAvailable, token: user.accessToken) {[weak self] itemAvailabilityRes in
+            switch itemAvailabilityRes {
+                case .success(let res):
+                    DispatchQueue.main.async {
+                        if res.newToken != nil {
+                            user.accessToken = res.newToken!
+                        }
+                        
+                        self?.updatedAvailability = res.data
+                    }
+                case .failure(let err):
+                    print(err)
+            }
+        }
+    }
+    
     func getItemData(itemId:UInt, user:UserModel) {
+        self.itemDataLoaded = true
         service.retrieveItemById(itemId: itemId, token: user.accessToken) {[weak self] itemDataResponse in
             switch itemDataResponse {
                 case .success(let itemData):
@@ -42,6 +63,7 @@ final class EditItemVM:ObservableObject {
                         }
                         self?.plantName = itemData.data.name
                         self?.plantDescription = itemData.data.description
+                        self?.isAvailable = itemData.data.isavailable
                         
                         // go through the category list and set the toggle to true if it is present
                         for cat in itemData.data.categories {
@@ -57,9 +79,9 @@ final class EditItemVM:ObservableObject {
                             
                             // now activate it since this category id was a pre-existing one in the db
                             self?.categoryHolder[indexOfCategoryToActivate].isActive = true
-                            
-                            self?.isAvailable = itemData.data.isavailable
                         }
+                        
+                        self?.itemDataLoaded = true
                     }
                 case .failure(let error):
                     DispatchQueue.main.async {
@@ -68,6 +90,7 @@ final class EditItemVM:ObservableObject {
                         }
                         print("[EditItemVM] tried to get data for item \(itemId): \(error)")
                         self?.networkError = true
+                        self?.itemDataLoaded = true
                     }
             }
         }

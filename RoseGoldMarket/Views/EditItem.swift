@@ -39,16 +39,18 @@ struct EditItem: View {
                 ForEach(selectedPlantImages.indices, id: \.self) { selectedImageIndex in
                     PhotosPicker(selection: $selectedPlantImages[selectedImageIndex], matching: .images) {
                         ZStack {
-                            Circle() // outer rim
-                                .frame(width: 100, height: 100)
-                                .foregroundColor(Color(.lightGray))
-                            
                             if let plantImage = plantImages[selectedImageIndex] {
+                                Circle() // outer rim
+                                    .frame(width: 100, height: 100)
+                                    .foregroundColor(Color(.lightGray))
+                                
                                 Image(uiImage: plantImage)
                                     .resizable()
                                     .scaledToFill()
                                     .clipShape(Circle())
                                     .frame(width: 90, height: 90)
+                            } else {
+                                ProgressView().tint(Color("AccentColor"))
                             }
                         }.onChange(of: selectedPlantImages[selectedImageIndex]) { _ in
                             Task {
@@ -74,6 +76,9 @@ struct EditItem: View {
                     .fontWeight(.bold)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top)
+                    .alert(isPresented: $viewModel.itemIsDeleted) {
+                        Alert(title: Text("Success"), message: Text("Your item has been deleted"), dismissButton: .default(Text("OK"), action: { dismiss() }))
+                    }
                 
                 TextField("", text: $viewModel.plantName)
                     .padding()
@@ -93,6 +98,9 @@ struct EditItem: View {
                     .onSubmit {
                         focusedField = .description
                     }
+                    .alert(isPresented: $viewModel.plantUpdated) {
+                        Alert(title: Text("Success"), message: Text("Your plant was updated"), dismissButton: .default(Text("OK")) { dismiss() })
+                    }
             }
             .onAppear() {
                 if firstAppear {
@@ -106,9 +114,6 @@ struct EditItem: View {
                         getImage(owner: ownerName, itemName: itemName, imageNumber: num)
                     }
                 }
-            }
-            .alert(isPresented: $viewModel.plantUpdated) {
-                Alert(title: Text("Success"), message: Text("Your plant was updated"), dismissButton: .default(Text("OK")) { dismiss() })
             }
             
             // MARK: Description
@@ -126,6 +131,7 @@ struct EditItem: View {
                     .focused($focusedField, equals: EditFields.description)
                     .padding()
                     .modifier(CustomTextBubble(isActive: focusedField == EditFields.description, accentColor: .blue))
+                    .frame(minHeight: 50)
                     .shadow(radius: 5)
                     .onChange(of: viewModel.plantDescription) {
                         viewModel.plantDescription = String($0.prefix(200)) // limit to 200 characters
@@ -133,87 +139,100 @@ struct EditItem: View {
                     .onSubmit {
                         focusedField = nil
                     }
+                    .onReceive(Publishers.keyboardHeight) { keyboardHeight in
+                        if keyboardHeight > 0 {
+                            withAnimation(.easeOut) {
+                                typing = true
+                            }
+                        } else {
+                            withAnimation(.easeOut) {
+                                typing = false
+                            }
+                        }
+                    }
                     .alert(isPresented: $viewModel.categoriesUpdated) {
                         Alert(title: Text("Categories Saved"), dismissButton: .default(Text("OK")))
                     }
             }
             
-            // MARK: Still Available
-            Toggle("Still available?", isOn: $viewModel.isAvailable)
-                .padding(.top)
-                .tint(Color("MainColor"))
-                .alert(isPresented: $viewModel.itemIsDeleted) {
-                    Alert(title: Text("Success"), message: Text("Your item has been deleted"), dismissButton: .default(Text("OK"), action: { dismiss() }))
+            if !typing {
+                // MARK: Still Available
+                HStack {
+                    Text("Still Available?").fontWeight(.bold).foregroundColor(Color("AccentColor"))
+
+                    Spacer()
+
+                    Rectangle()
+                        .fill(viewModel.isAvailable ? .green : .clear)
+                        .frame(width: 20, height: 20)
+                        .border(.gray, width: 2)
+                        .onTapGesture {
+                            withAnimation {
+                                viewModel.isAvailable.toggle()
+                            }
+                            
+                            // send off the code that will update the availability of the item on the backend
+                            viewModel.updateItemAvailability(itemId: itemId, itemIsAvailable: viewModel.isAvailable, user: user)
+                        }
+                        .alert(isPresented: $viewModel.updatedAvailability) {
+                            Alert(title: Text("Success"), message: Text(viewModel.isAvailable ? "Your plant listing has been added back the market" : "Your plant listing has been removed from the market"), dismissButton: .default(Text("OK")))
+                        }
+                }.padding(.top)
+
+                Menu("Actions") {
+                    Button("Delete") {areYouSure.toggle()}
+                    Button("Change Categories") { viewModel.isShowingCategoryPicker = true}
+                    Button("Save Changes") {
+                            // figure out if the images have been changed etc
+                            guard plantImagesAdded() else {
+                                viewModel.addPhotos = true
+                                return
+                            }
+                            guard !viewModel.plantName.isEmpty else {
+                                focusedField = .name
+                                return
+                            }
+                            guard !viewModel.plantDescription.isEmpty else {
+                                focusedField = .description
+                                return
+                            }
+                            guard viewModel.categoryChosen == true else {
+                                viewModel.missingCategories = true
+                                return
+                            }
+
+                            guard
+                                viewModel.plantDescription.count <= 200
+                            else {
+                                focusedField = .description
+                                viewModel.tooManyChars = true
+                                return
+                            }
+
+                            guard viewModel.plantName.count <= 20 else {
+                                focusedField = .name
+                                return
+                            }
+
+
+                            guard
+                                let plantImage = plantImages[0]?.jpegData(compressionQuality: 0.5),
+                                let plantImage2 = plantImages[1]?.jpegData(compressionQuality: 0.5),
+                                let plantImage3 = plantImages[2]?.jpegData(compressionQuality: 0.5)
+                            else {
+                                return
+                            }
+
+                            viewModel.savePlant(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, itemId: itemId, user:user)
+                        }
                 }
-            
-            if !viewModel.isAvailable {
-                Toggle("Plant was picked up", isOn: $viewModel.pickedUp).padding(.top)
-                    .tint(Color("MainColor"))
-            }
-            
-            Menu("Actions") {
-                Button("Delete") {areYouSure.toggle()}
-                Button("Change Categories") { viewModel.isShowingCategoryPicker = true}
-                Button("Save Changes") {
-                        // figure out if the images have been changed etc
-                        guard plantImagesAdded() else {
-                            viewModel.addPhotos = true
-                            return
-                        }
-                        guard !viewModel.plantName.isEmpty else {
-                            focusedField = .name
-                            return
-                        }
-                        guard !viewModel.plantDescription.isEmpty else {
-                            focusedField = .description
-                            return
-                        }
-                        guard viewModel.categoryChosen == true else {
-                            viewModel.missingCategories = true
-                            return
-                        }
-                        
-                        guard
-                            viewModel.plantDescription.count <= 200
-                        else {
-                            focusedField = .description
-                            viewModel.tooManyChars = true
-                            return
-                        }
-                        
-                        guard viewModel.plantName.count <= 20 else {
-                            focusedField = .name
-                            return
-                        }
-                        
-                        
-                        guard
-                            let plantImage = plantImages[0]?.jpegData(compressionQuality: 0.5),
-                            let plantImage2 = plantImages[1]?.jpegData(compressionQuality: 0.5),
-                            let plantImage3 = plantImages[2]?.jpegData(compressionQuality: 0.5)
-                        else {
-                            return
-                        }
-                        
-                        viewModel.savePlant(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, itemId: itemId, user:user)
-                    }
-            }
-            .font(.system(size: 20, weight: .heavy, design: .default))
-            .alert(isPresented: $viewModel.missingCategories) {
-                Alert(title: Text("Missing Categories"), message: Text("Make sure to pick some categories for your plant"), dismissButton: .default(Text("OK")))
+                .font(.system(size: 20, weight: .heavy, design: .default))
+                .alert(isPresented: $viewModel.missingCategories) {
+                    Alert(title: Text("Missing Categories"), message: Text("Make sure to pick some categories for your plant"), dismissButton: .default(Text("OK")))
+                }
             }
             
             Spacer()
-            .alert(isPresented: $areYouSure) {
-                Alert(
-                    title: Text("Are You Sure?"),
-                    message: Text("You're about to delete your item. You can't undo this."),
-                    primaryButton: .destructive(Text("Delete")) {
-                        viewModel.deleteItem(itemId: itemId, user:user)
-                    },
-                    secondaryButton: .cancel()
-                )
-            }
         }
         .sheet(
             isPresented: $viewModel.isShowingCategoryPicker,
@@ -233,7 +252,6 @@ struct EditItem: View {
             }
             Spacer()
         }
-        .ignoresSafeArea(.keyboard, edges: .bottom)
         .padding([.leading, .trailing])
     }
 }

@@ -66,10 +66,57 @@ struct ItemService {
         }.resume()
     }
     
+    func updateItemAvailability(itemId: UInt, itemIsAvailable: Bool, token: String, completion: @escaping (Result<ResponseFromServer<Bool>, ItemErrors>) -> ()) {
+        let networker = Networker()
+        guard let urlBase = networker.getUrlForEnv(appEnvironment: .Prod) else {
+            print("not able to get url base")
+            return
+        }
+        let url = "\(urlBase)/api/item-handler/toggle-item-availability"
+        let requestWithoutBody = networker.constructRequest(uri: url, token: token, post: true)
+        let reqBody: [String: Any] = ["itemId": itemId, "itemIsAvailable": itemIsAvailable]
+        let request = networker.buildReqBody(req: requestWithoutBody, body: reqBody)
+        
+        URLSession.shared.dataTask(with: request) {(data, response, err) in
+            guard err == nil else {
+                completion(.failure(.genError))
+                return
+            }
+            
+            guard let response = response as? HTTPURLResponse else {
+                completion(.failure(.genError))
+                return
+            }
+            
+            guard response.statusCode != 403 else {
+                completion(.failure(.tokenExpired))
+                return
+            }
+            
+            guard response.statusCode == 200 else {
+                completion(.failure(.badStatusCode))
+                return
+            }
+            
+            guard let data = data else {
+                print("couldn't unwrap the data")
+                completion(.failure(.dataConversionError))
+                return
+            }
+            
+            do {
+                let decoder = JSONDecoder()
+                let itemsResponse = try decoder.decode(ResponseFromServer<Bool>.self, from: data)
+                completion(.success(itemsResponse))
+            } catch let dataError {
+                print(dataError.localizedDescription)
+            }
+        }.resume()
+    }
+    
     func retrieveItems(categoryIdFilters: [UInt], limit: UInt, offset: UInt, longAndLat: String, miles: UInt, searchTerm: String, token: String, completion: @escaping (Result<ResponseFromServer<[Item]>, ItemErrors>) -> ()) {
         let networker = Networker()
         let urlRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/item-handler/fetch-filtered-items",token: token , post: true)
-        //let urlRequest = networker.constructRequest(uri: "http://192.168.1.65:4000/api/item-handler/fetch-filtered-items", token: token, post: true)
         
         let body: [String:Any] = [
             "categories": categoryIdFilters,
@@ -372,4 +419,7 @@ struct ItemService {
 enum ItemErrors: String, Error {
     case genError = "error occurred"
     case tokenExpired = "The access token has expired. Time to issue a new one"
+    case responseConversionError = "could not convert the response object to an HTTPResponse"
+    case dataConversionError = "was not able to convert the data object to a known type"
+    case badStatusCode = "the status code indicated that there was a big problem"
 }
