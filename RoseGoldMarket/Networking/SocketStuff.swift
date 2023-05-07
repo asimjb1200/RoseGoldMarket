@@ -23,10 +23,10 @@ final class SocketUtils: ObservableObject {
         self.decoder.dateDecodingStrategy = .formatted(self.dateFormatter)
         
         // grab the user's account id from the device which was saved on login and connect if it's a valid one
-        let userAccountId = userService.loadAccountId()
-        if userAccountId != 0 {
-            self.connectToServer(withId: userAccountId)
-        }
+//        let userAccountId = userService.loadAccountId()
+//        if userAccountId != 0 {
+//            self.connectToServer(withId: userAccountId)
+//        }
         
         manager.defaultSocket.on(clientEvent: .connect) {data, ack in
             print("socket connected")

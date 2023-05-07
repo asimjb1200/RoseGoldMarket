@@ -752,22 +752,22 @@ final class UserNetworking {
         defaults.removeObject(forKey: "rg-avatarUrl")
     }
     
-    func loadUserFromDevice() -> ServiceUser? {
-        let defaults: UserDefaults = .standard
-        let username = defaults.string(forKey: "rg-username")
-        let accountId = defaults.integer(forKey: "rg-accountId")
-        let avatarUrl = defaults.string(forKey: "rg-avatarUrl")
-        guard
-            let username = username,
-            let avatarUrl = avatarUrl
-        else {
-            return nil
-        }
-
-         let serviceUser: ServiceUser = ServiceUser(avatarUrl: avatarUrl, accountId: UInt(accountId), username: username, accessToken: "")
-        
-        return serviceUser
-    }
+//    func loadUserFromDevice() -> ServiceUser? {
+//        let defaults: UserDefaults = .standard
+//        let username = defaults.string(forKey: "rg-username")
+//        let accountId = defaults.integer(forKey: "rg-accountId")
+//        let avatarUrl = defaults.string(forKey: "rg-avatarUrl")
+//        guard
+//            let username = username,
+//            let avatarUrl = avatarUrl
+//        else {
+//            return nil
+//        }
+//
+//         let serviceUser: ServiceUser = ServiceUser(avatarUrl: avatarUrl, accountId: UInt(accountId), username: username, accessToken: "")
+//
+//        return serviceUser
+//    }
     
     func loadUsernameFromDevice() -> String {
         let defaults: UserDefaults = .standard

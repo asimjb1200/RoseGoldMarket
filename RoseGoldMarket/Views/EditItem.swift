@@ -233,6 +233,16 @@ struct EditItem: View {
             }
             
             Spacer()
+                .alert(isPresented: $areYouSure) {
+                    Alert(
+                        title: Text("Are You Sure"),
+                        message: Text("Once you delete your item we can't undo it."),
+                        primaryButton: .destructive(Text("Delete")) {
+                            viewModel.deleteItem(itemId: itemId, user:user)
+                        },
+                        secondaryButton: .cancel()
+                    )
+                }
         }
         .sheet(
             isPresented: $viewModel.isShowingCategoryPicker,

@@ -240,7 +240,6 @@ struct LogIn: View {
                     DispatchQueue.main.async {
                         service.saveUserToDevice(user: userRes.data)
                         service.saveAccessToken(accessToken: userRes.data.accessToken)
-                        let savedPassword = service.loadUserPassword()
 
                         self.loading = false
                         globalUser.login(serviceUsr: userRes.data)
