@@ -17,6 +17,7 @@ struct ContentView: View {
     @State var tab: Int = 0
     @State var firstAppear = true
     @StateObject var messenger: MessagingViewModel = .shared
+    @EnvironmentObject private var subHandler: SubscriptionHandler
     @EnvironmentObject var user:UserModel
     @Environment(\.scenePhase) var scenePhase
     @Environment(\.colorScheme) var colorScheme
@@ -60,6 +61,9 @@ struct ContentView: View {
                 messenger.getUnreadMessagesForUser(user: user)
                 firstAppear = false
             }
+        }
+        .task {
+            await subHandler.checkSubscriptionStatus()
         }
         .environmentObject(messenger)
         .environmentObject(context)

@@ -1,0 +1,79 @@
+{
+  "identifier" : "A78BE296",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_applicationInternalID" : "1621164586",
+    "_developerTeamID" : "P2B946HD8M",
+    "_lastSynchronizedDate" : 705276788.23646295
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21272282",
+      "localizations" : [
+
+      ],
+      "name" : "Base Package",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "1.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6446265254",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Access the app in the USA",
+              "displayName" : "Monthly Subscription",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "tier_1_users",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Monthly Subscription",
+          "subscriptionGroupID" : "21272282",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "12.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "6446266901",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Save money by paying for the entire year now",
+              "displayName" : "Yearly Subscription",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "tier_2_users",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Yearly Subscription",
+          "subscriptionGroupID" : "21272282",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 2,
+    "minor" : 0
+  }
+}

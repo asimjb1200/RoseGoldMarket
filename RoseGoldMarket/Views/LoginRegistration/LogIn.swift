@@ -11,21 +11,15 @@ import FacebookShare
 import Social
 
 struct LogIn: View {
-    // @State var username = ""
     @State var password = ""
     @State var email = ""
-    @State var badPw = false
-    @State var badUsername = false
-    @State var badEmail = false
-    @State var badCreds = false
-    @State var loading = false
-    @FocusState private var focusedField:FormFields?
+    @State var isLoading = false
+    @State var verificationCodeError = false
     @EnvironmentObject var globalUser:UserModel
     @EnvironmentObject var appViewState: CurrentAppView
+    @EnvironmentObject private var subHandler: SubscriptionHandler
     var appBanner:UIImage? = UIImage(named: "UpdatedBanner")
     var service:UserNetworking = .shared
-    let accent = Color.blue
-    //let darkGreen = Color("DarkGreen") may try to do a gradient type thing under the banner in the future
     var buttonWidth = UIScreen.main.bounds.width * 0.85
     
     
@@ -54,92 +48,43 @@ struct LogIn: View {
                     .padding(.bottom, 25)
             }
             
-            
-            HStack {
-                Image(systemName: "envelope.circle").foregroundColor(focusedField == FormFields.email ? accent : Color.gray)
-                TextField("Email", text: $email)
-                    .textContentType(UITextContentType.emailAddress)
-                    .focused($focusedField, equals: .email)
-            }
-            .padding()
-            .modifier(CustomTextBubble(isActive: focusedField == .email, accentColor: .blue))
-            .padding()
-            .padding([.leading, .trailing])
-            .alert(isPresented: $badEmail) {
-                Alert(title: Text("Email Address"), message: Text("Your email address is invalid"), dismissButton: .default(Text("OK")))
-            }
-            
-            HStack {
-                Image(systemName: "lock.fill").foregroundColor(focusedField == FormFields.password ? accent : Color.gray)
-                
-                SecureField("Password", text: $password)
-                    .textContentType(.password)
-                    .focused($focusedField, equals: .password)
-            }
-            .padding()
-            .modifier(CustomTextBubble(isActive: focusedField == .password, accentColor: .blue))
-            .padding()
-            .padding([.leading, .trailing])
-            .alert(isPresented: $badPw) {
-                Alert(title: Text("Incorrect Password"), message: Text("Your password contains invalid characters"), dismissButton: .default(Text("OK")))
-            }
-            
-            Button(
-                action: {
-                    withAnimation {
-                        appViewState.currentView = .ForgotPassword
-                    }
-                },
-                label: {
-                    Text("Forgot Password?")
-                        .font(.subheadline)
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                        .foregroundColor(.blue)
-                        .padding(.trailing)
-                        .padding(.top, -8)
-                        .padding(.bottom)
-                }
-            )
-            
-            if loading {
+            if subHandler.subPurchaseLoading {
                 ProgressView()
             } else {
-                Button(
-                    action: {
-                        guard !self.email.isEmpty else {
-                            self.badEmail = true
-                            focusedField = .email
-                            return
-                        }
-                        
-                        guard Validators.isValidEmail(email: self.email) else {
-                            self.badEmail = true
-                            focusedField = .email
-                            return
-                        }
-                        
-                        guard !self.password.isEmpty else {
-                            self.badPw = true
-                            focusedField = .password
-                            return
-                        }
-                        focusedField = nil
-                        self.loginWithEmail()
-                    },
-                    label: {
-                        Text("Log In")
-                            .foregroundColor(Color.white)
-                            .frame(width: buttonWidth)
-                            .font(.system(size: 16, weight: Font.Weight.bold))
-                            .padding()
-                            .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue).frame(width: buttonWidth))
-                            .padding(.top)
-                            .alert(isPresented: $badCreds) {
-                                Alert(title: Text("Incorrect Credentials"), message: Text("Your username and password combination couldn't be found in our records"), dismissButton: .default(Text("OK")))
+                if !subHandler.firstMonthOver() {
+                    LoginTextBoxes(email: $email, password: $password).environmentObject(globalUser).environmentObject(appViewState)
+                } else {
+                    if !subHandler.isSubscribed {
+                        Text("Please sign up for one of our automatic subscription options to continue seamlessly.").frame(maxWidth: .infinity, alignment: .center).padding()
+                        Menu {
+                            ForEach(subHandler.products) {(product) in
+                                Button {
+                                    Task {
+                                        do {
+                                            try await subHandler.purchase(product)
+                                        } catch {
+                                            print(error)
+                                        }
+                                    }
+                                } label: {
+                                    Text("\(product.displayPrice) - \(product.displayName)")
+                                }
                             }
-                })
+                        } label: {
+                            Text("Subscription Options")
+                                .fontWeight(.bold)
+                                .frame(width: buttonWidth)
+                                .foregroundColor(.white)
+                                .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue).frame(width: buttonWidth, height: 50))
+                                .padding()
+                        }
+                        Spacer()
+                    } else {
+                        LoginTextBoxes(email: $email, password: $password).environmentObject(globalUser).environmentObject(appViewState)
+                    }
+                }
             }
-            
+
             Group {
                 Text("Share Us!").font(.footnote).foregroundColor(Color.gray)
                 HStack {
@@ -214,7 +159,11 @@ struct LogIn: View {
                             //dialog.mode = .shareSheet
                             dialog.show()
                         }
-                }.padding(.top, 15)
+                }
+                .padding(.top, 15)
+                .alert(isPresented: $verificationCodeError) {
+                    Alert(title: Text("There was a problem"), message: Text("Try again or contact us."))
+                }
             }.offset(y: 40)
             Spacer()
             Button(
@@ -223,46 +172,58 @@ struct LogIn: View {
                     Text("Don't have an account? \(Text("Sign Up").foregroundColor(.blue))").padding(.bottom)
                 }
             )
+        }
+        .onOpenURL { url in
+            print("URL OPENED. let's give them a loading screen while we verify the code: \(url)")
+            // this is going to open for every link the login page receives, so I'll have to do some addtl checks
+            self.isLoading = true
             
-            //
-            
+            if let urlComponents = URLComponents(string: url.absoluteString) {
+                let queryItems = urlComponents.queryItems
+                guard let userInfoHash = queryItems?.first(where: {$0.name == "userInformation"})?.value else {
+                    print("not from our server")
+                    self.isLoading = false
+                    return
+                }
+                guard let userEmail = queryItems?.first(where: {$0.name == "emailAddress"})?.value else {
+                    self.isLoading = false
+                    return
+                }
+                
+                // now build a request and post this data back to the server to see if the codes are correct
+                service.verifyAccount(userEmailAddress: userEmail, userInformationHash: userInfoHash, completion: { verificationResponse in
+                    switch(verificationResponse) {
+                    case .success( _):
+                        DispatchQueue.main.async {
+                            print("they can login now")
+                            self.isLoading = false
+                        }
+                    case .failure(let verificationError):
+                        print(verificationError)
+                        if verificationError == .wrongCode {
+                            print("the code they attempted was invalid")
+                        } else if verificationError == .userNotFound {
+                            print("that user couldn't be found")
+                        } else {
+                            print("a server side error occurred")
+                        }
+                        self.isLoading = false
+                        self.verificationCodeError = true
+                    }
+                })
+            } else {
+                print("one of the social media share links was clicked")
+                self.isLoading = false
+            }
         }
         .edgesIgnoringSafeArea(.top)
         .ignoresSafeArea(.keyboard, edges: .bottom)
         .frame(maxHeight: .infinity, alignment: .topLeading)
     }
-    
-    func loginWithEmail() {
-        self.loading = true
-        service.loginWithEmail(email: email.lowercased().filter { !$0.isWhitespace }, pw: password.filter{ !$0.isWhitespace }) { userData in
-            switch (userData) {
-                case .success(let userRes):
-                    DispatchQueue.main.async {
-                        service.saveUserToDevice(user: userRes.data)
-                        service.saveAccessToken(accessToken: userRes.data.accessToken)
-
-                        self.loading = false
-                        globalUser.login(serviceUsr: userRes.data)
-                    }
-                
-            case .failure(let err):
-                DispatchQueue.main.async {
-                    self.loading = false
-                    if err == .badPassword {
-                        print("bad pw error")
-                        self.badPw = true
-                    } else {
-                        self.badCreds = true
-                    }
-                    print(err.localizedDescription)
-                }
-            }
-        }
-    }
 }
 
 struct LogIn_Previews: PreviewProvider {
     static var previews: some View {
-        LogIn()
+        LogIn().environmentObject(UserModel.shared).environmentObject(SubscriptionHandler()).environmentObject(CurrentAppView())
     }
 }
