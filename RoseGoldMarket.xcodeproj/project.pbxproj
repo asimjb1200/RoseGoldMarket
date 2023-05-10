@@ -66,6 +66,7 @@
 		68A73B0127D6874900DC2C04 /* EditItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A73B0027D6874900DC2C04 /* EditItemViewModel.swift */; };
 		68A90D7927A2560100CD3768 /* EnumsForAddItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A90D7827A2560100CD3768 /* EnumsForAddItemsView.swift */; };
 		68AB6814296D0CD2009F5558 /* PlantImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68AB6813296D0CD2009F5558 /* PlantImage.swift */; };
+		68AE23D92A0B120700D7CB4C /* ManageSubscriptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68AE23D82A0B120700D7CB4C /* ManageSubscriptions.swift */; };
 		68BDD46E28DE65F700FCE429 /* KeyboardNotificationPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68BDD46D28DE65F700FCE429 /* KeyboardNotificationPublisher.swift */; };
 		68BF1DCB2974FB3700028FEB /* WhichPhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68BF1DCA2974FB3700028FEB /* WhichPhoto.swift */; };
 		68BF1DCD297503E200028FEB /* EditPlantFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68BF1DCC297503E200028FEB /* EditPlantFields.swift */; };
@@ -155,6 +156,7 @@
 		68A73B0027D6874900DC2C04 /* EditItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditItemViewModel.swift; sourceTree = "<group>"; };
 		68A90D7827A2560100CD3768 /* EnumsForAddItemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnumsForAddItemsView.swift; sourceTree = "<group>"; };
 		68AB6813296D0CD2009F5558 /* PlantImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantImage.swift; sourceTree = "<group>"; };
+		68AE23D82A0B120700D7CB4C /* ManageSubscriptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageSubscriptions.swift; sourceTree = "<group>"; };
 		68BDD46D28DE65F700FCE429 /* KeyboardNotificationPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardNotificationPublisher.swift; sourceTree = "<group>"; };
 		68BF1DCA2974FB3700028FEB /* WhichPhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhichPhoto.swift; sourceTree = "<group>"; };
 		68BF1DCC297503E200028FEB /* EditPlantFields.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditPlantFields.swift; sourceTree = "<group>"; };
@@ -432,6 +434,7 @@
 				68E9193027D027AD00154DBB /* MyListings.swift */,
 				684B923127D2BA7B00CF25D9 /* EditItem.swift */,
 				68E0FF2F29A04CDF002ED6BB /* ChangeUsername.swift */,
+				68AE23D82A0B120700D7CB4C /* ManageSubscriptions.swift */,
 			);
 			name = AccountOptions;
 			sourceTree = "<group>";
@@ -527,6 +530,7 @@
 				684872A6295D2230004DA1D8 /* CameraAccessor.swift in Sources */,
 				684B923227D2BA7B00CF25D9 /* EditItem.swift in Sources */,
 				6848679E2798D5CB0033969D /* ItemService.swift in Sources */,
+				68AE23D92A0B120700D7CB4C /* ManageSubscriptions.swift in Sources */,
 				68BF1DCB2974FB3700028FEB /* WhichPhoto.swift in Sources */,
 				68BF1DCD297503E200028FEB /* EditPlantFields.swift in Sources */,
 				681AB5C727A650F700B1629B /* ItemDetails.swift in Sources */,

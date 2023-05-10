@@ -26,7 +26,8 @@ struct ContentView: View {
 
     var body: some View {
         TabView(selection: $context.selectedTab) {
-            HomeMarket(tab: $context.selectedTab).environmentObject(context)
+            HomeMarket(tab: $context.selectedTab)
+                .environmentObject(context)
                 .tabItem {
                     Label("Market", systemImage: "house.fill")
                 }.tag(0)
@@ -45,6 +46,7 @@ struct ContentView: View {
                 .badge(messenger.newMsgCount)
 
             AccountOptions()
+                .environmentObject(subHandler)
                 .tabItem {
                     Label("Account", systemImage: "person.crop.circle.fill")
                 }.tag(3)

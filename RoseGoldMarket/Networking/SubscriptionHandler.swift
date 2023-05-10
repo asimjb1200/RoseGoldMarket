@@ -109,7 +109,7 @@ final class SubscriptionHandler: ObservableObject {
     func purchase(_ product: Product) async throws {
         self.subPurchaseLoading = true
         let result = try await product.purchase()
-
+        
         switch result {
             case let .success(.verified(transaction)):
                 // Successful purhcase
