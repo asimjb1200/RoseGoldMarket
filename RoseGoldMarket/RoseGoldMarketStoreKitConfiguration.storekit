@@ -9,7 +9,7 @@
   "settings" : {
     "_applicationInternalID" : "1621164586",
     "_developerTeamID" : "P2B946HD8M",
-    "_lastSynchronizedDate" : 705276788.23646295
+    "_lastSynchronizedDate" : 705525840.41364205
   },
   "subscriptionGroups" : [
     {
@@ -28,12 +28,12 @@
           ],
           "displayPrice" : "1.99",
           "familyShareable" : false,
-          "groupNumber" : 1,
+          "groupNumber" : 2,
           "internalID" : "6446265254",
           "introductoryOffer" : null,
           "localizations" : [
             {
-              "description" : "Access the app in the USA",
+              "description" : "Monthly fee to access the marketplace",
               "displayName" : "Monthly Subscription",
               "locale" : "en_US"
             }
@@ -53,12 +53,12 @@
           ],
           "displayPrice" : "12.99",
           "familyShareable" : false,
-          "groupNumber" : 2,
+          "groupNumber" : 1,
           "internalID" : "6446266901",
           "introductoryOffer" : null,
           "localizations" : [
             {
-              "description" : "Save money by paying for the entire year now",
+              "description" : "Pay to access the app for 1 year.",
               "displayName" : "Yearly Subscription",
               "locale" : "en_US"
             }
