@@ -92,6 +92,17 @@ struct AccountOptions: View {
                             Text("Account Actions").font(.title).fontWeight(.bold)
                         }
                     )
+                    
+                    Section(
+                        content: {
+                            Link("Privacy Policy", destination: URL(string: "https://rosegoldgardens.com/privacy.html")!)
+                                
+                            Link("Terms of Use", destination: URL(string: "https://rosegoldgardens.com/terms.html")!)
+                        },
+                        header: {
+                            Text("Legal").font(.title).fontWeight(.bold)
+                        }
+                    )
                 }
                 .alert(isPresented: $deletetionErrorOccurred) {
                     Alert(title:Text("An Error Occurred"), message: Text("Try again later."))
