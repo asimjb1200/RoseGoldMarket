@@ -9,7 +9,7 @@
   "settings" : {
     "_applicationInternalID" : "1621164586",
     "_developerTeamID" : "P2B946HD8M",
-    "_lastSynchronizedDate" : 705525840.41364205
+    "_lastSynchronizedDate" : 705872166.60100305
   },
   "subscriptionGroups" : [
     {
@@ -51,7 +51,7 @@
           "codeOffers" : [
 
           ],
-          "displayPrice" : "12.99",
+          "displayPrice" : "19.99",
           "familyShareable" : false,
           "groupNumber" : 1,
           "internalID" : "6446266901",
