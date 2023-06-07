@@ -7,6 +7,7 @@
 
 import Foundation
 import SocketIO
+import SwiftUI
 
 final class MessagingViewModel: ObservableObject {
     @Published var firstAppear = true

@@ -12,6 +12,8 @@ import Alamofire
 struct Networker {
     // static let shared = Networker()
     init() {}
+    
+    /// gets the correct base url for the environment that I am planning on working in
     func getUrlForEnv(appEnvironment: AppEnvironment) -> String? {
         guard let plist = Bundle.main.infoDictionary else {return nil}
         guard let endpoints = plist["URL Endpoints"] as? [String: String] else {return nil}

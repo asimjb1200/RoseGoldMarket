@@ -93,7 +93,7 @@ struct LogIn: View {
                         .frame(width: 40, height: 40)
                         .padding([.leading, .trailing], 30)
                         .onTapGesture {
-                            let text = "instagram://sharesheet?text=For endless floral discoveries, check out the Rose Gold Garden marketplace on the Apple Store: https://google.com"
+                            let text = "instagram://sharesheet?text=For endless floral discoveries, check out the Rose Gold Garden marketplace on the Apple Store: https://apps.apple.com/us/app/rose-gold-gardens/id1621164586"
                             guard
                                 let urlQuery = text.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed),
                                 let url = URL(string: urlQuery)
@@ -116,7 +116,7 @@ struct LogIn: View {
                         .padding([.leading, .trailing], 30)
                         .onTapGesture {
                             let tweetText = "For endless floral discoveries, check out the Rose Gold Garden marketplace on the Apple Store: "
-                            let urlForTweet = "www.rosegoldgardens.com"
+                            let urlForTweet = "https://apps.apple.com/us/app/rose-gold-gardens/id1621164586"
                             let shareString = "https://twitter.com/intent/tweet?text=\(tweetText)&url=\(urlForTweet)"
                             
                             // encode a space to %20 for example
@@ -141,7 +141,7 @@ struct LogIn: View {
                         .padding([.leading, .trailing], 30)
                         .onTapGesture {
                             // update this with my app's app store link
-                            guard let url = URL(string: "https://developers.facebook.com") else {
+                            guard let url = URL(string: "https://apps.apple.com/us/app/rose-gold-gardens/id1621164586") else {
                                 return
                             }
                             

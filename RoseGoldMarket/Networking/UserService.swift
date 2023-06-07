@@ -752,6 +752,30 @@ final class UserNetworking {
         defaults.removeObject(forKey: "rg-avatarUrl")
     }
     
+    func sendDeviceTokenToServer(deviceToken: String, accessToken: String) async throws -> String {
+        if let baseUrl = networker.getUrlForEnv(appEnvironment: .LocalNetwork) {
+            let url = "\(baseUrl)/api/users/store-device-token"
+            let requestBody: [String: String] = ["deviceToken": deviceToken]
+            let requestWithoutBody = networker.constructRequest(uri: url, token: accessToken, post: true)
+            let request = networker.buildReqBody(req: requestWithoutBody, body: requestBody)
+            let session = URLSession.shared
+            
+            let (_, response) = try await session.data(for: request)
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw DeviceTokenErrors.responseConversionError
+            }
+            
+            if httpResponse.statusCode == 200 {
+                return DeviceTokenErrors.success.rawValue
+            } else {
+                return DeviceTokenErrors.serverError.rawValue
+            }
+        } else {
+            throw DeviceTokenErrors.badURL
+        }
+    }
+    
 //    func loadUserFromDevice() -> ServiceUser? {
 //        let defaults: UserDefaults = .standard
 //        let username = defaults.string(forKey: "rg-username")

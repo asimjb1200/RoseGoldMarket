@@ -6,11 +6,10 @@
 //
 
 import SwiftUI
-
-class PopToRoot: ObservableObject {
-    @Published var navToHome = false
-    @Published var selectedTab: Int = 0
-}
+import Combine
+import AppTrackingTransparency
+import FBSDKCoreKit
+import os
 
 struct ContentView: View {
     @StateObject var context = PopToRoot()
@@ -22,6 +21,7 @@ struct ContentView: View {
     @Environment(\.scenePhase) var scenePhase
     @Environment(\.colorScheme) var colorScheme
     
+    let userService:UserNetworking = .shared
     let socket:SocketUtils = .shared
 
     var body: some View {
@@ -62,6 +62,33 @@ struct ContentView: View {
                 messenger.getLatestMessages(viewingUser: user.accountId, user: user)
                 messenger.getUnreadMessagesForUser(user: user)
                 firstAppear = false
+            }
+            
+//            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+//                if let error = error {
+//                    print("D'oh: \(error.localizedDescription)")
+//                } else {
+//                    DispatchQueue.main.async {
+//                        UIApplication.shared.registerForRemoteNotifications()
+//                    }
+//                }
+//            }
+            
+            ATTrackingManager.requestTrackingAuthorization { (status) in
+                switch status {
+                    case .authorized:
+                        FBSDKCoreKit.Settings.shared.isAdvertiserTrackingEnabled = true
+                        FBSDKCoreKit.Settings.shared.isAutoLogAppEventsEnabled = true
+                        FBSDKCoreKit.Settings.shared.isAdvertiserIDCollectionEnabled = true
+                    case .denied:
+                        FBSDKCoreKit.Settings.shared.isAdvertiserTrackingEnabled = false
+                        FBSDKCoreKit.Settings.shared.isAutoLogAppEventsEnabled = false
+                        FBSDKCoreKit.Settings.shared.isAdvertiserIDCollectionEnabled = false
+                    default:
+                        FBSDKCoreKit.Settings.shared.isAdvertiserTrackingEnabled = false
+                        FBSDKCoreKit.Settings.shared.isAutoLogAppEventsEnabled = false
+                        FBSDKCoreKit.Settings.shared.isAdvertiserIDCollectionEnabled = false
+                }
             }
         }
         .task {

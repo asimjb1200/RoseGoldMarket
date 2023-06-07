@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>This app uses your data for personalized ads and to track your activity for analytics purposes.</string>
 	<key>URL Endpoints</key>
 	<dict>
 		<key>LocalNetwork</key>
@@ -26,16 +28,20 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>fb436637955105906</string>
+				<string>fb269627918885831</string>
 			</array>
 		</dict>
 	</array>
 	<key>FacebookAppID</key>
-	<string>436637955105906</string>
-	<key>FacebookClientToken</key>
-	<string>323a8da363ffe77823e3eea2ed2fca48</string>
+	<string>269627918885831</string>
+    <key>FacebookClientToken</key>
+    <string>c3e67ec1037fb94e12348903c6a8fbbb</string>
 	<key>FacebookDisplayName</key>
 	<string>Rose Gold Gardens</string>
+	<key>FacebookAutoLogAppEventsEnabled</key>
+	<string>FALSE</string>
+	<key>FacebookAdvertiserIDCollectionEnabled</key>
+	<string>FALSE</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>instagram</string>
