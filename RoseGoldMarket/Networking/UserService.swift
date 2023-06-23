@@ -675,7 +675,7 @@ final class UserNetworking {
         ] as CFDictionary
         
         let status = SecItemAdd(addquery, nil)
-        print("Save operation finished with status: \(status)")
+        print("Save access token operation finished with status: \(status)")
     }
     
     func saveUserPassword(password: String, username: String) {
@@ -743,6 +743,7 @@ final class UserNetworking {
         defaults.set(user.username, forKey: "rg-username")
         defaults.set(user.accountId, forKey: "rg-accountId")
         defaults.set(user.avatarUrl, forKey: "rg-avatarUrl")
+        print("user saved")
     }
     
     func deleteUserFromDevice() {
@@ -753,7 +754,7 @@ final class UserNetworking {
     }
     
     func sendDeviceTokenToServer(deviceToken: String, accessToken: String) async throws -> String {
-        if let baseUrl = networker.getUrlForEnv(appEnvironment: .LocalNetwork) {
+        if let baseUrl = networker.getUrlForEnv(appEnvironment: .Prod) {
             let url = "\(baseUrl)/api/users/store-device-token"
             let requestBody: [String: String] = ["deviceToken": deviceToken]
             let requestWithoutBody = networker.constructRequest(uri: url, token: accessToken, post: true)
@@ -850,7 +851,6 @@ final class UserNetworking {
         if dict != nil {
             let keyData = dict![kSecValueData] as! Data
             let accessToken = String(data: keyData, encoding: .utf8)!
-            print("Loaded access token: \(accessToken)")
             return accessToken
         } else {
             return nil

@@ -58,7 +58,7 @@ struct Networker {
             let bodyData = try JSONSerialization.data(withJSONObject: body)
             request.httpBody = bodyData
         } catch let err {
-            print(err)
+            print(err.localizedDescription)
         }
         return request
     }
