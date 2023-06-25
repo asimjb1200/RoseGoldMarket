@@ -121,6 +121,8 @@ extension LoginTextBoxes {
                 case .success(let userRes):
                     DispatchQueue.main.async {
                         service.saveUserToDevice(user: userRes.data)
+                        let accessToken = service.loadAccessToken()
+                        print("previous access token: \(accessToken)")
                         service.saveAccessToken(accessToken: userRes.data.accessToken)
 
                         self.loading = false

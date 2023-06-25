@@ -675,7 +675,11 @@ final class UserNetworking {
         ] as CFDictionary
         
         let status = SecItemAdd(addquery, nil)
-        print("Save access token operation finished with status: \(status)")
+        
+        if status == -25299 { // key already exists, so update it with new one
+            updateAccessToken(newToken: accessToken)
+        }
+        // print("Save access token operation finished with status: \(status)")
     }
     
     func saveUserPassword(password: String, username: String) {
@@ -743,7 +747,6 @@ final class UserNetworking {
         defaults.set(user.username, forKey: "rg-username")
         defaults.set(user.accountId, forKey: "rg-accountId")
         defaults.set(user.avatarUrl, forKey: "rg-avatarUrl")
-        print("user saved")
     }
     
     func deleteUserFromDevice() {
@@ -824,7 +827,7 @@ final class UserNetworking {
         ] as CFDictionary
         
         let status = SecItemUpdate(findTokenQuery, updateQuery)
-        print("Update Finished with a status of \(status)")
+        // print("Update Finished with a status of \(status)")
     }
     
     func deleteAccessToken() {
