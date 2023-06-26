@@ -161,17 +161,19 @@ struct MessageThread: View {
             }
         }
         .onAppear() {
-            viewModel.getAllMessagesInThread(viewingUser: viewingUser.accountId, otherUserAccount: receiverId, user: viewingUser)
-            
-            // remove all messages from unread messages array that have the other user as the sender. This chat has been opened so no need to keep them there
-            let newMessageCountFromTheOtherUser = viewModel.unreadMessages.filter { $0.senderid == receiverId }
-            
-            viewModel.unreadMessages = viewModel.unreadMessages.filter { $0.senderid != receiverId }
-            
-            // delete the unreads from the other user on the back end
-            viewModel.deleteFromUnreadTable(otherUserId: receiverId, viewingUser: viewingUser)
-            
-            viewModel.newMsgCount -= newMessageCountFromTheOtherUser.count
+            Task {
+                await viewModel.getAllMessagesInThread(viewingUser: viewingUser.accountId, otherUserAccount: receiverId, user: viewingUser)
+                
+                // remove all messages from unread messages array that have the other user as the sender. This chat has been opened so no need to keep them there
+                let newMessageCountFromTheOtherUser = viewModel.unreadMessages.filter { $0.senderid == receiverId }
+                
+                viewModel.unreadMessages = viewModel.unreadMessages.filter { $0.senderid != receiverId }
+                
+                // delete the unreads from the other user on the back end
+                viewModel.deleteFromUnreadTable(otherUserId: receiverId, viewingUser: viewingUser)
+                
+                viewModel.newMsgCount -= newMessageCountFromTheOtherUser.count
+            }
         }
     }
 }

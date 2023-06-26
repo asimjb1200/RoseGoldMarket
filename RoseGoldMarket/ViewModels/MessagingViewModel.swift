@@ -27,6 +27,7 @@ final class MessagingViewModel: ObservableObject {
     let dateFormatter = DateFormatter()
     let socket:SocketUtils = .shared
     static let shared = MessagingViewModel()
+    let userService: UserNetworking = .shared
     
     private init() {
         print("message view model initialzied")
@@ -147,19 +148,19 @@ final class MessagingViewModel: ObservableObject {
         }
     }
     
-    func getAllMessagesInThread(viewingUser:UInt, otherUserAccount:UInt, user:UserModel) {
-        MessagingService().fetchMessageThreadBetweenUsers(viewingAccountId: viewingUser, otherUserAccountId: otherUserAccount, token: user.accessToken) { threadDataResponse in
-            switch threadDataResponse {
-                case .success(let threadData):
-                    if threadData.newToken != nil {
-                        user.accessToken = threadData.newToken!
-                    }
-                    DispatchQueue.main.async {
-                        self.currentlyActiveChat = threadData.data
-                    }
-                case .failure(let err):
-                    print(err)
+    func getAllMessagesInThread(viewingUser:UInt, otherUserAccount:UInt, user:UserModel) async {        
+        do {
+            let messageData: ResponseFromServer<[ChatData]> = try await MessagingService().fetchMessageThreadBetweenUsers(viewingAccountId: viewingUser, otherUserAccountId: otherUserAccount, token: user.accessToken)
+            
+            if messageData.newToken != nil {
+                user.accessToken = messageData.newToken!
+                userService.updateAccessToken(newToken: messageData.newToken!)
             }
+            DispatchQueue.main.async {
+                self.currentlyActiveChat = messageData.data
+            }
+        } catch let err {
+            print(err)
         }
     }
     
