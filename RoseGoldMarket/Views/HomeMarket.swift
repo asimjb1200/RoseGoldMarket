@@ -48,7 +48,10 @@ struct HomeMarket: View {
                             .padding()
                             .sheet(isPresented: $viewModel.showFilterSheet, onDismiss: {
                                 viewModel.searchButtonPressed = true
-                                viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
+                                Task {
+                                    await viewModel.getFilteredItemsV2(user: user, geoLocation: userGeolocation)
+                                }
+                                
                             }) {
                                 Text("Choose Your Filters")
                                     .fontWeight(.bold)
@@ -87,7 +90,10 @@ struct HomeMarket: View {
                                 }
                                 .onSubmit {
                                     viewModel.searchButtonPressed = true
-                                    viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
+                                    
+                                    Task {
+                                        await viewModel.getFilteredItemsV2(user: user, geoLocation: userGeolocation)
+                                    }
                                 }
                                 .submitLabel(.search)
                         }
@@ -95,7 +101,10 @@ struct HomeMarket: View {
                         .padding()
                         .onAppear() {
                             if firstAppear {
-                                determineUserLocation()
+                                Task {
+                                   await determineUserLocation()
+                                }
+                                
                             }
                         }
                     }
@@ -117,9 +126,9 @@ struct HomeMarket: View {
                                 ForEach(viewModel.items, id: \.self) { x in
                                     NavigationLink(destination: ItemDetails(item: x, viewingFromAccountDetails: false)) {
                                         ItemPreview(itemId: x.id, itemTitle: x.name, itemImageLink: x.itemImageFolderPath)
-                                        .onAppear() {
+                                        .task {
                                             if x == viewModel.items.last, viewModel.allDataLoaded == false {
-                                                determineUserLocation()
+                                                await determineUserLocation()
                                             }
                                         }
                                     }
@@ -135,17 +144,17 @@ struct HomeMarket: View {
         }
     }
     
-    func determineUserLocation() {
+    func determineUserLocation() async {
         if firstAppear {
             firstAppear = false
         }
         if locationManager.lastLocation != nil {
-            viewModel.getFilteredItems(user: user, geoLocation: userGeolocation)
+            await viewModel.getFilteredItemsV2(user: user, geoLocation: userGeolocation)
         } else {
             guard let databaseLocation = locationManager.databaseLocation else {
                 return
             }
-            viewModel.getFilteredItems(user: user, geoLocation: databaseLocation)
+            await viewModel.getFilteredItemsV2(user: user, geoLocation: databaseLocation)
         }
     }
 }

@@ -11,7 +11,7 @@ import MessageUI
 struct AccountOptions: View {
     @EnvironmentObject var user:UserModel
     @EnvironmentObject var messenger:MessagingViewModel
-    @EnvironmentObject var subHandler: SubscriptionHandler
+    //@EnvironmentObject var subHandler: SubscriptionHandler
     @StateObject var emailer = EmailService()
     @Environment(\.openURL) var openURL
     @State var confirmLogout = false
@@ -35,7 +35,7 @@ struct AccountOptions: View {
                             
                             NavigationLink(destination: ChangeUsername(), label: {Text("Change Display Name")})
                             
-                            NavigationLink(destination: ManageSubscriptions(), label: {Text("Purchase Subscriptions")})
+                            // NavigationLink(destination: ManageSubscriptions(), label: {Text("Purchase Subscriptions")})
                         },
                         header: {
                             Text("My Account").font(.title).fontWeight(.bold)
@@ -134,6 +134,6 @@ struct AccountOptions_Previews: PreviewProvider {
         AccountOptions()
             .environmentObject(UserModel.shared)
             .environmentObject(MessagingViewModel.shared)
-            .environmentObject(SubscriptionHandler())
+            //.environmentObject(SubscriptionHandler())
     }
 }

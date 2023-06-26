@@ -163,6 +163,10 @@ final class MessagingViewModel: ObservableObject {
         }
     }
     
+    func getAllMessagesInThreadV2(viewingUser:UInt, otherUserAccount:UInt, user:UserModel) {
+        
+    }
+    
     func getLatestMessages(viewingUser:UInt, user:UserModel) {
         MessagingService().fetchLatestMessageInEachChat(userId: viewingUser, token: user.accessToken) { chatData in
             switch chatData {

@@ -20,7 +20,10 @@ final class HomeMarketViewModel: ObservableObject {
     var searchButtonPressed = false
     
     private var currentOffset: UInt = 0
+    
     let service = ItemService()
+    let userService: UserNetworking = .shared
+    
     let mileOptions: [UInt] = [5, 10, 15, 20]
     
     init() {
@@ -28,59 +31,55 @@ final class HomeMarketViewModel: ObservableObject {
             // create a category object for each of the categories ids
             self.categoryHolder.append(Category(category: $0.rawValue, isActive: false))
         }
-//        self.getFilteredItems(user: user)
     }
     
-    func getFilteredItems(user:UserModel, geoLocation:String) -> () {
-        self.isLoadingPage = true
+    func getFilteredItemsV2(user:UserModel, geoLocation:String) async {
         let categoryIdList: [UInt] = self.categoryHolder.filter{ $0.isActive == true}.map{ $0.category }
         
         // if the user has prompted a search, reset all search variables
-        if searchButtonPressed {
-            self.items = []
-            self.currentOffset = 0
-            self.allDataLoaded = false
-            self.searchButtonPressed = false
+        await MainActor.run { // doing this to make sure that this code always runs before the search kicks off
+            if self.searchButtonPressed {
+                //print("resetting search stuff")
+                self.items = []
+                self.currentOffset = 0
+                self.allDataLoaded = false
+                self.searchButtonPressed = false
+            }
         }
         
-        service.retrieveItems(categoryIdFilters: categoryIdList, limit: 10, offset: currentOffset, longAndLat: geoLocation, miles: searchRadius, searchTerm: searchTerm, token: user.accessToken, completion: {[weak self] itemResponse in
-            switch itemResponse {
-                case .success(let itemData):
-                    DispatchQueue.main.async {
-                        if itemData.newToken != nil {
-                            user.accessToken = itemData.newToken!
-                        }
-                        
-                        if !itemData.data.isEmpty {
-                            self?.currentOffset += 10
-                            
-                            // make sure the items aren't already in the array
-                            for newItem in itemData.data {
-                                if let itemIsPresent = self?.items.contains(where: { $0.id == newItem.id }) {
-                                    if !itemIsPresent {
-                                        self?.items.append(newItem)
-                                    }
-                                }
-                            }
-                            
-                            //self?.items.append(contentsOf: itemData.data) // add new items to the end of array for infinite scroll
-                            self?.isLoadingPage = false
-                        } else {
-                            self?.currentOffset = 0
-                            self?.allDataLoaded = true
-                            self?.isLoadingPage = false
+        do {
+            //print("starting network code")
+            let itemData = try await service.retrieveItemsV2(categoryIdFilters: categoryIdList, limit: 10, offset: currentOffset, longAndLat: geoLocation, miles: searchRadius, searchTerm: searchTerm, token: user.accessToken)
+            
+            DispatchQueue.main.async {
+                if itemData.newToken != nil {
+                    user.accessToken = itemData.newToken!
+                    self.userService.updateAccessToken(newToken: itemData.newToken!)
+                }
+                
+                if !itemData.data.isEmpty {
+                    self.currentOffset += 10
+                    
+                    // make sure the items aren't already in the array
+                    for newItem in itemData.data {
+                        if self.items.contains(where: { $0.id == newItem.id }) == false {
+                            self.items.append(newItem)
                         }
                     }
-                case .failure(let err):
-                    DispatchQueue.main.async {
-                        print("[HomeMarketVM] problem occurred when fetching items: \(err)")
-                        if err == .tokenExpired {
-                            user.logout()
-                        }
-                        self?.isLoadingPage = false
-                        self?.errorOccurred = true
-                    }
+                    
+                    //self?.items.append(contentsOf: itemData.data) // add new items to the end of array for infinite scroll
+                    self.isLoadingPage = false
+                } else {
+                    self.currentOffset = 0
+                    self.allDataLoaded = true
+                    self.isLoadingPage = false
+                }
             }
-        })
+        } catch let err {
+            print(err.localizedDescription)
+            DispatchQueue.main.async {
+                self.items = []
+            }
+        }
     }
 }

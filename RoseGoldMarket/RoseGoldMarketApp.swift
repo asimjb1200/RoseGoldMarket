@@ -17,7 +17,7 @@ struct RoseGoldMarketApp: App {
     var service:UserNetworking = .shared
     @StateObject var user:UserModel = .shared
     @StateObject var currentAppView:CurrentAppView = CurrentAppView()
-    @StateObject var subHandler = SubscriptionHandler()
+    // @StateObject var subHandler = SubscriptionHandler()
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     var body: some Scene {
@@ -25,26 +25,21 @@ struct RoseGoldMarketApp: App {
             if self.isLoading {
                 ProgressView().tint(Color.blue)
             } else {
-                if user.isLoggedIn && !subHandler.firstMonthOver() {
+                if user.isLoggedIn {
                     ContentView()
-                        .environmentObject(subHandler)
-                        .environmentObject(user)
-                } else if user.isLoggedIn && subHandler.firstMonthOver() && subHandler.isSubscribed {
-                    ContentView()
-                        .environmentObject(subHandler)
                         .environmentObject(user)
                 } else {
                     switch currentAppView.currentView {
                         case .LandingPage:
                             LandingPage()
                             .environmentObject(currentAppView)
-                            .environmentObject(subHandler)
+                            //.environmentObject(subHandler)
                             
                         case .LoginView:
                             LogIn()
                                 .environmentObject(user)
                                 .environmentObject(currentAppView)
-                                .environmentObject(subHandler)
+                                //.environmentObject(subHandler)
                             
                         case .RegistrationView:
                             Register()

@@ -20,6 +20,7 @@ struct AccountDetailsView: View {
     let username:String
     let accountid:UInt
     let service = ItemService()
+    let userService: UserNetworking = .shared
     let columns = [ // I want two columns of equal width on this view
         GridItem(.flexible(), spacing: 0),
         GridItem(.flexible(), spacing: 0)
@@ -80,7 +81,9 @@ struct AccountDetailsView: View {
                 }.frame(height: 300)
                 Spacer()
             }.onAppear() {
-                self.fetchUserItems()
+                Task {
+                    await self.fetchUserItems()
+                }
             }.sheet(isPresented: $reportingUser) {
                 VStack {
                     if sendingMessage {
@@ -132,7 +135,26 @@ struct AccountDetailsView: View {
 }
 
 extension AccountDetailsView {
-    func fetchUserItems() {
+    func fetchUserItems() async {
+        do {
+            let itemData = try await service.retrieveItemsForAccountV2(accountId: accountid, token: user.accessToken)
+            
+            DispatchQueue.main.async {
+                self.items = itemData.data
+                if itemData.newToken != nil {
+                    user.accessToken = itemData.newToken!
+                    userService.updateAccessToken(newToken: itemData.newToken!)
+                }
+            }
+        } catch let err {
+            print(err.localizedDescription)
+            self.errorOccurred = true
+            
+            if err.localizedDescription == ItemErrors.tokenExpired.rawValue {
+                self.user.logout()
+            }
+        }
+        
         service.retrieveItemsForAccount(accountId: accountid, token: user.accessToken, completion: { dataRes in
             switch dataRes {
             case .success(let itemData):

@@ -16,7 +16,7 @@ struct ContentView: View {
     @State var tab: Int = 0
     @State var firstAppear = true
     @StateObject var messenger: MessagingViewModel = .shared
-    @EnvironmentObject private var subHandler: SubscriptionHandler
+    // @EnvironmentObject private var subHandler: SubscriptionHandler
     @EnvironmentObject var user:UserModel
     @Environment(\.scenePhase) var scenePhase
     @Environment(\.colorScheme) var colorScheme
@@ -46,7 +46,6 @@ struct ContentView: View {
                 .badge(messenger.newMsgCount)
 
             AccountOptions()
-                .environmentObject(subHandler)
                 .tabItem {
                     Label("Account", systemImage: "person.crop.circle.fill")
                 }.tag(3)
@@ -105,9 +104,6 @@ struct ContentView: View {
                         FBSDKCoreKit.Settings.shared.isAdvertiserIDCollectionEnabled = false
                 }
             }
-        }
-        .task {
-            await subHandler.checkSubscriptionStatus()
         }
         .environmentObject(messenger)
         .environmentObject(context)

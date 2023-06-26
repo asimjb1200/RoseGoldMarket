@@ -114,9 +114,12 @@ struct ItemService {
         }.resume()
     }
     
-    func retrieveItems(categoryIdFilters: [UInt], limit: UInt, offset: UInt, longAndLat: String, miles: UInt, searchTerm: String, token: String, completion: @escaping (Result<ResponseFromServer<[Item]>, ItemErrors>) -> ()) {
+    func retrieveItemsV2(categoryIdFilters: [UInt], limit: UInt, offset: UInt, longAndLat: String, miles: UInt, searchTerm: String, token: String) async throws -> ResponseFromServer<[Item]> {
+        
         let networker = Networker()
-        let urlRequest = networker.constructRequest(uri: "https://rosegoldgardens.com/api/item-handler/fetch-filtered-items",token: token , post: true)
+        let url = networker.getUrlForEnv(appEnvironment: .Prod)
+        guard let url = url else { throw ItemErrors.urlError }
+        let urlRequest = networker.constructRequest(uri: "\(url)/api/item-handler/fetch-filtered-items", token: token , post: true)
         
         let body: [String:Any] = [
             "categories": categoryIdFilters,
@@ -129,56 +132,33 @@ struct ItemService {
         
         let request = networker.buildReqBody(req: urlRequest, body: body)
         
-        URLSession.shared.dataTask(with: request) {(data, response, err) in
-            guard err == nil else {
-                completion(.failure(.genError))
-                return
-            }
-            
-            guard let response = response as? HTTPURLResponse else {
-                completion(.failure(.genError))
-                return
-            }
-            
-            guard response.statusCode != 403 else {
-                completion(.failure(.tokenExpired))
-                return
-            }
-            
-            guard response.statusCode != 404 else {
-                let resData = ResponseFromServer<[Item]>(data: [], error: [], newToken: nil)
-                completion(.success(resData))
-                return
-            }
-            
-            guard response.statusCode == 200 else {
-                print("The status wasn't ok")
-                completion(.failure(.genError))
-                return
-            }
-            
-            guard let data = data else {
-                print("couldn't unwrap the data")
-                completion(.failure(.genError))
-                return
-            }
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let response = response as? HTTPURLResponse else {
+            throw ItemErrors.responseConversionError
+        }
+        
+        guard response.statusCode != 403 else {
+            throw ItemErrors.tokenExpired
+        }
+        
+        guard response.statusCode != 404 else {
+            let resData = ResponseFromServer<[Item]>(data: [], error: [], newToken: nil)
+            return resData
+        }
+        
+        guard response.statusCode == 200 else {
+            print("The status wasn't ok")
+            throw ItemErrors.badStatusCode
+        }
 
-            do {
-                let decoder = JSONDecoder()
-                let dateFormatter = DateFormatter()
-                dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-                
-                decoder.dateDecodingStrategy = .formatted(dateFormatter)
-                let itemsResponse = try decoder.decode(ResponseFromServer<[Item]>.self, from: data)
-                completion(.success(itemsResponse))
-                //return
-            } catch let decodeError {
-                print(decodeError.localizedDescription)
-                completion(.failure(.genError))
-                //return
-            }
-        }.resume()
+        let decoder = JSONDecoder()
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        
+        decoder.dateDecodingStrategy = .formatted(dateFormatter)
+        let itemsResponse = try decoder.decode(ResponseFromServer<[Item]>.self, from: data)
+        return itemsResponse
     }
     
     func retrieveItemsForAccount(accountId: UInt, token: String, completion: @escaping (Result<ResponseFromServer<[Item]>, ItemErrors>) -> ()) {
@@ -225,8 +205,43 @@ struct ItemService {
             } catch let error {
                 print(error)
             }
-
         }.resume()
+    }
+    
+    func retrieveItemsForAccountV2(accountId: UInt, token: String) async throws -> ResponseFromServer<[Item]> {
+        let networker = Networker()
+        let queryItem = [URLQueryItem(name: "accountId", value: "\(accountId)")]
+        guard let baseUrl = networker.getUrlForEnv(appEnvironment: .Prod) else {throw ItemErrors.urlError}
+        let req = networker.constructRequest(uri: "\(baseUrl)/api/users/items", token: token, queryItems: queryItem)
+        
+        let (data, response) = try await URLSession.shared.data(for: req)
+        
+        guard let response = response as? HTTPURLResponse else {
+            throw ItemErrors.responseConversionError
+        }
+        
+        guard response.statusCode != 403 else {
+            throw ItemErrors.tokenExpired
+        }
+        
+        guard response.statusCode != 404 else {
+            let resData = ResponseFromServer<[Item]>(data: [], error: [], newToken: nil)
+            return resData
+        }
+        
+        guard response.statusCode == 200 else {
+            throw ItemErrors.badStatusCode
+        }
+        
+        let decoder = JSONDecoder()
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        
+        decoder.dateDecodingStrategy = .formatted(dateFormatter)
+        let itemsResponse = try decoder.decode(ResponseFromServer<[Item]>.self, from: data)
+        
+        return itemsResponse
     }
     
     func retrieveItemById(itemId:UInt, token: String, completion: @escaping (Result<ResponseFromServer<Item>, ItemErrors>) -> ()) {
@@ -418,6 +433,7 @@ struct ItemService {
 
 enum ItemErrors: String, Error {
     case genError = "error occurred"
+    case urlError = "couldnt get url"
     case tokenExpired = "The access token has expired. Time to issue a new one"
     case responseConversionError = "could not convert the response object to an HTTPResponse"
     case dataConversionError = "was not able to convert the data object to a known type"

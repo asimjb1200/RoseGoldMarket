@@ -191,6 +191,36 @@ struct MessagingService {
         }.resume()
     }
     
+    func fetchMessageThreadBetweenUsers(viewingAccountId:UInt, otherUserAccountId:UInt, token: String) async throws -> ResponseFromServer<[ChatData]> {
+        let queryItems = [
+            URLQueryItem(name: "viewingAccount", value: "\(viewingAccountId)"),
+            URLQueryItem(name: "otherUserAccount", value: "\(otherUserAccountId)")
+        ]
+        
+        guard let urlBase = networker.getUrlForEnv(appEnvironment: .Prod) else {
+            print("not able to get url base")
+            throw MessageErrors.genError
+        }
+        
+        let url = "\(urlBase)/api/chat-handler/get-chat-thread"
+        let request = networker.constructRequest(uri: url, token: token, queryItems: queryItems)
+        
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            
+            let decoder = JSONDecoder()
+            let dateFormatter = DateFormatter()
+            dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+            decoder.dateDecodingStrategy = .formatted(dateFormatter)
+            
+            let chatData = try decoder.decode(ResponseFromServer<[ChatData]>.self, from: data)
+            return chatData
+        } catch {
+            throw MessageErrors.decodingError
+        }
+    }
+    
     func getOtherChatParticipantName(accountId: UInt, token: String, completion: @escaping (Result<String, UserErrors>) -> ()) {
         guard let urlBase = networker.getUrlForEnv(appEnvironment: .Prod) else {
             print("not able to get url base")

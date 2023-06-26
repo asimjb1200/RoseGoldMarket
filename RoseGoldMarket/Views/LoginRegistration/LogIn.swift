@@ -17,7 +17,7 @@ struct LogIn: View {
     @State var verificationCodeError = false
     @EnvironmentObject var globalUser:UserModel
     @EnvironmentObject var appViewState: CurrentAppView
-    @EnvironmentObject private var subHandler: SubscriptionHandler
+    // @EnvironmentObject private var subHandler: SubscriptionHandler
     var appBanner:UIImage? = UIImage(named: "UpdatedBanner")
     var service:UserNetworking = .shared
     var buttonWidth = UIScreen.main.bounds.width * 0.85
@@ -48,42 +48,7 @@ struct LogIn: View {
                     .padding(.bottom, 25)
             }
             
-            if subHandler.subPurchaseLoading {
-                ProgressView()
-            } else {
-                if !subHandler.firstMonthOver() {
-                    LoginTextBoxes(email: $email, password: $password).environmentObject(globalUser).environmentObject(appViewState)
-                } else {
-                    if !subHandler.isSubscribed {
-                        Text("Please sign up for one of our automatic subscription options to continue seamlessly.").frame(maxWidth: .infinity, alignment: .center).padding()
-                        Menu {
-                            ForEach(subHandler.products) {(product) in
-                                Button {
-                                    Task {
-                                        do {
-                                            try await subHandler.purchase(product)
-                                        } catch {
-                                            print(error)
-                                        }
-                                    }
-                                } label: {
-                                    Text("\(product.displayPrice) - \(product.displayName)")
-                                }
-                            }
-                        } label: {
-                            Text("Subscription Options")
-                                .fontWeight(.bold)
-                                .frame(width: buttonWidth)
-                                .foregroundColor(.white)
-                                .background(RoundedRectangle(cornerRadius: 25).fill(Color.blue).frame(width: buttonWidth, height: 50))
-                                .padding()
-                        }
-                        Spacer()
-                    } else {
-                        LoginTextBoxes(email: $email, password: $password).environmentObject(globalUser).environmentObject(appViewState)
-                    }
-                }
-            }
+            LoginTextBoxes(email: $email, password: $password).environmentObject(globalUser).environmentObject(appViewState)
 
             Group {
                 Text("Share Us!").font(.footnote).foregroundColor(Color.gray)
@@ -224,6 +189,6 @@ struct LogIn: View {
 
 struct LogIn_Previews: PreviewProvider {
     static var previews: some View {
-        LogIn().environmentObject(UserModel.shared).environmentObject(SubscriptionHandler()).environmentObject(CurrentAppView())
+        LogIn().environmentObject(UserModel.shared).environmentObject(CurrentAppView())
     }
 }

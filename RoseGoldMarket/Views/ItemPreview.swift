@@ -17,7 +17,18 @@ struct ItemPreview: View {
                 if let image = phase.image {
                     image.resizable().frame(maxWidth: 200, maxHeight: 200).cornerRadius(15).shadow(radius: 5)
                 } else if phase.error != nil {
-                    Color.red // an error occurred
+                    // an error occurred so try again
+                    AsyncImage(url: URL(string: "https://rosegoldgardens.com/api/images/\(itemImageLink)/image1.jpg")) { phase2 in
+                        if let image2 = phase2.image {
+                            image2.resizable().frame(maxWidth: 200, maxHeight: 200).cornerRadius(15).shadow(radius: 5)
+                        } else if phase2.error != nil {
+                            Color.red // an error occurred
+                        } else {
+                            ProgressView()
+                                .foregroundColor(Color("MainColor"))
+                                .frame(width: 100, height: 100) // place holder for the image while it's loading
+                        }
+                    }
                 } else {
                     ProgressView()
                         .foregroundColor(Color("MainColor"))
