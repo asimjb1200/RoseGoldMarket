@@ -119,36 +119,36 @@ struct MessagingService {
         
     }
     
-    func sendNotificationReply(chatData: ChatData, accessToken: String) async throws {
-        if let baseURL = networker.getUrlForEnv(appEnvironment: .Prod) {
-            let url = "\(baseURL)/api/chat-handler/reply-through-notification"
-            let requestWithoutBody = networker.constructRequest(uri: url, token: accessToken, post: true)
-
-            let requestBody: [String: Any] =
-                [
-                    "senderUsername": chatData.senderUsername,
-                    "id": chatData.id.uuidString, // without converting the uuid to a string it will cause an error during json conversion
-                    "senderid": chatData.senderid,
-                    "recid": chatData.recid,
-                    "receiverUsername": chatData.receiverUsername,
-                    "message": chatData.message,
-                    "timestamp": chatData.timestamp.formatted(.iso8601)
-                ]
-            
-            let request = networker.buildReqBody(req: requestWithoutBody, body: requestBody)
-            let session = URLSession.shared
-            
-            let (_, response) = try await session.data(for: request)
-            
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw NetworkingErrors.responseConversionError
-            }
-            
-            if httpResponse.statusCode != 200 {
-                throw NetworkingErrors.problemStatusCode
-            }
-        }
-    }
+//    func sendNotificationReply(chatData: ChatData, accessToken: String) async throws {
+//        if let baseURL = networker.getUrlForEnv(appEnvironment: .Prod) {
+//            let url = "\(baseURL)/api/chat-handler/reply-through-notification"
+//            let requestWithoutBody = networker.constructRequest(uri: url, token: accessToken, post: true)
+//
+//            let requestBody: [String: Any] =
+//                [
+//                    "senderUsername": chatData.senderUsername,
+//                    "id": chatData.id.uuidString, // without converting the uuid to a string it will cause an error during json conversion
+//                    "senderid": chatData.senderid,
+//                    "recid": chatData.recid,
+//                    "receiverUsername": chatData.receiverUsername,
+//                    "message": chatData.message,
+//                    "timestamp": chatData.timestamp.formatted(.iso8601)
+//                ]
+//            
+//            let request = networker.buildReqBody(req: requestWithoutBody, body: requestBody)
+//            let session = URLSession.shared
+//            
+//            let (_, response) = try await session.data(for: request)
+//            
+//            guard let httpResponse = response as? HTTPURLResponse else {
+//                throw NetworkingErrors.responseConversionError
+//            }
+//            
+//            if httpResponse.statusCode != 200 {
+//                throw NetworkingErrors.problemStatusCode
+//            }
+//        }
+//    }
     
     func fetchMessageThreadBetweenUsers(viewingAccountId:UInt, otherUserAccountId:UInt, token: String, completion: @escaping (Result<ResponseFromServer<[ChatData]>, MessageErrors>) -> ()) {
         let queryItems = [

@@ -20,20 +20,20 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         Settings.shared.isAdvertiserIDCollectionEnabled = false
         
         // allow user to reply to chat messages during notifications
-        let replyToNewMessageAction = UNTextInputNotificationAction(identifier: "REPLY_TO_MESSAGE", title: "Reply")
+//        let replyToNewMessageAction = UNTextInputNotificationAction(identifier: "REPLY_TO_MESSAGE", title: "Reply")
         
         // define the notification type
-        let newMessageCategory =
-            UNNotificationCategory(
-                identifier: "MESSAGE",
-                actions: [replyToNewMessageAction],
-                intentIdentifiers: [],
-                hiddenPreviewsBodyPlaceholder: ""
-            )
+//        let newMessageCategory =
+//            UNNotificationCategory(
+//                identifier: "MESSAGE",
+//                actions: [replyToNewMessageAction],
+//                intentIdentifiers: [],
+//                hiddenPreviewsBodyPlaceholder: ""
+//            )
         
         // register the notification type
-        let notificationCenter = UNUserNotificationCenter.current()
-        notificationCenter.setNotificationCategories([newMessageCategory])
+//        let notificationCenter = UNUserNotificationCenter.current()
+//        notificationCenter.setNotificationCategories([newMessageCategory])
         
         return true
     }
@@ -51,14 +51,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     //-- must use device to get valid push token
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         // convert the token to a hex string
-        let token = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
+        // let token = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
         
         // set the object that I want to handle notifications for me
-        let notificationCenter = UNUserNotificationCenter.current()
-        notificationCenter.delegate = AppNotificationDelegate.shared
+//        let notificationCenter = UNUserNotificationCenter.current()
+//        notificationCenter.delegate = AppNotificationDelegate.shared
         
         // send a notification to subscribers that are listening for the .deviceTokenReceived notification
-        NotificationCenter.default.post(name: .deviceTokenReceived, object: token)
+        // NotificationCenter.default.post(name: .deviceTokenReceived, object: token)
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {

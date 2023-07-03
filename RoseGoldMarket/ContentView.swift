@@ -55,21 +55,6 @@ struct ContentView: View {
                 context.navToHome.toggle()
             }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .deviceTokenReceived)) { newTokenObject in
-            if let deviceIdentifier = newTokenObject.object as? String {
-                os_log(.debug, "Device Token received")
-                
-                Task {
-                    do {
-                        _ = try await userService.sendDeviceTokenToServer(deviceToken: deviceIdentifier, accessToken: user.accessToken)
-                    } catch let err {
-                        print(err)
-                    }
-                }
-            } else {
-                print("couldn't get it")
-            }
-        }
         .accentColor(Color("AccentColor"))
         .onAppear() {
             if firstAppear {
@@ -78,15 +63,15 @@ struct ContentView: View {
                 firstAppear = false
             }
             
-            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-                if let error = error {
-                    print("D'oh: \(error.localizedDescription)")
-                } else {
-                    DispatchQueue.main.async {
-                        UIApplication.shared.registerForRemoteNotifications()
-                    }
-                }
-            }
+//            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+//                if let error = error {
+//                    print("D'oh: \(error.localizedDescription)")
+//                } else {
+//                    DispatchQueue.main.async {
+//                        UIApplication.shared.registerForRemoteNotifications()
+//                    }
+//                }
+//            }
             
             ATTrackingManager.requestTrackingAuthorization { (status) in
                 switch status {
@@ -122,6 +107,21 @@ struct ContentView: View {
                 socket.disconnectFromServer(accountId: user.accountId)
             }
         }
+//        .onReceive(NotificationCenter.default.publisher(for: .deviceTokenReceived)) { newTokenObject in
+//            if let deviceIdentifier = newTokenObject.object as? String {
+//                os_log(.debug, "Device Token received")
+//
+//                Task {
+//                    do {
+//                        _ = try await userService.sendDeviceTokenToServer(deviceToken: deviceIdentifier, accessToken: user.accessToken)
+//                    } catch let err {
+//                        print(err)
+//                    }
+//                }
+//            } else {
+//                print("couldn't get it")
+//            }
+//        }
     }
 }
 
