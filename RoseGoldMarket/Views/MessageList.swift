@@ -80,7 +80,9 @@ struct MessageList: View {
             }
         }
         .onAppear() {
-            viewModel.getLatestMessages(viewingUser: currentUser.accountId, user: currentUser)
+            Task {
+                await viewModel.getLatestMessages(viewingUser: currentUser.accountId, user: currentUser)
+            }
         }
     }
 }

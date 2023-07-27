@@ -58,9 +58,12 @@ struct ContentView: View {
         .accentColor(Color("AccentColor"))
         .onAppear() {
             if firstAppear {
-                messenger.getLatestMessages(viewingUser: user.accountId, user: user)
-                messenger.getUnreadMessagesForUser(user: user)
-                firstAppear = false
+                Task {
+                    async let latestMessagesCall: () = messenger.getLatestMessages(viewingUser: user.accountId, user: user)
+                    async let unreadMessagesCall: () = messenger.getUnreadMessagesForUser(user: user)
+                    await [latestMessagesCall, unreadMessagesCall]
+                    firstAppear = false
+                }
             }
             
 //            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
@@ -96,8 +99,12 @@ struct ContentView: View {
             if newPhase == .active { // for when the user comes back to the app
                 if !firstAppear && user.accountId != 0 {
                     socket.connectToServer(withId: user.accountId)
-                    messenger.getLatestMessages(viewingUser: user.accountId, user: user)
-                    messenger.getUnreadMessagesForUser(user: user)
+                    Task {
+                        async let latestMessages: () = messenger.getLatestMessages(viewingUser: user.accountId, user: user)
+                        async let unreadMessages: () = messenger.getUnreadMessagesForUser(user: user)
+//
+                        await [latestMessages, unreadMessages]
+                    }
                 }
                 print("active")
             } else if newPhase == .inactive {

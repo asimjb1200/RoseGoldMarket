@@ -105,14 +105,17 @@ struct EditItem: View {
             .onAppear() {
                 if firstAppear {
                     firstAppear = false
-                    viewModel.getItemData(itemId: itemId, user: user)
-                    CategoryIds.allCases.forEach {
-                        // create a category object for each of the categories ids
-                        viewModel.categoryHolder.append(Category(category: $0.rawValue, isActive: false))
+                    Task {
+                        await viewModel.getItemData(itemId: itemId, user: user)
+                        CategoryIds.allCases.forEach {
+                            // create a category object for each of the categories ids
+                            viewModel.categoryHolder.append(Category(category: $0.rawValue, isActive: false))
+                        }
+                        for num in 1...3 {
+                            getImage(owner: ownerName, itemName: itemName, imageNumber: num)
+                        }
                     }
-                    for num in 1...3 {
-                        getImage(owner: ownerName, itemName: itemName, imageNumber: num)
-                    }
+                    
                 }
             }
             
@@ -170,9 +173,11 @@ struct EditItem: View {
                             withAnimation {
                                 viewModel.isAvailable.toggle()
                             }
-                            
-                            // send off the code that will update the availability of the item on the backend
-                            viewModel.updateItemAvailability(itemId: itemId, itemIsAvailable: viewModel.isAvailable, user: user)
+                            Task {
+                                // send off the code that will update the availability of the item on the backend
+                                await viewModel.updateItemAvailability(itemId: itemId, itemIsAvailable: viewModel.isAvailable, user: user)
+                                
+                            }
                         }
                         .alert(isPresented: $viewModel.updatedAvailability) {
                             Alert(title: Text("Success"), message: Text(viewModel.isAvailable ? "Your plant listing has been added back the market" : "Your plant listing has been removed from the market"), dismissButton: .default(Text("OK")))
@@ -223,7 +228,9 @@ struct EditItem: View {
                                 return
                             }
 
-                            viewModel.savePlant(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, itemId: itemId, user:user)
+                            Task {
+                                await viewModel.savePlant(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, itemId: itemId, user:user)
+                            }
                         }
                 }
                 .font(.system(size: 20, weight: .heavy, design: .default))
@@ -238,7 +245,9 @@ struct EditItem: View {
                         title: Text("Are You Sure"),
                         message: Text("Once you delete your item we can't undo it."),
                         primaryButton: .destructive(Text("Delete")) {
-                            viewModel.deleteItem(itemId: itemId, user:user)
+                            Task {
+                                await viewModel.deleteItem(itemId: itemId, user:user)
+                            }
                         },
                         secondaryButton: .cancel()
                     )
@@ -247,7 +256,9 @@ struct EditItem: View {
         .sheet(
             isPresented: $viewModel.isShowingCategoryPicker,
             onDismiss: {
-                viewModel.saveNewCategories(itemId: itemId, user: user)
+                Task {
+                    await viewModel.saveNewCategories(itemId: itemId, user: user)
+                }
             }
         ) {
             Text("Choose Your Categories")

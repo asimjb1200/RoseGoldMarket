@@ -240,7 +240,7 @@ struct AddItems: View {
                     Alert(title: Text("Missing Categories"), message: Text("Add categories to your plant."), dismissButton: .default(Text("OK!")))
                 }
                 
-                if !sendingData {
+            if !viewModel.sendingData {
                     Button(
                         action: {
                             guard viewModel.itemPosted == false else {return}
@@ -287,19 +287,21 @@ struct AddItems: View {
                                 print("couldn't get the images and compress them")
                                 return
                             }
-                            sendingData = true
-                            viewModel.savePlantV2(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, user: user) { itemPosted in
-                                if itemPosted {
-                                    // reset everything now
-                                    viewModel.plantName = ""
-                                    viewModel.plantDescription = ""
-                                    descriptionFieldIsFocus = false
-                                    nameFieldIsFocus = false
-                                    image1 = nil
-                                    image2 = nil
-                                    image3 = nil
+                            //viewModel.sendingData = true
+                            Task {
+                                let itemPosted = await viewModel.savePlantV2(accountid: user.accountId, plantImage: plantImage, plantImage2: plantImage2, plantImage3: plantImage3, user: user)
+                                DispatchQueue.main.async {
+                                    if itemPosted {
+                                        // reset everything now
+                                        descriptionFieldIsFocus = false
+                                        nameFieldIsFocus = false
+                                        image1 = nil
+                                        image2 = nil
+                                        image3 = nil
+                                        
+                                    }
+                                    //sendingData = false
                                 }
-                                sendingData = false
                             }
                         },
                         label: {

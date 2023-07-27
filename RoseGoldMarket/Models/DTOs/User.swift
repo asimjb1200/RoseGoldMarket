@@ -10,15 +10,21 @@ import SwiftUI
 
 
 class UserModel: ObservableObject, UserProtocol {
-    var username: String
-    var accessToken: String
-    var accountId: UInt
-    var avatarUrl: String
     private var userService: UserNetworking = .shared
     static let shared:UserModel = UserModel(username: "", accessToken: "", accountId: 0, avatarUrl: "")
-    let socket:SocketUtils = .shared
+    
     @Published var isLoggedIn = false
-
+    
+    var username: String
+    var accessToken: String {
+        didSet {
+            userService.saveAccessToken(accessToken: accessToken) // this way everytime the access token is set, we save it to the device
+        }
+    }
+    var accountId: UInt
+    var avatarUrl: String
+    
+    let socket:SocketUtils = .shared
     let decoder = JSONDecoder()
 
     private init (username:String, accessToken:String, accountId:UInt, avatarUrl:String) {

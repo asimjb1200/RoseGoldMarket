@@ -115,7 +115,9 @@ struct AccountDetailsView: View {
                                     return
                                 }
 
-                                sendReportMessage()
+                                Task {
+                                    await sendReportMessage()
+                                }
                             },
                             label: {
                                 Text("Submit")
@@ -143,40 +145,23 @@ extension AccountDetailsView {
                 self.items = itemData.data
                 if itemData.newToken != nil {
                     user.accessToken = itemData.newToken!
-                    userService.updateAccessToken(newToken: itemData.newToken!)
                 }
             }
-        } catch let err {
-            print(err.localizedDescription)
-            self.errorOccurred = true
-            
-            if err.localizedDescription == ItemErrors.tokenExpired.rawValue {
+        } catch ItemErrors.tokenExpired {
+            DispatchQueue.main.async {
                 self.user.logout()
             }
+        } catch let err {
+            print(err)
+            self.errorOccurred = true
         }
-        
-        service.retrieveItemsForAccount(accountId: accountid, token: user.accessToken, completion: { dataRes in
-            switch dataRes {
-            case .success(let itemData):
-                DispatchQueue.main.async {
-                    self.items = itemData.data
-                    if itemData.newToken != nil {
-                        user.accessToken = itemData.newToken!
-                    }
-                }
-                
-            case .failure(let error):
-                self.errorOccurred = true
-                if error == .tokenExpired {
-                    self.user.logout()
-                }
-                print(error.localizedDescription)
-            }
-        })
     }
     
-    func sendReportMessage() {
-        sendingMessage = true
+    func sendReportMessage() async {
+        await MainActor.run {
+            sendingMessage = true
+        }
+        
         UserNetworking.shared.reportAUser(userToReport: accountid, reportingUser: user.accountId, reason: reason, token: user.accessToken) { reportResponse in
             switch reportResponse {
                 case .success(let reportSentRes):

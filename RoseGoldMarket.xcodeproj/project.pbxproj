@@ -10,6 +10,7 @@
 		6800EDD627B06B0100461643 /* MessageErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6800EDD527B06B0100461643 /* MessageErrors.swift */; };
 		6800EDD827B06C3600461643 /* ChatData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6800EDD727B06C3600461643 /* ChatData.swift */; };
 		6802E52A296E77AB009EF0E9 /* LandingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6802E529296E77AB009EF0E9 /* LandingPage.swift */; };
+		680378A92A6A25F700C46C42 /* ItemErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680378A82A6A25F700C46C42 /* ItemErrors.swift */; };
 		680A3B4528CEB2F500E784E8 /* AddressInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680A3B4428CEB2F500E784E8 /* AddressInformation.swift */; };
 		680F155F2951680700911999 /* Validators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680F155E2951680700911999 /* Validators.swift */; };
 		68135B8029403CA500760038 /* SecurityCodeTextBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68135B7F29403CA500760038 /* SecurityCodeTextBox.swift */; };
@@ -60,6 +61,7 @@
 		6870B8C129F2141700D8E2AB /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6870B8C029F2141700D8E2AB /* AppEnvironment.swift */; };
 		6878BCCB27F270C700CD071A /* badwords.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6878BCCA27F270C700CD071A /* badwords.txt */; };
 		687A0BCB28602E23003B76D1 /* UnderlineTextFieldModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687A0BCA28602E23003B76D1 /* UnderlineTextFieldModifier.swift */; };
+		688076472A6F65520049CF5E /* RuntimeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688076462A6F65520049CF5E /* RuntimeError.swift */; };
 		688591BB29077FF1006CE699 /* AccountVerificationErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688591BA29077FF1006CE699 /* AccountVerificationErrors.swift */; };
 		688B6EB62A09AB6D00AEC5D5 /* RoseGoldMarketStoreKitConfiguration.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 688B6EB52A09AB6D00AEC5D5 /* RoseGoldMarketStoreKitConfiguration.storekit */; };
 		688B6EB82A09ADE300AEC5D5 /* SubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688B6EB72A09ADE300AEC5D5 /* SubscriptionHandler.swift */; };
@@ -104,6 +106,7 @@
 		6800EDD527B06B0100461643 /* MessageErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageErrors.swift; sourceTree = "<group>"; };
 		6800EDD727B06C3600461643 /* ChatData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatData.swift; sourceTree = "<group>"; };
 		6802E529296E77AB009EF0E9 /* LandingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingPage.swift; sourceTree = "<group>"; };
+		680378A82A6A25F700C46C42 /* ItemErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemErrors.swift; sourceTree = "<group>"; };
 		680A3B4428CEB2F500E784E8 /* AddressInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressInformation.swift; sourceTree = "<group>"; };
 		680F155E2951680700911999 /* Validators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Validators.swift; sourceTree = "<group>"; };
 		68135B7F29403CA500760038 /* SecurityCodeTextBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityCodeTextBox.swift; sourceTree = "<group>"; };
@@ -156,6 +159,7 @@
 		68722E2A28F3C41600E214A0 /* RoseGoldMarket.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RoseGoldMarket.entitlements; sourceTree = "<group>"; };
 		6878BCCA27F270C700CD071A /* badwords.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = badwords.txt; sourceTree = "<group>"; };
 		687A0BCA28602E23003B76D1 /* UnderlineTextFieldModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnderlineTextFieldModifier.swift; sourceTree = "<group>"; };
+		688076462A6F65520049CF5E /* RuntimeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeError.swift; sourceTree = "<group>"; };
 		688591BA29077FF1006CE699 /* AccountVerificationErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountVerificationErrors.swift; sourceTree = "<group>"; };
 		688B6EB52A09AB6D00AEC5D5 /* RoseGoldMarketStoreKitConfiguration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = RoseGoldMarketStoreKitConfiguration.storekit; sourceTree = "<group>"; };
 		688B6EB72A09ADE300AEC5D5 /* SubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionHandler.swift; sourceTree = "<group>"; };
@@ -256,6 +260,8 @@
 				688591BA29077FF1006CE699 /* AccountVerificationErrors.swift */,
 				68A8819B2A2BB2CA00DEB5CB /* DeviceTokenErrors.swift */,
 				68C4CB432A3AB2C000D72F92 /* NetworkingErrors.swift */,
+				680378A82A6A25F700C46C42 /* ItemErrors.swift */,
+				688076462A6F65520049CF5E /* RuntimeError.swift */,
 			);
 			path = Errors;
 			sourceTree = "<group>";
@@ -556,6 +562,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				68E9193327D02AD800154DBB /* EmailSupportViewModel.swift in Sources */,
+				688076472A6F65520049CF5E /* RuntimeError.swift in Sources */,
 				684219DE28DC2ED400936369 /* RegistrationFormEnum.swift in Sources */,
 				68E083DF27ACBE4000DA0110 /* MessagingService.swift in Sources */,
 				688B6EB82A09ADE300AEC5D5 /* SubscriptionHandler.swift in Sources */,
@@ -566,6 +573,7 @@
 				6848679E2798D5CB0033969D /* ItemService.swift in Sources */,
 				68AE23D92A0B120700D7CB4C /* ManageSubscriptions.swift in Sources */,
 				68BF1DCB2974FB3700028FEB /* WhichPhoto.swift in Sources */,
+				680378A92A6A25F700C46C42 /* ItemErrors.swift in Sources */,
 				68BF1DCD297503E200028FEB /* EditPlantFields.swift in Sources */,
 				681AB5C727A650F700B1629B /* ItemDetails.swift in Sources */,
 				680F155F2951680700911999 /* Validators.swift in Sources */,

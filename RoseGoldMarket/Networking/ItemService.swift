@@ -9,9 +9,14 @@ import Foundation
 import Alamofire
 
 struct ItemService {
-    func postItem(itemData items: ItemForBackend, token: String, completion: @escaping (Result<ResponseFromServer<String>, ItemErrors>) -> ()) {
+
+    func postItemV2(itemData items: ItemForBackend, token: String) async throws -> ResponseFromServer<String> {
         let networker = Networker()
-        let serverUrl = URL(string: "https://rosegoldgardens.com/api/item-handler/add-items")
+        guard let urlBase = networker.getUrlForEnv(appEnvironment: .Prod) else {
+            print("not able to get url base")
+            throw ItemErrors.urlError
+        }
+        let serverUrl = URL(string: "\(urlBase)/api/item-handler/add-items")
         var urlRequest = URLRequest(url: serverUrl!)
         
         let boundary = UUID().uuidString
@@ -23,95 +28,49 @@ struct ItemService {
         let requestData = networker.buildMultipartImageRequest(boundary: boundary, item: items)
         urlRequest.httpBody = requestData
         
-        URLSession.shared.dataTask(with: urlRequest) {(data, response, error) in
-            guard error == nil else {
-                completion(.failure(.genError))
-                return
-            }
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        
+        guard let response = response as? HTTPURLResponse else {
+            throw ItemErrors.responseConversionError
+        }
+        
+        guard response.statusCode != 403 else {
+            throw ItemErrors.tokenExpired
+        }
+        
+        let decoded = try JSONDecoder().decode(ResponseFromServer<String>.self, from: data)
 
-            guard let response = response as? HTTPURLResponse else {
-                print("error unwrapping response")
-                completion(.failure(.genError))
-                return
-            }
-
-            guard response.statusCode != 403 else {
-                completion(.failure(.tokenExpired))
-                return
-            }
-
-            guard response.statusCode == 201 else {
-                print("the request failed")
-                completion(.failure(.genError))
-                return
-            }
-
-
-            guard let data = data else {
-                print("problem decoding data")
-                completion(.failure(.genError))
-                return
-            }
-
-            do {
-                let decoded = try JSONDecoder().decode(ResponseFromServer<String>.self, from: data)
-                print("Data posted")
-                completion(.success(decoded))
-                return
-            } catch let err {
-                print("\(err.localizedDescription)")
-                completion(.failure(.genError))
-                return
-            }
-        }.resume()
+        return decoded
     }
     
-    func updateItemAvailability(itemId: UInt, itemIsAvailable: Bool, token: String, completion: @escaping (Result<ResponseFromServer<Bool>, ItemErrors>) -> ()) {
+    func updateItemAvailabilityV2(itemId: UInt, itemIsAvailable: Bool, token: String) async throws -> ResponseFromServer<Bool> {
         let networker = Networker()
         guard let urlBase = networker.getUrlForEnv(appEnvironment: .Prod) else {
             print("not able to get url base")
-            return
+            throw ItemErrors.urlError
         }
         let url = "\(urlBase)/api/item-handler/toggle-item-availability"
         let requestWithoutBody = networker.constructRequest(uri: url, token: token, post: true)
         let reqBody: [String: Any] = ["itemId": itemId, "itemIsAvailable": itemIsAvailable]
         let request = networker.buildReqBody(req: requestWithoutBody, body: reqBody)
         
-        URLSession.shared.dataTask(with: request) {(data, response, err) in
-            guard err == nil else {
-                completion(.failure(.genError))
-                return
-            }
-            
-            guard let response = response as? HTTPURLResponse else {
-                completion(.failure(.genError))
-                return
-            }
-            
-            guard response.statusCode != 403 else {
-                completion(.failure(.tokenExpired))
-                return
-            }
-            
-            guard response.statusCode == 200 else {
-                completion(.failure(.badStatusCode))
-                return
-            }
-            
-            guard let data = data else {
-                print("couldn't unwrap the data")
-                completion(.failure(.dataConversionError))
-                return
-            }
-            
-            do {
-                let decoder = JSONDecoder()
-                let itemsResponse = try decoder.decode(ResponseFromServer<Bool>.self, from: data)
-                completion(.success(itemsResponse))
-            } catch let dataError {
-                print(dataError.localizedDescription)
-            }
-        }.resume()
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let response = response as? HTTPURLResponse else {
+            throw ItemErrors.responseConversionError
+        }
+        
+        guard response.statusCode != 403 else {
+            throw ItemErrors.tokenExpired
+        }
+        
+        do {
+            let decoder = JSONDecoder()
+            let itemsResponse = try decoder.decode(ResponseFromServer<Bool>.self, from: data)
+            return itemsResponse
+        } catch let dataError {
+            throw ItemErrors.dataConversionError
+        }
     }
     
     func retrieveItemsV2(categoryIdFilters: [UInt], limit: UInt, offset: UInt, longAndLat: String, miles: UInt, searchTerm: String, token: String) async throws -> ResponseFromServer<[Item]> {
@@ -161,53 +120,6 @@ struct ItemService {
         return itemsResponse
     }
     
-    func retrieveItemsForAccount(accountId: UInt, token: String, completion: @escaping (Result<ResponseFromServer<[Item]>, ItemErrors>) -> ()) {
-        let networker = Networker()
-        let queryItem = [URLQueryItem(name: "accountId", value: "\(accountId)")]
-        let req = networker.constructRequest(uri: "https://rosegoldgardens.com/api/users/items", token: token, queryItems: queryItem)
-        
-        URLSession.shared.dataTask(with: req) {(data, response, err) in
-            guard err == nil else {
-                completion(.failure(.genError))
-                return
-            }
-            guard let response = response as? HTTPURLResponse else {
-                completion(.failure(.genError))
-                return
-            }
-            
-            guard response.statusCode != 403 else {
-                completion(.failure(.tokenExpired))
-                return
-            }
-            
-            guard response.statusCode == 200 else {
-                print("The status wasn't ok")
-                completion(.failure(.genError))
-                return
-            }
-            
-            guard let data = data else {
-                print("couldn't unwrap the data")
-                completion(.failure(.genError))
-                return
-            }
-            
-            do {
-                let decoder = JSONDecoder()
-                let dateFormatter = DateFormatter()
-                dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-                
-                decoder.dateDecodingStrategy = .formatted(dateFormatter)
-                let itemsResponse = try decoder.decode(ResponseFromServer<[Item]>.self, from: data)
-                completion(.success(itemsResponse))
-            } catch let error {
-                print(error)
-            }
-        }.resume()
-    }
-    
     func retrieveItemsForAccountV2(accountId: UInt, token: String) async throws -> ResponseFromServer<[Item]> {
         let networker = Networker()
         let queryItem = [URLQueryItem(name: "accountId", value: "\(accountId)")]
@@ -244,50 +156,50 @@ struct ItemService {
         return itemsResponse
     }
     
-    func retrieveItemById(itemId:UInt, token: String, completion: @escaping (Result<ResponseFromServer<Item>, ItemErrors>) -> ()) {
+    func retrieveItemByIdV2(itemId:UInt, token: String) async throws -> ResponseFromServer<Item> {
         let queryItem = [URLQueryItem(name: "itemId", value: "\(itemId)")]
-        let req = Networker().constructRequest(uri: "https://rosegoldgardens.com/api/item-handler/item-details-for-edit", token: token, queryItems: queryItem)
+        let networker = Networker()
+        guard let urlBase = networker.getUrlForEnv(appEnvironment: .Prod) else {
+            print("not able to get url base")
+            throw ItemErrors.urlError
+        }
+        let req = networker.constructRequest(uri: "\(urlBase)/api/item-handler/item-details-for-edit", token: token, queryItems: queryItem)
         
-        URLSession.shared.dataTask(with: req) { (data, response, err) in
-            if err != nil {
-                completion(.failure(.genError))
-            }
+        let (data, response) = try await URLSession.shared.data(for: req)
+        
+        guard let response = response as? HTTPURLResponse else {
+            throw ItemErrors.responseConversionError
+        }
+        
+        guard response.statusCode != 403 else {
+            throw ItemErrors.tokenExpired
+        }
+        
+        do {
+            let decoder = JSONDecoder()
+            let dateFormatter = DateFormatter()
+            dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
             
-            guard let data = data else {
-                completion(.failure(.genError))
-                return
-            }
+            decoder.dateDecodingStrategy = .formatted(dateFormatter)
             
-            guard let response = response as? HTTPURLResponse else {
-                return
-            }
-            
-            guard response.statusCode != 403 else {
-                completion(.failure(.tokenExpired))
-                return
-            }
-
-            
-            do {
-                let decoder = JSONDecoder()
-                let dateFormatter = DateFormatter()
-                dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-                
-                decoder.dateDecodingStrategy = .formatted(dateFormatter)
-                
-                let itemData = try decoder.decode(ResponseFromServer<Item>.self, from: data)
-                completion(.success(itemData))
-            } catch let itemError {
-                print(itemError)
-                completion(.failure(.genError))
-            }
-        }.resume()
+            let itemData = try decoder.decode(ResponseFromServer<Item>.self, from: data)
+            return itemData
+        } catch let itemError {
+            print(itemError.localizedDescription)
+            throw ItemErrors.dataConversionError
+        }
     }
     
-    func deleteItem(itemId:UInt, itemName:String, token: String, completion: @escaping (Result<ResponseFromServer<Bool>, ItemErrors>) -> ()) {
+    func deleteItemV2(itemId:UInt, itemName:String, token: String) async throws -> ResponseFromServer<Bool> {
         let queryItems = [URLQueryItem(name: "itemId", value: "\(itemId)"), URLQueryItem(name: "itemName", value: "\(itemName.replacingOccurrences(of: " ", with: "%20"))")]
-        let url = URL(string: "https://rosegoldgardens.com/api/item-handler/delete-item")!
+        let networker = Networker()
+        guard let urlBase = networker.getUrlForEnv(appEnvironment: .Prod) else {
+            print("not able to get url base")
+            throw ItemErrors.urlError
+        }
+
+        let url = URL(string: "\(urlBase)/api/item-handler/delete-item")!
         let finalURL = url.appending(queryItems: queryItems)
         var request = URLRequest(url: finalURL)
         
@@ -295,88 +207,61 @@ struct ItemService {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
-        URLSession.shared.dataTask(with: request) { (data, response, error) in
-            guard error == nil else {
-                completion(.failure(.genError))
-                return
-            }
-            
-            guard let response = response as? HTTPURLResponse else {
-                return
-            }
-            
-            guard response.statusCode != 403 else {
-                completion(.failure(.tokenExpired))
-                return
-            }
-
-            
-            guard let data = data else {
-                return
-            }
-
-            do {
-                let dataPosted = try JSONDecoder().decode(ResponseFromServer<Bool>.self, from: data)
-                completion(.success(dataPosted))
-            } catch let apiErr {
-                print(apiErr)
-            }
-        }.resume()
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let response = response as? HTTPURLResponse else {
+            throw ItemErrors.responseConversionError
+        }
+        
+        guard response.statusCode != 403 else {
+            throw ItemErrors.tokenExpired
+        }
+        
+        do {
+            let dataPosted = try JSONDecoder().decode(ResponseFromServer<Bool>.self, from: data)
+            return dataPosted
+        } catch let apiErr {
+            print(apiErr.localizedDescription)
+            throw ItemErrors.dataConversionError
+        }
     }
     
-    func updateCategories(newCategories: [UInt], itemId: UInt, token: String, completion: @escaping (Result<ResponseFromServer<Bool>, ItemErrors>) -> ()) {
+    func updateCategoriesV2(newCategories: [UInt], itemId: UInt, token: String) async throws -> ResponseFromServer<Bool> {
         let networker = Networker()
-        //let serverUrl = URL(string: "https://rosegoldgardens.com/api/item-handler/edit-item-categories")
-        
-        let req = networker.constructRequest(uri: "https://rosegoldgardens.com/api/item-handler/edit-item-categories", token: token, post: true)
+        guard let urlBase = networker.getUrlForEnv(appEnvironment: .Prod) else {
+            print("not able to get url base")
+            throw ItemErrors.urlError
+        }
+        let req = networker.constructRequest(uri: "\(urlBase)/api/item-handler/edit-item-categories", token: token, post: true)
         let body: [String: Any] = ["categories": newCategories, "itemId": itemId]
         let reqWithBody = networker.buildReqBody(req: req, body: body)
         
-        URLSession.shared.dataTask(with: reqWithBody) {(data, response, err) in
-            guard err == nil else {
-                completion(.failure(.genError))
-                return
-            }
-            
-            guard let response = response as? HTTPURLResponse else {
-                completion(.failure(.genError))
-                return
-            }
-            
-            guard response.statusCode != 403 else {
-                completion(.failure(.tokenExpired))
-                return
-            }
-            
-            guard response.statusCode == 200 else {
-                print("the request failed")
-                completion(.failure(.genError))
-                return
-            }
-
-            
-            guard let data = data else {
-                print("problem decoding data")
-                completion(.failure(.genError))
-                return
-            }
-            
-            do {
-                let decoded = try JSONDecoder().decode(ResponseFromServer<Bool>.self, from: data)
-                print("Data posted")
-                completion(.success(decoded))
-                return
-            } catch let err {
-                print("\(err.localizedDescription)")
-                completion(.failure(.genError))
-                return
-            }
-        }.resume()
+        let (data, response) = try await URLSession.shared.data(for: reqWithBody)
+        
+        guard let response = response as? HTTPURLResponse else {
+            throw ItemErrors.responseConversionError
+        }
+        
+        guard response.statusCode != 403 else {
+            throw ItemErrors.tokenExpired
+        }
+        
+        do {
+            let decoded = try JSONDecoder().decode(ResponseFromServer<Bool>.self, from: data)
+            return decoded
+        } catch let err {
+            print("\(err.localizedDescription)")
+            throw ItemErrors.dataConversionError
+        }
     }
     
-    func updateItem(itemData items: ItemForBackend, itemId:UInt, token: String, completion: @escaping (Result<ResponseFromServer<String>, ItemErrors>) -> ()) {
+    func updateItemV2(itemData items: ItemForBackend, itemId:UInt, token: String) async throws -> ResponseFromServer<String> {
         let networker = Networker()
-        let serverUrl = URL(string: "https://rosegoldgardens.com/api/item-handler/edit-item")
+        guard let urlBase = networker.getUrlForEnv(appEnvironment: .Prod) else {
+            print("not able to get url base")
+            throw ItemErrors.urlError
+        }
+        let serverUrl = URL(string: "\(urlBase)/api/item-handler/edit-item")
         var urlRequest = URLRequest(url: serverUrl!)
         
         let boundary = UUID().uuidString
@@ -387,55 +272,29 @@ struct ItemService {
         
         let requestData = networker.buildMultipartImageRequest(boundary: boundary, item: items, itemId: itemId)
         
-        URLSession.shared.uploadTask(with: urlRequest, from: requestData) {(data, response, error) in
-            guard error == nil else {
-                completion(.failure(.genError))
-                return
-            }
-            
-            guard let response = response as? HTTPURLResponse else {
-                print("error unwrapping response")
-                completion(.failure(.genError))
-                return
-            }
-            
-            guard response.statusCode != 403 else {
-                completion(.failure(.tokenExpired))
-                return
-            }
-            
-            guard response.statusCode == 201 else {
-                print("the request failed")
-                completion(.failure(.genError))
-                return
-            }
-
-            
-            guard let data = data else {
-                print("problem decoding data")
-                completion(.failure(.genError))
-                return
-            }
-            
-            do {
-                let decoded = try JSONDecoder().decode(ResponseFromServer<String>.self, from: data)
-                print("Data posted")
-                completion(.success(decoded))
-                return
-            } catch let err {
-                print("\(err.localizedDescription)")
-                completion(.failure(.genError))
-                return
-            }
-        }.resume()
+        let (data, response) = try await URLSession.shared.upload(for: urlRequest, from: requestData)
+        
+        guard let response = response as? HTTPURLResponse else {
+            print("error unwrapping response")
+            throw ItemErrors.responseConversionError
+        }
+        
+        guard response.statusCode != 403 else {
+            throw ItemErrors.tokenExpired
+        }
+        
+        guard response.statusCode == 201 else {
+            print("the request failed to update the item")
+            throw ItemErrors.badStatusCode
+        }
+        
+        do {
+            let decoded = try JSONDecoder().decode(ResponseFromServer<String>.self, from: data)
+            return decoded
+        } catch let err {
+            print("\(err.localizedDescription)")
+            throw ItemErrors.dataConversionError
+        }
+        
     }
-}
-
-enum ItemErrors: String, Error {
-    case genError = "error occurred"
-    case urlError = "couldnt get url"
-    case tokenExpired = "The access token has expired. Time to issue a new one"
-    case responseConversionError = "could not convert the response object to an HTTPResponse"
-    case dataConversionError = "was not able to convert the data object to a known type"
-    case badStatusCode = "the status code indicated that there was a big problem"
 }

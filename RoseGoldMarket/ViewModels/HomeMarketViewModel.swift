@@ -54,7 +54,6 @@ final class HomeMarketViewModel: ObservableObject {
             DispatchQueue.main.async {
                 if itemData.newToken != nil {
                     user.accessToken = itemData.newToken!
-                    self.userService.updateAccessToken(newToken: itemData.newToken!)
                 }
                 
                 if !itemData.data.isEmpty {
@@ -75,8 +74,13 @@ final class HomeMarketViewModel: ObservableObject {
                     self.isLoadingPage = false
                 }
             }
-        } catch let err {
-            print(err.localizedDescription)
+        } catch ItemErrors.tokenExpired {
+            DispatchQueue.main.async {
+                user.logout()
+            }
+        }
+        catch let err {
+            print(err)
             DispatchQueue.main.async {
                 self.items = []
             }

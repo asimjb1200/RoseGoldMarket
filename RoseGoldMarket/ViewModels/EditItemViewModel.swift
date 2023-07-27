@@ -35,135 +35,136 @@ final class EditItemVM:ObservableObject {
         return 0 != self.categoryHolder.filter{ $0.isActive == true }.count
     }
     
-    func updateItemAvailability(itemId:UInt, itemIsAvailable: Bool, user:UserModel) {
-        service.updateItemAvailability(itemId: itemId, itemIsAvailable: itemIsAvailable, token: user.accessToken) {[weak self] itemAvailabilityRes in
-            switch itemAvailabilityRes {
-                case .success(let res):
-                    DispatchQueue.main.async {
-                        if res.newToken != nil {
-                            user.accessToken = res.newToken!
-                        }
-                        
-                        self?.updatedAvailability = res.data
-                    }
-                case .failure(let err):
-                    print(err)
+    func updateItemAvailability(itemId:UInt, itemIsAvailable: Bool, user:UserModel) async {
+        do {
+            let res = try await service.updateItemAvailabilityV2(itemId: itemId, itemIsAvailable: itemIsAvailable, token: user.accessToken)
+            
+            DispatchQueue.main.async {
+                if res.newToken != nil {
+                    user.accessToken = res.newToken!
+                }
+                
+                self.updatedAvailability = res.data
             }
+        } catch ItemErrors.tokenExpired {
+            DispatchQueue.main.async {
+                user.logout()
+            }
+        } catch {
+            
         }
     }
     
-    func getItemData(itemId:UInt, user:UserModel) {
-        self.itemDataLoaded = true
-        service.retrieveItemById(itemId: itemId, token: user.accessToken) {[weak self] itemDataResponse in
-            switch itemDataResponse {
-                case .success(let itemData):
-                    DispatchQueue.main.async {
-                        if itemData.newToken != nil {
-                            user.accessToken = itemData.newToken!
-                        }
-                        self?.plantName = itemData.data.name
-                        self?.plantDescription = itemData.data.description
-                        self?.isAvailable = itemData.data.isavailable
-                        
-                        // go through the category list and set the toggle to true if it is present
-                        for cat in itemData.data.categories {
-                            // some characters may have a new line character in there so remove it
-                            let catId = self?.categoryMapper.categoriesByDescription[cat.replacingOccurrences(of: "\n", with: "")]
-                            
-                            // now find that category id in my array
-                            let indexOfCategoryToActivate = self?.categoryHolder.firstIndex(where: {$0.category == catId})
-                            
-                            guard let indexOfCategoryToActivate = indexOfCategoryToActivate else {
-                                return
-                            }
-                            
-                            // now activate it since this category id was a pre-existing one in the db
-                            self?.categoryHolder[indexOfCategoryToActivate].isActive = true
-                        }
-                        
-                        self?.itemDataLoaded = true
-                    }
-                case .failure(let error):
-                    DispatchQueue.main.async {
-                        if error == .tokenExpired {
-                            user.logout()
-                        }
-                        print("[EditItemVM] tried to get data for item \(itemId): \(error)")
-                        self?.networkError = true
-                        self?.itemDataLoaded = true
-                    }
-            }
+    func getItemData(itemId:UInt, user:UserModel) async {
+        DispatchQueue.main.async {
+            self.itemDataLoaded = true
         }
-    }
-    
-    func deleteItem(itemId:UInt, user:UserModel) {
-        service.deleteItem(itemId: itemId, itemName: self.plantName, token: user.accessToken) {[weak self] deletionResponse in
-            switch deletionResponse {
-                case .success(let resData):
-                    DispatchQueue.main.async {
-                        if resData.newToken != nil {
-                            user.accessToken = resData.newToken!
-                        }
-                        self?.itemIsDeleted = true
+        
+        do {
+            let itemData = try await service.retrieveItemByIdV2(itemId: itemId, token: user.accessToken)
+            DispatchQueue.main.async {
+                if itemData.newToken != nil {
+                    user.accessToken = itemData.newToken!
+                }
+                self.plantName = itemData.data.name
+                self.plantDescription = itemData.data.description
+                self.isAvailable = itemData.data.isavailable
+                
+                // go through the category list and set the toggle to true if it is present
+                for cat in itemData.data.categories {
+                    // some characters may have a new line character in there so remove it
+                    let catId = self.categoryMapper.categoriesByDescription[cat.replacingOccurrences(of: "\n", with: "")]
+                    
+                    // now find that category id in my array
+                    let indexOfCategoryToActivate = self.categoryHolder.firstIndex(where: {$0.category == catId})
+                    
+                    guard let indexOfCategoryToActivate = indexOfCategoryToActivate else {
+                        return
                     }
                     
-                case .failure(let error):
-                    DispatchQueue.main.async {
-                        if error == .tokenExpired {
-                            user.logout()
-                        }
-                        print("[EditItemVM] tried deleting item: \(error)")
-                        self?.networkError = true
-                    }
+                    // now activate it since this category id was a pre-existing one in the db
+                    self.categoryHolder[indexOfCategoryToActivate].isActive = true
+                }
+                
+                self.itemDataLoaded = true
+            }
+        } catch ItemErrors.tokenExpired {
+            DispatchQueue.main.async {
+                user.logout()
+            }
+        }catch let err {
+            DispatchQueue.main.async {
+                print("[EditItemVM] tried to get data for item \(itemId): \(err)")
+                self.networkError = true
+                self.itemDataLoaded = true
             }
         }
     }
     
-    func saveNewCategories(itemId: UInt, user:UserModel) {
+    func deleteItem(itemId:UInt, user:UserModel) async {
+        do {
+            let resData = try await service.deleteItemV2(itemId: itemId, itemName: plantName, token: user.accessToken)
+            DispatchQueue.main.async {
+                if resData.newToken != nil {
+                    user.accessToken = resData.newToken!
+                }
+                self.itemIsDeleted = true
+            }
+        } catch ItemErrors.tokenExpired {
+            DispatchQueue.main.async {
+                user.logout()
+            }
+        } catch let err {
+            DispatchQueue.main.async {
+                print("[EditItemVM] tried deleting item: \(err)\n\(err)")
+                self.networkError = true
+            }
+        }
+    }
+    
+    func saveNewCategories(itemId: UInt, user:UserModel) async {
         let categoryIdList: [UInt] = self.categoryHolder.filter{ $0.isActive == true}.map{ $0.category }
         
-        service.updateCategories(newCategories: categoryIdList, itemId: itemId, token: user.accessToken) { [weak self] apiRes in
-            switch apiRes {
-                case .success(let resData):
-                    DispatchQueue.main.async {
-                        if resData.newToken != nil {
-                            user.accessToken = resData.newToken!
-                        }
-                        if resData.data {
-                            self?.categoriesUpdated = true
-                        }
-                    }
-                case .failure(let err):
-                    DispatchQueue.main.async {
-                        print(err.localizedDescription)
-                    }
+        do {
+            let resData = try await service.updateCategoriesV2(newCategories: categoryIdList, itemId: itemId, token: user.accessToken)
+            
+            DispatchQueue.main.async {
+                if resData.newToken != nil {
+                    user.accessToken = resData.newToken!
+                }
+                self.categoriesUpdated = true
             }
+        } catch ItemErrors.tokenExpired {
+            DispatchQueue.main.async {
+                user.logout()
+            }
+        } catch let err {
+            print(err)
         }
     }
     
-    func savePlant(accountid: UInt, plantImage: Data, plantImage2: Data, plantImage3: Data, itemId:UInt, user:UserModel) {
+    func savePlant(accountid: UInt, plantImage: Data, plantImage2: Data, plantImage3: Data, itemId:UInt, user:UserModel) async {
         let categoryIdList: [UInt] = self.categoryHolder.filter{ $0.isActive == true}.map{ $0.category }
         let item = ItemForBackend(accountid: accountid, image1: plantImage, image2: plantImage2, image3: plantImage3, isavailable: self.isAvailable, pickedup: self.pickedUp, zipcode: 00000, dateposted: Date(), name: self.plantName, description: self.plantDescription, categoryIds: categoryIdList)
         
-        service.updateItem(itemData: item, itemId: itemId, token: user.accessToken) {[weak self] apiRes in
-            switch apiRes {
-                case .success(let resData):
-                    DispatchQueue.main.async {
-                        if resData.newToken != nil {
-                            user.accessToken = resData.newToken!
-                        }
-                        self?.plantUpdated = true
+        do {
+            let resData = try await service.updateItemV2(itemData: item, itemId: itemId, token: user.accessToken)
+            DispatchQueue.main.async {
+                if resData.newToken != nil {
+                    user.accessToken = resData.newToken!
+                }
+                self.plantUpdated = true
 //                        self?.viewStateErrors = .allGood
 //                        self?.showUpdateError = true
-                    }
-                case .failure(let err):
-                    DispatchQueue.main.async {
-                        if err == .tokenExpired {
-                            user.logout()
-                        }
-                        print("[EditItemVM] tried to save item \(itemId) after updates: \(err)")
-                        self?.networkError = true
-                    }
+            }
+        } catch ItemErrors.tokenExpired {
+            DispatchQueue.main.async {
+                user.logout()
+            }
+        } catch let err {
+            DispatchQueue.main.async {
+                print("[EditItemVM] tried to save item \(itemId) after updates: \(err)")
+                self.networkError = true
             }
         }
     }

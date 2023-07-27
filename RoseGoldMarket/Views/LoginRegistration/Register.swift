@@ -10,6 +10,7 @@ import CoreLocation
 import Combine
 import MapKit
 import UIKit
+import MessageUI
 
 
 struct Register: View {
@@ -32,6 +33,8 @@ struct Register: View {
     @State private var showLoginHere = true
     @State private var noAddyChosen = false
     @EnvironmentObject var appViewState: CurrentAppView
+    @StateObject var emailer = EmailService()
+    @Environment(\.openURL) var openURL
     //var addyChosen = false
 
     private let nonActiveField: some View = RoundedRectangle(cornerRadius: 30).stroke(.gray, lineWidth: 1)
@@ -50,7 +53,7 @@ struct Register: View {
         NavigationView {
             ScrollView {
                 VStack(alignment: .center, spacing: 25) {
-                    Spacer()
+                    //Spacer()
                     if self.pwPadding == 0 {
                         Group {
                             Text("Let's Get Started!")
@@ -545,16 +548,26 @@ struct Register: View {
                             })
                         
                     }
-                    
-                    HStack {
-                        Text("Already have an account? ")
-                        Button("Login Here") {
-                            withAnimation {
-                                appViewState.currentView = .LoginView // navigate back to the login screen
+                    Group {
+                        HStack {
+                            Text("Already have an account? ")
+                            Button("Login Here") {
+                                withAnimation {
+                                    appViewState.currentView = .LoginView // navigate back to the login screen
+                                }
+                            }.foregroundColor(Color.blue)
+                        }.padding(.top)
+                        
+                        Button("Report A Problem") {
+                            if MFMailComposeViewController.canSendMail() {
+                                emailer.sendEmail(subject: "Problem During Registration", body: "", to: "support@rosegoldgardens.com") { _ in
+
+                                }
+                            } else { // if they don't have the apple mail app on their phone
+                                openURL(URL(string: "mailto:support@rosegoldgardens.com?subject=Problem%20During%20Registration")!)
                             }
-                        }.foregroundColor(Color.blue)
-                    }.padding(.top)
-                    
+                        }
+                    }
                 }
                 .shadow(radius: 5)
                 .padding([.leading, .trailing, .top])

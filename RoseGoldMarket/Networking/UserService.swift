@@ -827,7 +827,7 @@ final class UserNetworking {
         ] as CFDictionary
         
         let status = SecItemUpdate(findTokenQuery, updateQuery)
-        // print("Update Finished with a status of \(status)")
+        print("Update Finished with a status of \(status)")
     }
     
     func deleteAccessToken() {

@@ -111,40 +111,44 @@ final class MessagingViewModel: ObservableObject {
     }
     
     /// fetches all of the messages that the user missed while their socket was disconnected
-    func getUnreadMessagesForUser(user:UserModel) {
-        MessagingService().fetchUnreadMessagesForUser(viewingUserId: user.accountId, token: user.accessToken) { unreadMessagesRes in
-            switch unreadMessagesRes {
-                case .success(let unreadMessages):
-                    DispatchQueue.main.async {
-                        self.unreadMessages = unreadMessages.data
-                        
-                        self.newMsgCount += self.unreadMessages.count
-                    }
-                case .failure(let err):
-                    DispatchQueue.main.async {
-                        print(err.localizedDescription)
-                    }
+    func getUnreadMessagesForUser(user:UserModel) async {
+        do {
+            let unreadMessages = try await MessagingService().fetchUnreadMessagesForUserV2(viewingUserId: user.accountId, token: user.accessToken)
+            
+            DispatchQueue.main.async {
+                self.unreadMessages = unreadMessages.data
+                
+                self.newMsgCount += self.unreadMessages.count
             }
+        } catch MessageErrors.tokenExpired {
+            DispatchQueue.main.async {
+                user.logout()
+            }
+        } catch let err{
+            print(err)
         }
     }
     
-    func deleteFromUnreadTable(otherUserId: UInt, viewingUser:UserModel) {
-        MessagingService().deleteUnreadMessageRecordsForChat(senderId: otherUserId, token: viewingUser.accessToken) { deletionResponse in
-            switch deletionResponse {
-                case .success(let responseObj):
-                    DispatchQueue.main.async {
-                        if responseObj.newToken != nil {
-                            viewingUser.accessToken = responseObj.newToken!
-                        }
-                        if responseObj.data {
-                            print("successfully deleted their messages")
-                        } else {
-                            print("wasn't able to delete their messages. Check your logs on the backend")
-                        }
-                    }
-                case .failure( _):
-                    print("an error occurred while trying to delete the unreads on the back end")
+    func deleteFromUnreadTable(otherUserId: UInt, viewingUser:UserModel) async {
+        do {
+            let responseObj = try await MessagingService().deleteUnreadMessageRecordsForChatV2(senderId: otherUserId, token: viewingUser.accessToken)
+            
+            DispatchQueue.main.async {
+                if responseObj.newToken != nil {
+                    viewingUser.accessToken = responseObj.newToken!
+                }
+                if responseObj.data {
+                    print("successfully deleted their messages")
+                } else {
+                    print("wasn't able to delete their messages. Check your logs on the backend")
+                }
             }
+        } catch MessageErrors.tokenExpired {
+            DispatchQueue.main.async {
+                viewingUser.logout()
+            }
+        } catch let err {
+            print(err)
         }
     }
     
@@ -154,34 +158,35 @@ final class MessagingViewModel: ObservableObject {
             
             if messageData.newToken != nil {
                 user.accessToken = messageData.newToken!
-                userService.updateAccessToken(newToken: messageData.newToken!)
+                //userService.updateAccessToken(newToken: messageData.newToken!)
             }
             DispatchQueue.main.async {
                 self.currentlyActiveChat = messageData.data
+            }
+        } catch MessageErrors.tokenExpired {
+            DispatchQueue.main.async {
+                user.logout()
             }
         } catch let err {
             print(err)
         }
     }
     
-    func getAllMessagesInThreadV2(viewingUser:UInt, otherUserAccount:UInt, user:UserModel) {
-        
-    }
-    
-    func getLatestMessages(viewingUser:UInt, user:UserModel) {
-        MessagingService().fetchLatestMessageInEachChat(userId: viewingUser, token: user.accessToken) { chatData in
-            switch chatData {
-                case .success(let latestChats) :
-                    if latestChats.newToken != nil {
-                        user.accessToken = latestChats.newToken!
-                    }
-                    DispatchQueue.main.async {
-                        self.latestMessages = latestChats.data
-                    }
-                    
-                case .failure(let err):
-                    print(err)
+    func getLatestMessages(viewingUser:UInt, user:UserModel) async {
+        do {
+            let latestChats = try await MessagingService().fetchLatestMessageInEachChatV2(userId: viewingUser, token: user.accessToken)
+            if latestChats.newToken != nil {
+                user.accessToken = latestChats.newToken!
             }
+            DispatchQueue.main.async {
+                self.latestMessages = latestChats.data
+            }
+        } catch MessageErrors.tokenExpired {
+            DispatchQueue.main.async {
+                user.logout()
+            }
+        } catch let err{
+            print(err)
         }
     }
 

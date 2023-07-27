@@ -170,7 +170,7 @@ struct MessageThread: View {
                 viewModel.unreadMessages = viewModel.unreadMessages.filter { $0.senderid != receiverId }
                 
                 // delete the unreads from the other user on the back end
-                viewModel.deleteFromUnreadTable(otherUserId: receiverId, viewingUser: viewingUser)
+                await viewModel.deleteFromUnreadTable(otherUserId: receiverId, viewingUser: viewingUser)
                 
                 viewModel.newMsgCount -= newMessageCountFromTheOtherUser.count
             }

@@ -93,7 +93,7 @@ struct AddProfilePic: View {
                             }
                         }
                         .onChange(of: registerViewModel.username) {
-                            registerViewModel.username = String($0.prefix(16))
+                            registerViewModel.username = String($0.trimmingCharacters(in: .whitespacesAndNewlines).prefix(16))
                             newUsernamePublisher.send(registerViewModel.username)
                         }
                         .onReceive(newUsernamePublisher.debounce(for: .milliseconds(500), scheduler: DispatchQueue.main)) { debouncedUsername in
