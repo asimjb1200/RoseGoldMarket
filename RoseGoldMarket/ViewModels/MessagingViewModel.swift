@@ -11,7 +11,15 @@ import SwiftUI
 
 final class MessagingViewModel: ObservableObject {
     @Published var firstAppear = true
-    @Published var newMsgCount = 0
+    @Published var newMsgCount = 0 {
+        didSet {
+            if newMsgCount < 0 {
+                DispatchQueue.main.async {
+                    self.newMsgCount = 0
+                }
+            }
+        }
+    }
     var unreadMessages: [UnreadMessage] = []
     /// Contains unique chats only. it is intended to be used to show a list to the user of each chat they are involved in. For example, if the user has chatted with 'John' and 'Tony' the
     /// list will contain the latest message in each of their respective threads (and ONLY the latest message).
@@ -117,7 +125,7 @@ final class MessagingViewModel: ObservableObject {
             
             DispatchQueue.main.async {
                 self.unreadMessages = unreadMessages.data
-                
+
                 self.newMsgCount += self.unreadMessages.count
             }
         } catch MessageErrors.tokenExpired {

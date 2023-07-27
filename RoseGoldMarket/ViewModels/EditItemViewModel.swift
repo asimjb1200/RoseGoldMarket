@@ -70,20 +70,13 @@ final class EditItemVM:ObservableObject {
                 self.plantDescription = itemData.data.description
                 self.isAvailable = itemData.data.isavailable
                 
-                // go through the category list and set the toggle to true if it is present
-                for cat in itemData.data.categories {
-                    // some characters may have a new line character in there so remove it
-                    let catId = self.categoryMapper.categoriesByDescription[cat.replacingOccurrences(of: "\n", with: "")]
-                    
-                    // now find that category id in my array
-                    let indexOfCategoryToActivate = self.categoryHolder.firstIndex(where: {$0.category == catId})
-                    
-                    guard let indexOfCategoryToActivate = indexOfCategoryToActivate else {
-                        return
-                    }
-                    
-                    // now activate it since this category id was a pre-existing one in the db
-                    self.categoryHolder[indexOfCategoryToActivate].isActive = true
+                
+                
+                // populate the category holder
+                for (categoryId, catDescription) in self.categoryMapper.categories {
+                    // search for the category in the item that was passed back. If it is found, we know that we have to activate the current category
+                    let categoryMatchFound = itemData.data.categories.first(where: { $0.replacingOccurrences(of: "\n", with: "") == catDescription }) != nil
+                    self.categoryHolder.append(Category(category: categoryId, isActive: categoryMatchFound))
                 }
                 
                 self.itemDataLoaded = true

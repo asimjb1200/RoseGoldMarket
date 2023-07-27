@@ -106,14 +106,14 @@ struct EditItem: View {
                 if firstAppear {
                     firstAppear = false
                     Task {
-                        await viewModel.getItemData(itemId: itemId, user: user)
-                        CategoryIds.allCases.forEach {
-                            // create a category object for each of the categories ids
-                            viewModel.categoryHolder.append(Category(category: $0.rawValue, isActive: false))
-                        }
-                        for num in 1...3 {
-                            getImage(owner: ownerName, itemName: itemName, imageNumber: num)
-                        }
+                        async let asyncArray: [()] = [
+                            viewModel.getItemData(itemId: itemId, user: user),
+                            getImage(owner: ownerName, itemName: itemName, imageNumber: 1),
+                            getImage(owner: ownerName, itemName: itemName, imageNumber: 2),
+                            getImage(owner: ownerName, itemName: itemName, imageNumber: 3)
+                        ]
+                        
+                        await asyncArray
                     }
                     
                 }
@@ -256,8 +256,12 @@ struct EditItem: View {
         .sheet(
             isPresented: $viewModel.isShowingCategoryPicker,
             onDismiss: {
-                Task {
-                    await viewModel.saveNewCategories(itemId: itemId, user: user)
+                if viewModel.categoryChosen {
+                    Task {
+                        await viewModel.saveNewCategories(itemId: itemId, user: user)
+                    }
+                } else {
+                    viewModel.missingCategories = true
                 }
             }
         ) {
@@ -278,28 +282,25 @@ struct EditItem: View {
 }
 
 extension EditItem {
-    func getImage(owner: String, itemName: String, imageNumber: Int) {
+    func getImage(owner: String, itemName: String, imageNumber: Int) async {
         if let encodedString = itemName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
             // Send the encodedString to the backend server
 
             // for each plant the images are stored as "image1", "image2", "image3"
             if let url: URL = URL(string: "https://rosegoldgardens.com/api/images/\(ownerName)/\(encodedString)/image\(imageNumber).jpg") {
-                URLSession.shared.dataTask(with: url) { (data, response, err) in
-                    guard err == nil else {
-                        print("an error occurred")
-                        return
-                    }
+                do {
+                    let (data, _) = try await URLSession.shared.data(from: url)
                     
-                    guard let imageData: Data = data else {
-                        print("couldnt decode data")
-                        return
-                    }
-                    if let uiImage = UIImage(data: imageData) {
+                    if let uiImage = UIImage(data: data) {
                         DispatchQueue.main.async {
                             self.plantImages[imageNumber - 1] = uiImage
                         }
                     }
-                }.resume()
+                } catch let err {
+                    print(err)
+                }
+
+
             }
         }
     }

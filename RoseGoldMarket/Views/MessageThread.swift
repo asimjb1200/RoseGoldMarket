@@ -172,7 +172,9 @@ struct MessageThread: View {
                 // delete the unreads from the other user on the back end
                 await viewModel.deleteFromUnreadTable(otherUserId: receiverId, viewingUser: viewingUser)
                 
-                viewModel.newMsgCount -= newMessageCountFromTheOtherUser.count
+                DispatchQueue.main.async {
+                    viewModel.newMsgCount -= newMessageCountFromTheOtherUser.count
+                }
             }
         }
     }
